@@ -1,0 +1,34 @@
+@import './variables.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui;
+  padding: 20px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--grey-light);
+  transition: 0.2s ease-out;
+}
+
+button {
+  background-color: var(--secondary);
+  color: var(--white);
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+}
+
+.dark {
+  background-color: var(--primary-dark);
+  color: var(--white);
+}

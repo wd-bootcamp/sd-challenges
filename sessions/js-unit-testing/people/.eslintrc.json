@@ -1,0 +1,13 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "jest": true,
+    "node": true
+  },
+  "extends": ["next/babel", "eslint:recommended", "plugin:jest/recommended"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": ["jest"]
+}

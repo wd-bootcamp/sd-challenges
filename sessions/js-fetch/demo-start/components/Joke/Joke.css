@@ -1,0 +1,7 @@
+.joke {
+  width: 80%;
+  margin: 1rem;
+  padding: 0.5rem;
+  background-color: var(--grey-light);
+  border-radius: 8px;
+}

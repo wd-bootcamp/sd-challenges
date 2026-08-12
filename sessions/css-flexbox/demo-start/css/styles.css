@@ -1,0 +1,37 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+nav {
+  padding: 14px 20px;
+  background-color: #8336ff7b;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.menu {
+  font-size: 22px;
+}
+
+.menu > li {
+  color: #334;
+}
+
+.menu > li:hover {
+  text-decoration: underline #ee4c0b 3px;
+}

@@ -1,0 +1,7 @@
+.app {
+  font-family: sans-serif;
+  text-align: center;
+  display: grid;
+  min-height: 100;
+  place-items: center;
+}

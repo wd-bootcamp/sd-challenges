@@ -1,0 +1,29 @@
+/* CSS reset that makes working with width and height easier
+   and should always be in your stylesheet. */
+* {
+  box-sizing: border-box;
+}
+
+/* The font-family property is inherited to all child elements by default */
+body {
+  font-family: system-ui;
+}
+
+/* All links (anchors) are hotpink when the user hovers over them */
+a:hover {
+  color: hotpink;
+}
+
+/* make all h1 elements text be blue and 2rem big */
+h1 {
+  color: blue;
+  font-size: 2rem;
+}
+
+/* All elements with the class introduction are italic (and fancy) */
+.introduction {
+  font-style: italic;
+  background-color: lightblue;
+  padding: 16px;
+  border-radius: 8px;
+}
