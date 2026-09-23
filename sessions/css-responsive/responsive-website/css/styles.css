@@ -63,8 +63,6 @@ Once you feel ready to write your media queries, scroll down to find prompts whe
 /* Hint 4: You may need a specific selector to change just one element. 
 If you're unsure, refer to your CSS Basics handout. */
 
-/* Hint 5: CSS Grid might come in handy for certain layouts. Refer to your CSS Flexbox handout for more details! */
-
 *,
 *::before,
 *::after {
