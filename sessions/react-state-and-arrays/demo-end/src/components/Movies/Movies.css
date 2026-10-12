@@ -1,0 +1,21 @@
+.movies {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  color: var(--dark);
+  background-color: rgb(243, 243, 243);
+  min-height: 100vh;
+}
+
+.movies__title {
+  font-size: 48px;
+  padding-top: 20px;
+  font-weight: bold;
+  text-align: center;
+  color: var(--dark);
+}
+
+.movies__movies {
+  margin: 10px 0;
+}
