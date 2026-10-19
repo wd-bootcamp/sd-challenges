@@ -40,8 +40,8 @@ export default function ISSTracker() {
 
   // const { coords, isLoading, error } = useCoords();
 
-  if (isLoading || !coords) return <p>Loading...</p>;
   if (error) return <p>Something went wrong...</p>;
+  if (isLoading || !coords) return <p>Loading...</p>;
 
   return (
     <main>
