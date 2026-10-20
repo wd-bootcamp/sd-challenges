@@ -1,14 +1,10 @@
 # React Component Testing: Demo End
 
-This is the end result of the React Component Testing demo.
-
-## Notes
-
-- You only have to touch the `./pages/index.js` file.
+This is the end result of the React Component Testing demo: the favorite movies app with tests for the components `Movie`, `Movies` and `Form`.
 
 ## Development
 
-To work locally, please install the dependencies using `npm i` first.
+To work locally, please install the dependencies using `npm i` first (Node.js 22.22 or newer is required).
 
 Run `npm run dev` to start a development server and open the displayed URL in a browser.
 
@@ -20,6 +16,5 @@ You can use the following commands:
 
 - `npm run dev` to start a development server
 - `npm run build` to build the project
-- `npm run start` to start a production server
-- `npm run test` to run the tests
-- `npm run lint` to run the linter
+- `npm run serve` to preview the production build
+- `npm run test` to run the tests with Vitest
