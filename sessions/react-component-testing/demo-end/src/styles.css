@@ -1,0 +1,141 @@
+:root {
+  --nemo: #ff4a11;
+  --granite: #252629;
+  --water: #f3f5f9;
+  --foam: #ffffff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+}
+
+.movie-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style-type: none;
+}
+
+.movie {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 16px;
+  margin: -8px -16px;
+  border-radius: 4px;
+}
+
+.movie:hover {
+  background-color: var(--water);
+}
+
+.movie h2 {
+  margin: 0;
+  font-size: 1.7rem;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  opacity: 0.5;
+  transition: all 200ms;
+}
+
+.movie.liked h2 {
+  opacity: 1;
+  text-decoration-color: var(--nemo);
+}
+
+.movie-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.round-button {
+  width: 2em;
+  height: 2em;
+  color: var(--foam);
+  background-color: var(--granite);
+  border: none;
+  border-radius: 999px;
+}
+
+.round-button:hover {
+  background-color: var(--nemo);
+}
+
+.movie-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 32px;
+}
+
+.movie-form h2 {
+  margin-bottom: 0;
+}
+
+.movie-form .fields {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.movie-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.movie-form label {
+  font-size: 0.8rem;
+}
+
+.movie-form input[type="text"] {
+  padding: 10px 20px;
+  font: inherit;
+  font-size: 1.2rem;
+  border: 1px solid var(--granite);
+  border-radius: 4px;
+}
+
+.movie-form input[type="checkbox"] {
+  width: 44.5px;
+  margin: 0;
+  aspect-ratio: 1;
+}
+
+.movie-form button {
+  padding: 10px 20px;
+  font: inherit;
+  font-size: 1.2rem;
+  color: var(--foam);
+  background-color: var(--granite);
+  border: 1px solid var(--granite);
+  border-radius: 4px;
+}
+
+.movie-form button:hover {
+  background-color: var(--nemo);
+  border-color: var(--nemo);
+}
