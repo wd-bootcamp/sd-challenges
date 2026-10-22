@@ -1,19 +1,31 @@
 import type { Student } from "./types";
 
-// Step 1: Restructure `Student` in `types.ts` so that grades belong to subjects.
-// Print the student with the grades per subject, for example:
+// Step 1: Grades per subject
+// a) Restructure `Student` in `types.ts` so that grades belong to subjects
+//    (e.g. Sport, Art, Math). There is more than one good solution.
+// b) Add at least two students to the `students` array.
+//    Give them different subjects and a different number of grades.
+// c) Copy `printStudent` from the previous challenge and update it,
+//    so that it prints the grades per subject, for example:
 //
-// Florian Weber (14)
-// ==============
+//    Florian Weber (14)
+//    ==============================
 //
-// Grades:
-// Sport: A,1,*
-// Art: 3,2,4,5
-// Math: 1,2,A
+//    Grades:
+//    Sport: A,1,*
+//    Art: 3,2,4,5
+//    Math: 1,2,A
 //
-// Step 2: Calculate the average grade for each student and for the entire list of students.
-// Decide together how to handle `undefined` and letter grades, and how to weight
-// students who have more grades than others.
+// d) Print all students.
+
+// Step 2: Averages
+// a) Calculate the average grade for each student.
+// b) Calculate the average grade for the entire list of students.
+// c) Decide together:
+//    - How do you handle missing grades (`undefined`)?
+//    - How do you handle letter grades?
+//    - Should a student with many grades count more than a student with only a few?
+//    Write your decisions as comments.
 
 const students: Student[] = [];
 
