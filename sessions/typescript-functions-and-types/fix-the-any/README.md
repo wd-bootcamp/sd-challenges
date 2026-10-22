@@ -4,17 +4,12 @@ This challenge is about the problems of `any` and how to replace it with a real 
 
 ## Tasks
 
-The code in `./src/index.ts` has no type errors, but it is full of problems.
-
-- Step 1: Run the code. What happens and why doesn't TypeScript warn you?
-- Step 2: Replace `any` with a type alias `User`. Which lines now produce errors?
-- Step 3: Make `name` optional in `User` and handle the missing case in the function. What is the return type now?
-- Step 4: Explain in your own words (as a comment) why `any` is a bad fix for type errors.
+The tasks for this challenge are outlined in the comments inside the `./src/index.ts` file.
 
 ## Notes
 
 - You only have to touch the `./src/index.ts` file.
-- The first run is expected to crash.
+- The first run is expected to crash. That's part of the challenge.
 
 ## Development
 
