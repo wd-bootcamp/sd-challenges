@@ -15,6 +15,13 @@ function printStudent(student: Student): void {
   console.log(`Grades: ${grades.join(",")}`);
 }
 
+printStudent({
+  firstName: "Anton",
+  lastName: "Meier",
+  age: 16,
+  grades: [1, 4, 3, 1, undefined],
+});
+
 function printAllStudents(students: Student[]): void {
   students.forEach((student) => printStudent(student));
 }
