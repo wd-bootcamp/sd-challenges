@@ -113,6 +113,23 @@ The Gallery page displays a list of all art pieces. Each art piece's image, alon
 - [ ] Create a component to render the list of art pieces.
 - [ ] Create a component to render each art piece preview.
 
+<details>
+<summary>Hint ✨</summary>
+
+`response.json()` returns `any`. Annotate the result with your type and let the `fetcher` say what it returns:
+
+```ts
+async function fetcher(url: string): Promise<ArtPiece[]> {
+  // ...
+  const data: ArtPiece[] = await response.json();
+  return data;
+}
+```
+
+SWR only reports an `error` if the `fetcher` throws. Throw an `Error` when the response is not `ok`, like in React Data Fetching.
+
+</details>
+
 ### 2. Spotlight Page
 
 This page is the app's homepage. A random art piece image, along with its artist's name, is displayed as a spotlight feature.
@@ -399,7 +416,7 @@ As developers, we want to avoid repetitive manual testing by automating componen
 <details>
 <summary>Hint ✨</summary>
 
-The project uses [Vitest](https://vitest.dev/) with React Testing Library. It works like Jest: `describe`, `it` and `expect` are the same, but you import them from `vitest` and use `vi.fn()` instead of `jest.fn()`. Run the tests with `npm run test`.
+The project uses [Vitest](https://vitest.dev/) with React Testing Library, set up like in the React Component Testing session: `test`, `expect` and `vi` are available without imports, and `vi.fn()` replaces `jest.fn()`. Rendered components are cleaned up after each test automatically. Put a test file next to its component, for example `Navigation.test.tsx`, and run the tests with `npm run test`.
 
 Components that contain a `Link` or `NavLink` need a router around them in a test. Wrap them in a `MemoryRouter` from `react-router`.
 
