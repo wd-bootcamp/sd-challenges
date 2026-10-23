@@ -1,62 +1,94 @@
 # Recap Project 5: Art Gallery
 
-In this project, your team will create an interactive art gallery app.
+In this project, your team will create an interactive art gallery app with React, TypeScript and React Router.
 
-This is a group project, so please create **only one project per group** following the [guide in the template section](./README.md#template).
+This is a group project, so please create **only one project per group** following the [guide in the template section](#template).
 
 ## Overview
 
-In this project, we will create an art gallery app with four pages: **Spotlight**, **Gallery**, **Favorite**, and **Detail**. Users can like or unlike art pieces, and liked pieces will appear on the **Favorite** page.
+We will create an art gallery app with four pages: **Spotlight**, **Gallery**, **Favorites** and **Details**. Users can like or unlike art pieces, and liked pieces appear on the **Favorites** page. Users can also comment on art pieces. As a bonus, favorites and comments are saved in the browser.
 
 ![wireframes](./wireframes.excalidraw.png)
 
+To open the wireframes file `wireframes.excalidraw.png` in VS Code, install the [excalidraw extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor).
+
 ## API
 
-We will fetch all necessary information about the art pieces from an API specifically designed for this course. [Check out the API](https://example-apis.vercel.app/api/art).
+We fetch all necessary information about the art pieces from an API specifically designed for this course. [Check out the API](https://example-apis.vercel.app/api/art).
 
 ```bash
 https://example-apis.vercel.app/api/art
 ```
 
+An art piece looks like this. The type `ArtPiece` in `src/types.ts` describes it:
+
+```json
+{
+  "slug": "wheat-field-with-cypresses",
+  "artist": "Vincent van Gogh",
+  "name": "Wheat Field with Cypresses",
+  "imageSource": "https://example-apis.vercel.app/assets/art/wheat-field-with-cypresses.jpg",
+  "year": "1889",
+  "genre": "Landscape Painting",
+  "colors": ["#37412E", "#8D7332", "#838665", "#718F98", "#9DA59E"],
+  "dimensions": { "height": 1528, "width": 1920, "type": "jpg" }
+}
+```
+
 ## Template
 
 1. Open your terminal and navigate to the folder where your projects are stored.
-2. Execute the following command to create a new project based on a template:
+2. Execute the following command to create a new project based on this template:
 
    ```bash
-   npx ghcd@latest wd-bootcamp/web-exercises/tree/main/templates/next art-gallery-app -i
+   npx ghcd@latest wd-bootcamp/sd-challenges/tree/main/sessions/recap-project-5/art-gallery-app art-gallery-app -i
    ```
 
 3. Create a new empty repository on GitHub and add all group members as collaborators.
 4. Link your local repository to the GitHub repository and push the code.
-5. Each group member clones the repository to their local machine.
-6. Follow the instructions in the `README.md` file.
+5. Each group member clones the repository to their local machine and installs the dependencies with `npm i`.
+6. Create a GitHub project board and one issue for each user story below. Copy the title, the value proposition, the acceptance criteria and the tasks into the issue.
 
 > 💡 **Reminder**: Work on feature branches to avoid merge conflicts!
 
-## Resources
+## Starter project
 
-Download a [Favorite Icon](https://lucide.dev/icons/) and save it in an "assets" folder within your app's main directory.
+The template is a [Vite](https://vite.dev/) project with React, TypeScript, [React Router](https://reactrouter.com/) and [SWR](https://swr.vercel.app/) already installed:
+
+- `src/index.tsx` wraps the app with `BrowserRouter`.
+- `src/App.tsx` is your starting point.
+- `src/types.ts` contains the type `ArtPiece`.
+- `src/styles.css` contains some basic styles. Feel free to change them.
+- `vercel.json` makes sure that URLs like `/art-pieces/the-harvesters` also work after deploying and reloading the page.
+
+Run `npm run check` regularly: it type-checks your project with TypeScript.
 
 ## Deploying Your Project
 
-🚀 Project Deployment to Vercel is required: Please follow [these instructions](https://github.com/wd-bootcamp/cohort-template/blob/main/docs/deployment-vercel.md) to deploy the project on Vercel.
+🚀 Project deployment to Vercel is required: Please follow [these instructions](https://github.com/wd-bootcamp/cohort-template/blob/main/docs/deployment-vercel.md) to deploy the project on Vercel. Vercel detects Vite automatically.
 
-## Tasks
+## Working in the Team
 
-This app will include four main pages: **Spotlight**, **Gallery**, **Favorite**, and **Detail**.
+- Each user story is one issue. Assign each issue to a team member and work on the issues in sequence.
+- Only one issue per team member should be in the "In Progress" column at any given time.
+- Open a pull request for every issue and review each other's pull requests before they are merged into `main`.
 
-Each page will need access to the information from the API. Consider where to fetch and store the art piece data to ensure that all pages can easily access it.
+## User Stories
+
+This app has four main pages: **Spotlight**, **Gallery**, **Favorites** and **Details**. Each page needs access to the art pieces. Think about where to fetch and store the data so that all pages can reach it.
 
 <details>
 <summary>Hint ✨</summary>
-In Next.js, the place to store data or states that need to be accessed across the app is in <code>_app.js</code>.
+
+Fetch the art pieces once in `App.tsx` with `useSWR` and pass them down as props to the pages that need them. Components rendered by a `Route` can only get data from props, context or their own hooks.
+
+Remember to type everything: the fetched data, your state and the props of your components.
 
 </details>
 
 ### 1. Gallery Page
 
-The Gallery page will display a list of all art pieces. Each art piece's image, along with its artist’s name and title, will be shown.
+The Gallery page displays a list of all art pieces. Each art piece's image, along with its artist's name and title, is shown.
 
 #### Value Proposition
 
@@ -72,15 +104,35 @@ The Gallery page will display a list of all art pieces. Each art piece's image, 
 - [ ] Each art piece's image is displayed.
 - [ ] Each art piece's title is displayed.
 - [ ] Each art piece's artist's name is displayed.
+- [ ] The list is available on the route `/art-pieces`.
 
 #### Tasks
 
+- [ ] Fetch the art pieces with `useSWR` and write a `fetcher` function that returns `ArtPiece[]`.
+- [ ] Display a loading and an error state.
 - [ ] Create a component to render the list of art pieces.
-- [ ] Create a component to render each Art Piece Preview.
+- [ ] Create a component to render each art piece preview.
+
+<details>
+<summary>Hint ✨</summary>
+
+`response.json()` returns `any`. Annotate the result with your type and let the `fetcher` say what it returns:
+
+```ts
+async function fetcher(url: string): Promise<ArtPiece[]> {
+  // ...
+  const data: ArtPiece[] = await response.json();
+  return data;
+}
+```
+
+SWR only reports an `error` if the `fetcher` throws. Throw an `Error` when the response is not `ok`, like in React Data Fetching.
+
+</details>
 
 ### 2. Spotlight Page
 
-This page will serve as the app's homepage. A random art piece image, along with its artist’s name, will be displayed as a spotlight feature.
+This page is the app's homepage. A random art piece image, along with its artist's name, is displayed as a spotlight feature.
 
 #### Value Proposition
 
@@ -95,15 +147,23 @@ This page will serve as the app's homepage. A random art piece image, along with
 - [ ] One art piece is randomly selected as a spotlight feature.
 - [ ] The image of the selected art piece is displayed.
 - [ ] The artist's name for the spotlighted art piece is displayed.
+- [ ] The spotlight is available on the route `/`.
 
 #### Tasks
 
 - [ ] Write a function to select a random art piece. [Refer to this resource](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#examples).
 - [ ] Create a new component for the Spotlight page.
 
+<details>
+<summary>Hint ✨</summary>
+
+If you pick the random art piece directly in the component body, it changes on every re-render (for example when the state changes). Think about how you can pick it only once.
+
+</details>
+
 ### 3. App Navigation Design
 
-Since we have multiple pages, we want to enable smooth navigation between them. All pages should share a consistent layout.
+Since we have multiple pages, we want to enable smooth navigation between them. All pages share a consistent layout.
 
 #### Value Proposition
 
@@ -117,17 +177,26 @@ Since we have multiple pages, we want to enable smooth navigation between them. 
 
 - [ ] A navigation link labeled "Spotlight" is displayed.
 - [ ] A navigation link labeled "Gallery" is displayed.
-- [ ] Clicking "Spotlight" shows the Spotlight Page.
-- [ ] Clicking "Gallery" shows the Gallery Page.
+- [ ] Clicking "Spotlight" shows the Spotlight page.
+- [ ] Clicking "Gallery" shows the Gallery page.
+- [ ] The link of the current page is visually highlighted.
 
 #### Tasks
 
-- [ ] Create a Navigation component that renders all navigation links.
-- [ ] Render the Navigation component only once, ensuring it appears on all pages.
+- [ ] Create a `Navigation` component that renders all navigation links.
+- [ ] Render the `Navigation` component only once, ensuring it appears on all pages.
+- [ ] Unknown URLs show a "Page not found" message.
+
+<details>
+<summary>Hint ✨</summary>
+
+`NavLink` works like `Link`, but adds an `active` class to the link of the current page. Use the `end` prop for the link to `/`, otherwise it is active on every page.
+
+</details>
 
 ### 4. Art Piece Details Page
 
-When a user clicks on an art piece, they should see all detailed information about it, along with an option to navigate back to the list of art pieces.
+When a user clicks on an art piece, they see all detailed information about it, along with an option to navigate back to the list of art pieces.
 
 #### Value Proposition
 
@@ -140,40 +209,24 @@ When a user clicks on an art piece, they should see all detailed information abo
 #### Acceptance Criteria
 
 - [ ] Clicking on an art piece from the list navigates to the detail page.
-- [ ] The art piece’s image is displayed.
-- [ ] The art piece’s title is displayed.
-- [ ] The art piece’s artist is displayed.
-- [ ] The art piece’s year is displayed.
-- [ ] The art piece’s genre is displayed.
+- [ ] The details are available on the route `/art-pieces/:slug`, for example `/art-pieces/the-harvesters`.
+- [ ] The art piece's image is displayed.
+- [ ] The art piece's title is displayed.
+- [ ] The art piece's artist is displayed.
+- [ ] The art piece's year is displayed.
+- [ ] The art piece's genre is displayed.
 - [ ] A back button is displayed.
 - [ ] Clicking the back button navigates back to the list view.
+- [ ] An unknown `slug` shows an "Art piece not found" message instead of crashing.
 
 #### Tasks
 
-- [ ] Create a new component for displaying Art Piece Details.
-- [ ] Create a single **dynamic page** that renders the Art Piece Details, displaying information for the selected art piece.
+- [ ] Create a new component for displaying the art piece details.
+- [ ] Create a **dynamic route** that renders the details of the selected art piece. Read the `slug` from the URL with `useParams`.
 
-### 5. Favorite Page
+### 5. Mark Art Pieces as Favorites
 
-The Favorite page will display a list of all favorite art pieces. Each art piece will show its image, artist’s name, title, and a favorite button.
-
-Users should be able to save their favorite art pieces both on the Gallery page and the Detail page.
-
-To achieve this, we’ll divide the tasks into two parts:
-
-1. Implement the favorite button where needed.
-2. Create the Favorite page.
-
-### 5.1. Mark Art Pieces as Favorites
-
-Users want the ability to add additional information to each art piece. Consider where to store the art piece data to ensure all pages can access it efficiently. Remember that we’ll be reusing this favorite button across multiple pages.
-
-<details>
-<summary>Hint ✨</summary>
-
-In Next.js, the recommended place to store data or states that need to be accessed across the app is in `_app.js`.
-
-</details>
+Users want the ability to mark art pieces as favorites. Users can do this on the Gallery page, the Spotlight page and the Details page. The favorite button is reused on all of these pages.
 
 #### Value Proposition
 
@@ -188,8 +241,8 @@ In Next.js, the recommended place to store data or states that need to be access
 - [ ] The favorite button is displayed on each entry in the list view.
 - [ ] The favorite button is displayed on the details view.
 - [ ] The favorite button is displayed on the spotlight view.
-- [ ] Clicking the favorite button on a non-favorite piece saves it as a favorite and provides a visual indication (e.g., changing color or icon) to show it’s now a favorite.
-- [ ] Clicking the favorite button on a favorite piece removes it from favorites and provides a visual indication (e.g., changing color or icon) to show it’s no longer a favorite.
+- [ ] Clicking the favorite button on a non-favorite piece saves it as a favorite and provides a visual indication (for example a changing color or icon).
+- [ ] Clicking the favorite button on a favorite piece removes it from the favorites and provides a visual indication.
 - [ ] Favorite art pieces are visually highlighted to clearly show their favorite status.
 
 #### Tasks
@@ -197,7 +250,27 @@ In Next.js, the recommended place to store data or states that need to be access
 - [ ] Create a new component for the favorite button.
 - [ ] Store this additional information (favorite status) in a state.
 
-### 5.2. Favorite Listing Page
+<details>
+<summary>Hint ✨</summary>
+
+All pages need to read and change the favorite status. The place for state that is shared by several routes is the component that renders the `Routes`: `App`.
+
+Do not change the fetched art pieces. Store the additional information in your own state and connect it with the art pieces via the unique `slug`, for example:
+
+```ts
+type ArtPieceInfo = {
+  slug: string;
+  isFavorite: boolean;
+};
+```
+
+You can find a heart icon on [Lucide](https://lucide.dev/icons/heart).
+
+</details>
+
+### 6. Favorites Page
+
+The Favorites page displays a list of all favorite art pieces. Each art piece shows its image, artist's name, title and a favorite button.
 
 #### Value Proposition
 
@@ -210,11 +283,9 @@ In Next.js, the recommended place to store data or states that need to be access
 #### Acceptance Criteria
 
 - [ ] A navigation link labeled "Favorites" is displayed.
-- [ ] Clicking "Favorites" shows the Favorites page.
+- [ ] Clicking "Favorites" shows the Favorites page on the route `/favorites`.
 - [ ] All **favorite** art pieces are displayed in a list format.
-- [ ] Each art piece's image is displayed.
-- [ ] Each art piece's title is displayed.
-- [ ] Each art piece's artist name is displayed.
+- [ ] Each art piece's image, title and artist's name are displayed.
 - [ ] Each art piece has an active favorite button.
 
 #### Tasks
@@ -223,65 +294,14 @@ In Next.js, the recommended place to store data or states that need to be access
 
 <details>
 <summary>Hint ✨</summary>
-You could write a new function for checking whether an art Piece is favorite.
+
+You could write a function that checks whether an art piece is a favorite.
 
 </details>
 
-### 6. Testing Components
-
-As developers, we aim to avoid repetitive manual testing by automating component tests.
-
-#### Value Proposition
-
-**As a** programmer
-
-**I want to** automate component testing
-
-**so that** I can identify bugs more easily.
-
-#### Acceptance Criteria
-
-- [ ] Automated tests cover all core components, ensuring they render and function as expected.
-
-#### Tasks
-
-- [ ] Write tests for the Spotlight component.
-- [ ] Write tests for the Art Piece Preview and List of Art Pieces components.
-- [ ] Write tests for the Navigation component to confirm that links are rendered correctly.
-- [ ] Write tests for the Art Piece Details component to confirm that all details are displayed correctly.
-
 ### 7. Comments for Art Pieces
 
-To enhance user engagement, we’ll add a commenting feature that allows users to write and view comments on each art piece. A comment section will be displayed on the details page, showing comments specifically for the art piece being viewed.
-
-<details>
-<summary>Hint ✨</summary>
-It’s best practice to consolidate related information into a single state. However, if you're not comfortable with this approach, you can use separate states. Just ensure you can clearly identify which information corresponds to each art piece—consider saving a unique identifier, such as a slug, within each state for clarity.
-
-**Example:**
-
-- **Using a Single State:**
-
-  ```js
-  const [carInfo, setCarInfo] = useState([
-    { model: "vw-taos", colors: ["red", "blue", "white"], automatic: true },
-    { model: "vw-golf", colors: ["black", "white"], automatic: false },
-  ]);
-  ```
-
-- **Separate States per information:**
-
-  ```js
-  const [carColors, setCarColors] = useState([
-    { model: "vw-taos", colors: "red" },
-    { model: "vw-taos", colors: "blue" },
-    { model: "vw-golf", colors: "black" },
-  ]);
-
-  const [carAutomatic, setCarAutomatic] = useState(["vw-taos", "vw-golf"]);
-  ```
-
-  </details>
+To enhance user engagement, we add a commenting feature that allows users to write and view comments on each art piece. A comment section is displayed on the details page, showing the comments of the art piece being viewed.
 
 #### Value Proposition
 
@@ -294,40 +314,30 @@ It’s best practice to consolidate related information into a single state. How
 #### Acceptance Criteria
 
 - [ ] The detail view includes a section labeled "Comments" displaying a list of comments for this art piece.
-- [ ] Each comment’s text is displayed.
-- [ ] Each comment’s date and time are displayed.
-- [ ] The detail view includes an input field for writing a comment.
-- [ ] The detail view includes a submit button labeled "Send".
-- [ ] After submitting the form, the new comment is added to the list of comments.
+- [ ] Each comment's text is displayed.
+- [ ] Each comment's date and time are displayed.
+- [ ] A form with a text field and a submit button is displayed.
+- [ ] Submitting the form adds the comment to the list of this art piece, and only to this art piece.
+- [ ] Empty comments cannot be submitted.
 
 #### Tasks
 
-- [ ] Create at least two new components: one for managing the comment input and submission, and another for displaying the list of comments.
-- [ ] Store the comment information in a state. You can either create a new state specifically for comments or add this information to an existing state, ensuring it’s easily accessible for each relevant art piece.
+- [ ] Create a `Comments` component and a `CommentForm` component.
+- [ ] Type the comment, for example with `type Comment = { text: string; date: string }`.
+- [ ] Extend the information you store for each art piece with its comments.
 
-### 8. Persist Favorites and Comments in the Browser
+<details>
+<summary>Hint ✨</summary>
 
-Currently, all data is saved using `useState`, meaning it’s lost upon page refresh. To improve the user experience, we want to persist data in local storage. Keep in mind that when there is no data in local storage, we’ll need to fetch everything from the API.
+It is best practice to consolidate related information into one state. If you already have `ArtPieceInfo` with the `slug` and `isFavorite`, add a `comments` property with a list of comments.
 
-#### Value Proposition
+Use `new Date().toISOString()` to get a date you can store, and `new Date(dateString).toLocaleString()` to display it.
 
-**As an** art enthusiast
+</details>
 
-**I want** my favorites and comments to be saved
+### 8. Show Color Palette
 
-**so that** my data remains accessible even when I close or refresh the app.
-
-#### Acceptance Criteria
-
-- [ ] All favorite flags and comments on art pieces are persisted across browser reloads.
-
-#### Tasks
-
-- [ ] Use local storage to save information on art pieces, including favorites and comments.
-
-### 9. Show Color Palette
-
-To enrich the information displayed on the details page, we’ll add a color palette for each art piece.
+To enrich the information displayed on the details page, we add a color palette for each art piece.
 
 #### Value Proposition
 
@@ -340,15 +350,96 @@ To enrich the information displayed on the details page, we’ll add a color pal
 #### Acceptance Criteria
 
 - [ ] The art piece detail page displays a list of all colors used in the image.
-- [ ] Colors are displayed visually, such as in circles or squares.
+- [ ] Colors are displayed visually, for example in circles or squares.
 
 #### Tasks
 
 - [ ] Create a new component for displaying the color palette.
 
-## Bonus
+### 9. Bonus: Persist Favorites and Comments in the Browser
 
-### More Testing
+This is a bonus story: work on it when all other stories are done. Currently, all data is saved using `useState`, which means it is lost upon page refresh. To improve the user experience, we want to persist it in the browser's local storage.
 
-- [ ] Write tests for the comments components to ensure that all information is displayed correctly.
-- [ ] Write tests for the color palette that it is displayed correctly on the details page.
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want** my favorites and comments to be saved
+
+**so that** my data remains accessible even when I close or refresh the app.
+
+#### Acceptance Criteria
+
+- [ ] All favorite flags and comments on art pieces are persisted across browser reloads.
+- [ ] Without any data in the local storage, the app still works.
+
+#### Tasks
+
+- [ ] Use `localStorage` to save the information on art pieces, including favorites and comments.
+
+<details>
+<summary>Hint ✨</summary>
+
+The art pieces themselves are always fetched from the API. Only your own information (favorites and comments) is saved in the local storage.
+
+- Read the saved value once when creating the state: `useState` accepts a function that returns the initial value, for example `useState<ArtPieceInfo[]>(loadArtPiecesInfo)`.
+- Write the value with `localStorage.setItem(key, JSON.stringify(value))` in a `useEffect` that runs whenever the state changes.
+- `localStorage.getItem(key)` returns `string | null` and `JSON.parse` returns `any`: handle the `null` case and annotate the parsed value with your type.
+
+📙 Read more about [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+
+</details>
+
+### 10. Bonus: Testing Components
+
+As developers, we want to avoid repetitive manual testing by automating component tests.
+
+#### Value Proposition
+
+**As a** programmer
+
+**I want to** automate component testing
+
+**so that** I can identify bugs more easily.
+
+#### Acceptance Criteria
+
+- [ ] Automated tests cover the core components, ensuring they render and function as expected.
+
+#### Tasks
+
+- [ ] Write tests for the Spotlight component.
+- [ ] Write tests for the art piece preview and the list of art pieces.
+- [ ] Write tests for the navigation to confirm that the links are rendered correctly.
+- [ ] Write tests for the art piece details to confirm that all details are displayed correctly.
+
+<details>
+<summary>Hint ✨</summary>
+
+The project uses [Vitest](https://vitest.dev/) with React Testing Library, set up like in the React Component Testing session: `test`, `expect` and `vi` are available without imports, and `vi.fn()` replaces `jest.fn()`. Rendered components are cleaned up after each test automatically. Put a test file next to its component, for example `Navigation.test.tsx`, and run the tests with `npm run test`.
+
+Components that contain a `Link` or `NavLink` need a router around them in a test. Wrap them in a `MemoryRouter` from `react-router`.
+
+```tsx
+render(
+  <MemoryRouter>
+    <Navigation />
+  </MemoryRouter>
+);
+```
+
+</details>
+
+## Development
+
+To work locally, please install the dependencies using `npm i` first (Node.js 22.22 or newer is required).
+
+Run `npm run dev` to start a development server and open the displayed URL in a browser.
+
+### Scripts
+
+- `npm run dev` to start a development server
+- `npm run build` to build the project
+- `npm run serve` to preview the production build
+- `npm run check` to type-check the project with TypeScript
+- `npm run test` to run the tests with Vitest
