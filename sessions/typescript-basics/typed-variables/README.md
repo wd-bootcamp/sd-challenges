@@ -1,4 +1,4 @@
-# TypeScript Basics: TypeScript Variables
+# TypeScript Basics: Typed Variables
 
 This challenge is about declaring variables with type annotations and reading type errors.
 

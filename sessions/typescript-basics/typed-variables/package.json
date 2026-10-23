@@ -1,5 +1,5 @@
 {
-  "name": "typescript-basics_typescript-variables",
+  "name": "typescript-basics_typed-variables",
   "version": "0.0.0-unreleased",
   "description": "This challenge is about declaring variables with type annotations and reading type errors.",
   "private": true,
