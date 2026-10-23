@@ -27,10 +27,10 @@ grades.push(4);
 console.log(grades, names, score);
 
 // 5. Objects
-const student: { name: string; age: number; isEnrolled: boolean } = {
+const student: { name: string; age: number; isStudent: boolean } = {
   name: "Max",
   age: 22,
-  isEnrolled: true,
+  isStudent: true,
 };
 
 console.log(student.age);
