@@ -1,0 +1,65 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+main {
+  width: min(32rem, 100%);
+  padding: 1rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+.primary {
+  background: #333;
+  color: white;
+}
+
+.secondary {
+  background: white;
+  color: #333;
+}
+
+.badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  color: white;
+}
+
+.badge-green {
+  background: seagreen;
+}
+.badge-red {
+  background: crimson;
+}
+.badge-blue {
+  background: royalblue;
+}
