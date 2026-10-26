@@ -37,19 +37,11 @@ An art piece looks like this. The type `ArtPiece` in `src/types.ts` describes it
 
 ## Template
 
-1. Open your terminal and navigate to the folder where your projects are stored.
-2. Execute the following command to create a new project based on this template:
-
-   ```bash
-   npx ghcd@latest wd-bootcamp/sd-challenges/tree/main/sessions/recap-project-5/art-gallery-app art-gallery-app -i
-   ```
-
-3. Create a new empty repository on GitHub and add all group members as collaborators.
-4. Link your local repository to the GitHub repository and push the code.
-5. Each group member clones the repository to their local machine and installs the dependencies with `npm i`.
-6. Create a GitHub project board and one issue for each user story below. Copy the title, the value proposition, the acceptance criteria and the tasks into the issue.
+Do not work in this folder. Create the repository of your group from the GitHub template repository [web-recap-project-5](https://github.com/wd-bootcamp/web-recap-project-5) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/web-recap-project-5/blob/main/docs/github-respository-template.md). The template contains the same starter project as this folder, and the user stories below are created as predefined issues in your repository.
 
 > 💡 **Reminder**: Work on feature branches to avoid merge conflicts!
+
+> 📝 **Note for coaches**: The user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/web-recap-project-5/tree/main/.github/templates) of the template repository. If you change a story, change it in both places.
 
 ## Starter project
 
