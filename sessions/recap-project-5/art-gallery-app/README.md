@@ -20,7 +20,7 @@ We fetch all necessary information about the art pieces from an API specifically
 https://example-apis.vercel.app/api/art
 ```
 
-An art piece looks like this. The type `ArtPiece` in `src/types.ts` describes it:
+An art piece looks like this. You will write a TypeScript type for it in the first user story:
 
 ```json
 {
@@ -37,19 +37,11 @@ An art piece looks like this. The type `ArtPiece` in `src/types.ts` describes it
 
 ## Template
 
-1. Open your terminal and navigate to the folder where your projects are stored.
-2. Execute the following command to create a new project based on this template:
-
-   ```bash
-   npx ghcd@latest wd-bootcamp/sd-challenges/tree/main/sessions/recap-project-5/art-gallery-app art-gallery-app -i
-   ```
-
-3. Create a new empty repository on GitHub and add all group members as collaborators.
-4. Link your local repository to the GitHub repository and push the code.
-5. Each group member clones the repository to their local machine and installs the dependencies with `npm i`.
-6. Create a GitHub project board and one issue for each user story below. Copy the title, the value proposition, the acceptance criteria and the tasks into the issue.
+Do not work in this folder. Create the repository of your group from the GitHub template repository [web-recap-project-5](https://github.com/wd-bootcamp/web-recap-project-5) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/web-recap-project-5/blob/main/docs/github-respository-template.md). The template contains the same starter project as this folder, and the user stories below are created as predefined issues in your repository.
 
 > 💡 **Reminder**: Work on feature branches to avoid merge conflicts!
+
+> 📝 **Note for coaches**: The user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/web-recap-project-5/tree/main/.github/templates) of the template repository. If you change a story, change it in both places.
 
 ## Starter project
 
@@ -57,7 +49,6 @@ The template is a [Vite](https://vite.dev/) project with React, TypeScript, [Rea
 
 - `src/index.tsx` wraps the app with `BrowserRouter`.
 - `src/App.tsx` is your starting point.
-- `src/types.ts` contains the type `ArtPiece`.
 - `src/styles.css` contains some basic styles. Feel free to change them.
 - `vercel.json` makes sure that URLs like `/art-pieces/the-harvesters` also work after deploying and reloading the page.
 
@@ -108,6 +99,7 @@ The Gallery page displays a list of all art pieces. Each art piece's image, alon
 
 #### Tasks
 
+- [ ] Define a type `ArtPiece` that describes one art piece of the API (see the example in the README), for example in a new file `src/types.ts`. Only type the properties you use.
 - [ ] Fetch the art pieces with `useSWR` and write a `fetcher` function that returns `ArtPiece[]`.
 - [ ] Display a loading and an error state.
 - [ ] Create a component to render the list of art pieces.
@@ -180,12 +172,12 @@ Since we have multiple pages, we want to enable smooth navigation between them. 
 - [ ] Clicking "Spotlight" shows the Spotlight page.
 - [ ] Clicking "Gallery" shows the Gallery page.
 - [ ] The link of the current page is visually highlighted.
+- [ ] Unknown URLs show a "Page not found" message.
 
 #### Tasks
 
 - [ ] Create a `Navigation` component that renders all navigation links.
 - [ ] Render the `Navigation` component only once, ensuring it appears on all pages.
-- [ ] Unknown URLs show a "Page not found" message.
 
 <details>
 <summary>Hint ✨</summary>
@@ -323,7 +315,7 @@ To enhance user engagement, we add a commenting feature that allows users to wri
 #### Tasks
 
 - [ ] Create a `Comments` component and a `CommentForm` component.
-- [ ] Type the comment, for example with `type Comment = { text: string; date: string }`.
+- [ ] Type the comment, for example with `type ArtPieceComment = { text: string; date: string }`.
 - [ ] Extend the information you store for each art piece with its comments.
 
 <details>
