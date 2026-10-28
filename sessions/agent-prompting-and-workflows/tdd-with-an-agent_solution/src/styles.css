@@ -1,0 +1,99 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background-color: #f6f3ee;
+  color: #2b2a28;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #fff;
+}
+
+.book-form,
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  padding: 0.25rem 0.5rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+.book-list {
+  display: grid;
+  grid-template-columns: repeat(3, 300px);
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #fff;
+}
+
+.book-card__title,
+.book-card__author,
+.book-card__pages,
+.book-card__time,
+.book-card__rating {
+  margin: 0;
+}
+
+.book-card button {
+  margin-top: auto;
+}
+
+.status {
+  align-self: flex-start;
+  padding: 0.125rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+}
+
+.status--to-read {
+  background-color: #e4e1db;
+}
+
+.status--reading {
+  background-color: #fde68a;
+}
+
+.status--read {
+  background-color: #bbf7d0;
+}
+
+.empty {
+  font-style: italic;
+}
