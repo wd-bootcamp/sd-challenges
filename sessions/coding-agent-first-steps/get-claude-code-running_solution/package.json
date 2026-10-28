@@ -1,0 +1,10 @@
+{
+  "name": "coding-agent-first-steps_get-claude-code-running_solution",
+  "version": "0.0.0-unreleased",
+  "description": "coding-agent-first-steps: get-claude-code-running_solution",
+  "main": "n.a.",
+  "nf": {
+    "template": "empty"
+  },
+  "private": true
+}
