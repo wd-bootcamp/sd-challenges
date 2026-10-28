@@ -1,0 +1,10 @@
+{
+  "name": "chat-ai-vs-coding-agents_chat-agent-or-neither_solution",
+  "version": "0.0.0-unreleased",
+  "description": "chat-ai-vs-coding-agents: chat-agent-or-neither_solution",
+  "main": "n.a.",
+  "nf": {
+    "template": "empty"
+  },
+  "private": true
+}

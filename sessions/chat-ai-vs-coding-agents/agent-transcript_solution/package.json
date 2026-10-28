@@ -1,0 +1,10 @@
+{
+  "name": "chat-ai-vs-coding-agents_agent-transcript_solution",
+  "version": "0.0.0-unreleased",
+  "description": "chat-ai-vs-coding-agents: agent-transcript_solution",
+  "main": "n.a.",
+  "nf": {
+    "template": "empty"
+  },
+  "private": true
+}
