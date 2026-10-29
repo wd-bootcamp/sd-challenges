@@ -1,6 +1,6 @@
-# Advanced Unit Testing: Animal API (Solution)
+# Advanced Unit Testing: Product API (Solution)
 
-A solution for the [Animal API challenge](../animal-api). All tests are implemented and pass.
+A solution for the [Product API challenge](../product-api). All tests are implemented and pass.
 
 ## Development
 

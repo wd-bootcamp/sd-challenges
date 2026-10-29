@@ -1,27 +1,27 @@
-# Advanced Unit Testing: Animal API
+# Advanced Unit Testing: Product API
 
 (difficulty: 🔥🔥)
 
-`getAnimal` loads an animal with `fetch`. `getAnimalSounds` loads several animals and returns their sounds.
+`getProduct` loads a product with `fetch`. `getProductTitles` loads several products and returns their titles.
 
-> 💡 The URL `https://api.example.com/animals` does not exist. That is on purpose: the tests must never send a real request.
+> 💡 The URL `https://dummyjson.com/products` is a real API, but the tests must never send a real request. A unit test has to run without network and without the data on a server.
 
 ## Tasks
 
-Open `src/animals.test.ts`. The first test is already implemented. Implement the other test cases.
+Open `src/products.test.ts`. The first test is already implemented. Implement the other test cases.
 
 1. Mock `fetch` in every test with `vi.spyOn(globalThis, "fetch")`.
-2. Test the happy path and the two error cases of `getAnimal` (status 404 and a network error).
-3. Test that `getAnimalSounds` returns the sounds in the right order and sends one request per id.
+2. Test the happy path and the two error cases of `getProduct` (status 404 and a network error).
+3. Test that `getProductTitles` returns the titles in the right order and sends one request per id.
 4. Run `npm run check`. Does TypeScript complain about your tests?
 
 ### Hints
 
-- A successful response: `new Response(JSON.stringify(cat))`
+- A successful response: `new Response(JSON.stringify(mascara))`
 - A failed response: `new Response(null, { status: 404 })`
 - A network error: `mockRejectedValue(new TypeError("Failed to fetch"))`
 - A response body can be read only once. If your function sends several requests, use `mockResolvedValueOnce` once per request.
-- Promises: `await expect(getAnimal(1)).resolves.toEqual(cat)` and `await expect(getAnimal(99)).rejects.toThrow("...")`. Without `await` the test finishes before the promise is settled, and it passes even if it should fail.
+- Promises: `await expect(getProduct(1)).resolves.toEqual(mascara)` and `await expect(getProduct(999)).rejects.toThrow("...")`. Without `await` the test finishes before the promise is settled, and it passes even if it should fail.
 - Spies keep their mock behavior across tests, so restore them in an `afterEach` (already prepared).
 
 ## Development

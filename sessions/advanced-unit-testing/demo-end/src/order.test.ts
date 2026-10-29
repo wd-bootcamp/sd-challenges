@@ -9,7 +9,7 @@ describe("getOrderTotal", () => {
     vi.clearAllMocks();
     vi.mocked(getProduct).mockImplementation(async (id) => ({
       id,
-      name: `Product ${id}`,
+      title: `Product ${id}`,
       price: id * 10,
     }));
   });
