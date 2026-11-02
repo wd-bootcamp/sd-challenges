@@ -1,8 +1,8 @@
 # More Automation
 
-(difficulty: 🔥🔥🔥)
+(difficulty: 🔥🔥)
 
-The workflow of this project works, but it is slow and does everything in one job. Make it better.
+The workflow of this project works, but it does everything in one job. Make it better.
 
 ## Put the project on GitHub
 
@@ -27,14 +27,8 @@ Change `.github/workflows/ci.yml` step by step. Push after every step and look a
 
 1. **Separate jobs:** Split the job into three jobs: `check` (types), `test` and `build`. Every job needs the code, Node.js and the dependencies. What do you see in the Actions tab? Which jobs run at the same time?
 2. **Dependencies between jobs:** `build` should only start when `check` and `test` have succeeded (`needs`). Break a test and look at what happens to `build`.
-3. **Matrix:** Run the `test` job with Node.js 22 **and** 24 (`strategy.matrix`). How many jobs does the Actions tab show now? Give the jobs a `name` that contains the Node.js version.
-4. **Cancel old runs:** Add `concurrency` so a new push to a branch cancels the run that is still running for the same branch. Push twice in a row to see it.
-5. **Skip runs that do not need to run:** A change that only touches Markdown files does not need a pipeline. Add `paths-ignore` for `**.md` to both `push` and `pull_request`.
-6. **Least privilege:** The workflow only reads the code. Set `permissions` to `contents: read`.
-7. **Manual runs:** Add `workflow_dispatch` and start the workflow from the Actions tab with the button **Run workflow**.
-8. **Artifacts:** `npm run coverage` creates a `coverage` folder. In the `test` job, run the tests with coverage and upload the folder as an artifact, but only for Node.js 22 (artifact names have to be unique within a run). In the `build` job, upload `dist`. Download an artifact from the run page.
-
-> 💡 Required status checks and `paths-ignore` do not work well together: if a required workflow is skipped, the check stays "pending" and the pull request cannot be merged. Keep this in mind if you protect your branch.
+3. **Manual runs:** Add `workflow_dispatch` and start the workflow from the Actions tab with the button **Run workflow**.
+4. **Artifacts:** `npm run coverage` creates a `coverage` folder. In the `test` job, run the tests with coverage and upload the folder as an artifact. In the `build` job, upload `dist`. Download an artifact from the run page.
 
 ## Development
 

@@ -5,10 +5,8 @@ The `text-utils` library with its workflow in `.github/workflows/ci.yml`.
 What the workflow does:
 
 - It runs on every push to `main`, on every pull request and on demand (`workflow_dispatch`).
-- It only has read access to the repository (`permissions`).
-- A new run for the same branch cancels the one that is still running (`concurrency`).
-- The job runs twice, once with Node.js 22 and once with Node.js 24 (`matrix`).
-- Every run installs the dependencies with `npm ci` (with a dependency cache), checks the types, runs the tests, builds the project and uploads `dist` as an artifact.
+- It installs the dependencies with `npm ci` (with a dependency cache), checks the types, runs the tests and builds the project.
+- It uploads `dist` as an artifact that you can download from the page of the run.
 
 ## Put the project on GitHub
 
