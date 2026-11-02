@@ -1,6 +1,6 @@
-# React Component and Snapshot Testing: Demo End
+# Advanced React Testing: Demo End
 
-This is the end result of the React Component and Snapshot Testing demo: the favorite movies app with snapshot tests, tests with mocked components and tests for loading, error and success states.
+This is the end result of the Advanced React Testing demo: the favorite movies app with snapshot tests, tests with mocked components and tests for loading, error and success states.
 
 ## What to look at
 

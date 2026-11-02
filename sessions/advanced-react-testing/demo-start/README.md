@@ -1,6 +1,6 @@
-# React Component and Snapshot Testing: Demo Start
+# Advanced React Testing: Demo Start
 
-This is the starter of the React Component and Snapshot Testing demo. It is the favorite movies app from React Component Testing with a few additions:
+This is the starter of the Advanced React Testing demo. It is the favorite movies app from React Component Testing with a few additions:
 
 - `Movies` shows how many movies there are and how many are liked, and a hint when the list is empty.
 - `Recommendations` loads movie recommendations with `fetch` and shows a loading, an error and a success state.

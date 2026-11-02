@@ -1,5 +1,5 @@
 {
-  "name": "react-component-and-snapshot-testing_demo-end",
+  "name": "advanced-react-testing_user-directory",
   "version": "0.0.0-unreleased",
   "private": true,
   "type": "module",
@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "uid": "^2.0.1"
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
