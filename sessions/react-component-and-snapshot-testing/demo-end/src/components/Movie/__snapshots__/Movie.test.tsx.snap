@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`matches the snapshot of a liked movie 1`] = `
+<DocumentFragment>
+  <section
+    class="movie liked"
+  >
+    <h2>
+      The Matrix Reloaded
+    </h2>
+    <div
+      class="movie-actions"
+    >
+      <button
+        aria-label="unlike The Matrix Reloaded"
+        class="round-button"
+        title="unlike The Matrix Reloaded"
+        type="button"
+      >
+        👍
+      </button>
+      <button
+        aria-label="delete The Matrix Reloaded"
+        class="round-button"
+        title="delete The Matrix Reloaded"
+        type="button"
+      >
+        ✕
+      </button>
+    </div>
+  </section>
+</DocumentFragment>
+`;
+
+exports[`matches the snapshot of a movie 1`] = `
+<DocumentFragment>
+  <section
+    class="movie"
+  >
+    <h2>
+      The Matrix Reloaded
+    </h2>
+    <div
+      class="movie-actions"
+    >
+      <button
+        aria-label="like The Matrix Reloaded"
+        class="round-button"
+        title="like The Matrix Reloaded"
+        type="button"
+      >
+        👎
+      </button>
+      <button
+        aria-label="delete The Matrix Reloaded"
+        class="round-button"
+        title="delete The Matrix Reloaded"
+        type="button"
+      >
+        ✕
+      </button>
+    </div>
+  </section>
+</DocumentFragment>
+`;
