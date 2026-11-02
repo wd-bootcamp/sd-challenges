@@ -28,7 +28,7 @@ Restore the project for part 2 (`git restore .`).
 
 ### Part 2: Coding agent (about 30 minutes)
 
-1. Start Claude Code in the project folder: `claude`. Use the **Manual mode** (the default). Do not change the mode.
+1. Start Claude Code in the project folder: `claude`. Check the mode below the input: it has to be the **Manual mode**. If it is not, switch with `Shift+Tab` or restart with `claude --permission-mode manual`. Do not use any other mode.
 2. Ask it to find and fix the bugs. Do not tell it where they are. Use the specification.
 3. Read **every** permission prompt and every diff before you approve. Fill in your permission log (see below).
 4. After each fix, check it yourself in the browser and with `npm run test:run`.

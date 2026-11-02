@@ -29,7 +29,7 @@ A component with the prop `books` that shows one line of text:
 
 ## Tasks
 
-Work in a git repository (`git init -b main`, `git add .`, `git commit -m "Initial commit"`). Use Claude Code in the **Manual mode** and keep your permission log (see the Bug Hunt challenge for the table).
+Work in a git repository (`git init -b main`, `git add .`, `git commit -m "Initial commit"`). Use Claude Code in the **Manual mode** (check the mode below the input at every start) and keep your permission log (see the Bug Hunt challenge for the table).
 
 1. Ask the agent to write the tests for `sortBooks` **from the specification above, without implementing anything**. Read every test. Does it check what the specification says? Is an edge case missing (empty list, unrated books in `"desc"`, equal books)? Ask for more tests.
 2. Run `npm run test:run`. The new tests must be **red**, and red for the right reason ("sortBooks is not a function" is not a good reason, a failing assertion is). Commit the tests.
