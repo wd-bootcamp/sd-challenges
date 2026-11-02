@@ -1,5 +1,5 @@
 {
-  "name": "working-safely-with-coding-agents_injection-lab_solution",
+  "name": "ai-working-safely-with-coding-agents_security-review",
   "version": "0.0.0-unreleased",
   "private": true,
   "type": "module",
@@ -9,8 +9,7 @@
     "serve": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "check": "tsc --noEmit",
-    "canary": "node canary/server.mjs"
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "react": "19.3.1",
