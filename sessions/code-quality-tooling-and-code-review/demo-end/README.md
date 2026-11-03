@@ -18,6 +18,23 @@ SonarQube Cloud (formerly SonarCloud) is free for public repositories.
 4. Create a token in SonarQube Cloud (`My Account` → `Security`) and save it in your GitHub repository as a secret named `SONAR_TOKEN` (`Settings` → `Secrets and variables` → `Actions`).
 5. Put the **organization key** and the **project key** of your project into `sonar-project.properties`.
 
+## How coverage gets into SonarQube Cloud
+
+SonarQube Cloud does not measure coverage itself. It reads a report that your CI creates and uploads it together with the code. If the report is missing, the analysis still runs, but coverage stays empty.
+
+1. **Vitest creates the report.** `npm run coverage` runs `vitest run --coverage` and writes `coverage/lcov.info` (see `vitest.config.ts`, the `lcov` reporter).
+2. **The workflow creates it before the scan.** `coverage` is in `.gitignore`, so the report is never in the repository. `.github/workflows/sonar.yml` has to run `npm ci` and `npm run coverage` **before** the scan step, otherwise the scanner finds nothing.
+3. **The scanner finds it.** `sonar.javascript.lcov.reportPaths=coverage/lcov.info` in `sonar-project.properties` points to the file.
+4. **Tests are not production code.** `sonar.tests` and `sonar.test.inclusions` mark `*.test.ts` as tests, and `sonar.exclusions` keeps them out of the sources. Otherwise the tests count in duplications and code smells.
+
+Good to know:
+
+- Automatic analysis cannot import coverage. Use the analysis method **With GitHub Actions**.
+- Files that only contain types (here `src/types.ts`) have nothing to execute and show up with 0 % in the Vitest table. Leave them out of the coverage with `sonar.coverage.exclusions=src/types.ts`.
+- Optional properties such as the project name or the encoding are left out on purpose.
+- The quality gate looks at **coverage on new code** only (80 % by default). You see covered and uncovered lines per file in SonarQube Cloud, not only the percentage.
+- If coverage is 0 % or missing, check in this order: Was `lcov.info` created in the workflow run? Does the path in `sonar-project.properties` match? Is automatic analysis switched off?
+
 ## Put the project on GitHub
 
 The folder you downloaded has to be the **root** of your repository (the `.github` folder has to be at the top level, `ls -a` shows it).

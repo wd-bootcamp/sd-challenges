@@ -4,8 +4,11 @@ The solution of the Connect SonarQube Cloud challenge: `sonar-project.properties
 
 Things to look at:
 
-- `sonar.sources=src` together with `sonar.exclusions=src/**/*.test.ts` keeps the tests out of the analyzed sources. `sonar.tests` and `sonar.test.inclusions` tell SonarQube Cloud which files are tests.
+- `sonar.sources=src` together with `sonar.exclusions=src/**/*.test.ts` keeps the tests out of the analyzed sources. `sonar.tests` and `sonar.test.inclusions` tell SonarQube Cloud which files are tests. Otherwise the tests count in duplications and code smells.
 - `sonar.javascript.lcov.reportPaths=coverage/lcov.info` points to the report that `npm run coverage` writes. Without it, coverage is 0 %.
+- `sonar.coverage.exclusions=src/types.ts` leaves `src/types.ts` out of the coverage. The file only contains types and has nothing to execute.
+- The workflow has to create `coverage/lcov.info` **before** the scan step (`npm ci`, then `npm run coverage`). The folder `coverage` is in `.gitignore`, so the report is never in the repository.
+- If coverage is 0 % or missing, check in this order: Was `lcov.info` created in the workflow run? Does the path in `sonar-project.properties` match? Is automatic analysis switched off?
 - `fetch-depth: 0` loads the full git history. SonarQube Cloud uses it to find out which lines are new.
 - The workflow only needs the secret `SONAR_TOKEN`. The organization and project key live in `sonar-project.properties`.
 - The quality gate is a separate status check that SonarQube Cloud reports to the pull request. The workflow run itself is green when the scan ran, even if the quality gate failed.
