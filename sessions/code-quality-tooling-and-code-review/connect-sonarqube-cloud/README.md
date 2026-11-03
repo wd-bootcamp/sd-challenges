@@ -22,7 +22,7 @@ The folder you downloaded has to be the **root** of your repository (the `.githu
 
 1. Push the project and wait until the `CI` workflow is green.
 2. Connect the repository to SonarQube Cloud (steps below), but do **not** add the workflow yet. Open the project in SonarQube Cloud: what does it say?
-3. Create `sonar-project.properties` in the root of the repository. It needs the organization key, the project key, the folder with the sources, the tests and the location of the coverage report (`sonar.javascript.lcov.reportPaths`). Tests must not be part of the sources: exclude them with `sonar.exclusions`.
+3. Create `sonar-project.properties` in the root of the repository. It needs the organization key, the project key, the folder with the sources, the tests and the location of the coverage report (`sonar.javascript.lcov.reportPaths`). Tests must not be part of the sources: exclude them with `sonar.exclusions`. `src/types.ts` only contains types and has nothing to execute: leave it out of the coverage with `sonar.coverage.exclusions`.
 4. Create `.github/workflows/sonar.yml`. It runs for every push to `main` and for pull requests (`opened`, `synchronize`, `reopened`). It checks out the code with `fetch-depth: 0`, sets up Node.js, installs the dependencies, runs `npm run coverage` and then runs `SonarSource/sonarqube-scan-action@v8` with the secret `SONAR_TOKEN`.
 5. Push to `main` and open the first analysis in SonarQube Cloud. Look at the overview: coverage, issues, duplications, security hotspots. Is the quality gate green?
 6. Create a branch, change something small (for example introduce an unused variable), push it and open a pull request. Where do you see the result of SonarQube Cloud on the pull request?
