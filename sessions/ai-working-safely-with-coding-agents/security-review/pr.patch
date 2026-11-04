@@ -1,0 +1,189 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index ff17505..55e74c2 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,6 +1,7 @@
+ import { useState } from "react";
+ import { filterBooks, removeBook, toggleRead } from "./books";
+ import BookList from "./components/BookList";
++import NotesPanel from "./components/NotesPanel";
+ import Stats from "./components/Stats";
+ import { initialBooks } from "./data";
+ import type { Book, GenreFilter } from "./types";
+@@ -52,6 +53,7 @@ export default function App() {
+         onToggleRead={handleToggleRead}
+         onRemove={handleRemove}
+       />
++      <NotesPanel />
+     </main>
+   );
+ }
+diff --git a/src/components/NotesPanel/NotesPanel.test.tsx b/src/components/NotesPanel/NotesPanel.test.tsx
+new file mode 100644
+index 0000000..f10408d
+--- /dev/null
++++ b/src/components/NotesPanel/NotesPanel.test.tsx
+@@ -0,0 +1,42 @@
++import { afterEach, describe, expect, test, vi } from "vitest";
++import { render, screen } from "@testing-library/react";
++import userEvent from "@testing-library/user-event";
++import NotesPanel from ".";
++
++afterEach(() => {
++  vi.restoreAllMocks();
++  localStorage.clear();
++});
++
++describe("NotesPanel", () => {
++  test("adds a note", async () => {
++    const user = userEvent.setup();
++    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
++    render(<NotesPanel />);
++    await user.type(screen.getByLabelText("Note"), "Loved it");
++    await user.click(screen.getByRole("button", { name: "Add note" }));
++    expect(await screen.findByText("Loved it")).toBeInTheDocument();
++  });
++
++  test("shows the delete button only to admins", () => {
++    render(<NotesPanel />);
++    expect(
++      screen.queryByRole("button", { name: "Delete all notes" })
++    ).not.toBeInTheDocument();
++
++    localStorage.setItem("role", "admin");
++    render(<NotesPanel />);
++    expect(
++      screen.getByRole("button", { name: "Delete all notes" })
++    ).toBeInTheDocument();
++  });
++
++  test("renders the HTML of a note", async () => {
++    const user = userEvent.setup();
++    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
++    const { container } = render(<NotesPanel />);
++    await user.type(screen.getByLabelText("Note"), "<i>nice</i>");
++    await user.click(screen.getByRole("button", { name: "Add note" }));
++    expect(container.querySelector("li i")).not.toBeNull();
++  });
++});
+diff --git a/src/components/NotesPanel/index.tsx b/src/components/NotesPanel/index.tsx
+new file mode 100644
+index 0000000..b283409
+--- /dev/null
++++ b/src/components/NotesPanel/index.tsx
+@@ -0,0 +1,48 @@
++import { useState } from "react";
++import { deleteAllNotes, isAdmin, renderNote, saveNote } from "../../notes";
++
++export default function NotesPanel() {
++  const [notes, setNotes] = useState<string[]>([]);
++  const [text, setText] = useState("");
++
++  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
++    event.preventDefault();
++    if (text.trim() === "") {
++      return;
++    }
++    await saveNote(text);
++    setNotes([...notes, text]);
++    setText("");
++  }
++
++  async function handleDeleteAll() {
++    await deleteAllNotes();
++    setNotes([]);
++  }
++
++  return (
++    <section className="notes">
++      <h2>Notes</h2>
++      <form onSubmit={handleSubmit}>
++        <label>
++          Note
++          <textarea value={text} onChange={(e) => setText(e.target.value)} />
++        </label>
++        <button type="submit">Add note</button>
++      </form>
++      {isAdmin() && (
++        <button type="button" onClick={handleDeleteAll}>
++          Delete all notes
++        </button>
++      )}
++      <ul>
++        {notes.map((note, index) => (
++          <li
++            key={index}
++            dangerouslySetInnerHTML={{ __html: renderNote(note) }}
++          />
++        ))}
++      </ul>
++    </section>
++  );
++}
+diff --git a/src/notes.test.ts b/src/notes.test.ts
+new file mode 100644
+index 0000000..ddf50a0
+--- /dev/null
++++ b/src/notes.test.ts
+@@ -0,0 +1,16 @@
++import { describe, expect, test } from "vitest";
++import { renderNote } from "./notes";
++
++describe("renderNote", () => {
++  test("turns **text** into bold text", () => {
++    expect(renderNote("a **big** book")).toBe("a <b>big</b> book");
++  });
++
++  test("turns line breaks into <br>", () => {
++    expect(renderNote("one\ntwo")).toBe("one<br>two");
++  });
++
++  test("keeps HTML in a note, so formatting works", () => {
++    expect(renderNote("a <i>great</i> book")).toBe("a <i>great</i> book");
++  });
++});
+diff --git a/src/notes.ts b/src/notes.ts
+new file mode 100644
+index 0000000..2d1b404
+--- /dev/null
++++ b/src/notes.ts
+@@ -0,0 +1,27 @@
++const API_URL = "https://notes.example.com/api/notes";
++export const NOTES_API_KEY = "lab-fake-key-0000-do-not-use";
++
++/** Turns **bold** into <b> and line breaks into <br>. */
++export function renderNote(text: string): string {
++  return text.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
++}
++
++/** Only admins may delete all notes. */
++export function isAdmin(): boolean {
++  return localStorage.getItem("role") === "admin";
++}
++
++export async function saveNote(text: string): Promise<void> {
++  await fetch(API_URL, {
++    method: "POST",
++    headers: { "Content-Type": "application/json", "X-Api-Key": NOTES_API_KEY },
++    body: JSON.stringify({ text }),
++  });
++}
++
++export async function deleteAllNotes(): Promise<void> {
++  await fetch(API_URL, {
++    method: "DELETE",
++    headers: { "X-Api-Key": NOTES_API_KEY },
++  });
++}
+diff --git a/vite.config.ts b/vite.config.ts
+index cbc2174..ab309b9 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -5,6 +5,7 @@ export default defineConfig({
+   plugins: [react()],
+   server: {
+     open: true,
++    host: true,
+     port: 3000,
+   },
+   test: {
