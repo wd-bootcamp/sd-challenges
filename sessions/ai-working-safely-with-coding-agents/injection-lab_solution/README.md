@@ -27,14 +27,15 @@ The exact results depend on your version and your system, but the pattern is thi
 | Attempt                                    | Deny rule                                                                              | Sandbox                                                                         |
 | ------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | Claude reads `.env` with its **file tool** | **Blocked** by `Read(.env)`                                                            | Does not apply to the file tools                                                |
-| `cat .env`                                 | **Not blocked** (a deny rule for `Read` covers Claude's file tools, not every command) | Reading is allowed by default                                                   |
-| A script reads `.env`                      | **Not blocked**                                                                        | Reading is allowed by default                                                   |
+| `cat .env` (also `head`, `tail`, `sed`, `tee`, redirects) | **Blocked** by `Read(.env)`                                             | Reading is allowed by default                                                   |
+| `grep -r API_KEY .`                        | **Not blocked**                                                                        | Reading is allowed by default                                                   |
+| A script reads `.env` (`readFileSync`)     | **Not blocked**                                                                        | Reading is allowed by default                                                   |
 | A script sends the data to the canary      | **Not blocked** (`Bash(curl *)` only matches `curl`)                                   | **Blocked**: network access to hosts that are not allowed, `localhost` included |
 | `curl` to the canary                       | **Blocked** by `Bash(curl *)`                                                          | **Blocked**                                                                     |
 
 What to take from it:
 
-- **Deny rules are friction, not a boundary.** They stop the obvious, and they are checked first, in every mode. They do not stop a script that does the same through another way. The documentation says so itself.
+- **Deny rules are a guard rail, not a wall.** `Read(.env)` also blocks common read commands such as `cat`, `head`, `tail`, `sed`, `tee` and redirects. It does not block `grep -r` or a script that reads the file itself. They are checked first, in every mode, but they cannot cover every way to read a file.
 - **The sandbox limits what commands can do to the outside**: writes outside the project and network access. By default it does **not** stop commands from reading files. So the secret can be read, but not sent away. That is why you need both.
 - The sandbox does not cover Claude's file tools, MCP servers and hooks, and it does not protect the project files that the agent may change.
 - If a command fails in the sandbox, Claude may ask to run it **outside** the sandbox. Read that prompt carefully. It asks you to remove the protection.
