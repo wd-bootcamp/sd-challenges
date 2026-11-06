@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+lab/received.log
+INJECTED.md
+.claude/settings.local.json
+CLAUDE.local.md
