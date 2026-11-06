@@ -20,7 +20,7 @@ We fetch all necessary information about the art pieces from an API specifically
 https://example-apis.vercel.app/api/art
 ```
 
-An art piece looks like this. The first user story defines a TypeScript type for it:
+An art piece looks like this. The Gallery Page story (issue 4) defines a TypeScript type for it:
 
 ```json
 {
@@ -62,7 +62,7 @@ Vitest and React Testing Library are installed and configured in `vite.config.ts
 
 ## Working on Your Own
 
-- Start with the setup issues 11, 12 and 13, then work on the user stories in the order of their numbers.
+- Start with the setup issues 1, 2 and 3, then work on the user stories 4 to 13 in the order of their numbers.
 - Only one issue should be in the "In Progress" column at any given time.
 - Use one branch and one pull request for every issue.
 - Merge a pull request only when the CI checks and the quality gate are green.
@@ -70,11 +70,11 @@ Vitest and React Testing Library are installed and configured in `vite.config.ts
 
 ## Setup Issues
 
-The repository has three setup issues. Work on them first, in this order, before the user stories. They come after the user stories in the numbering, so the issue numbers match the story numbers.
+The repository has three setup issues. Work on them first, in this order, before the user stories.
 
-### 11. Setup: Tooling and CLAUDE.md
+### 1. Setup: Tooling and CLAUDE.md
 
-This is the first setup issue: work on the setup issues 11, 12 and 13 before the user stories. The project gets the scripts that check your code, and Claude gets the instructions for this project.
+This is the first setup issue: work on the setup issues 1, 2 and 3 before the user stories. The project gets the scripts that check your code, and Claude gets the instructions for this project.
 
 #### Value Proposition
 
@@ -111,7 +111,7 @@ The components and their tests are `.tsx` files. In Vitest, every pattern has to
 
 </details>
 
-### 12. Setup: CI Pipeline
+### 2. Setup: CI Pipeline
 
 This is the second setup issue. Every pull request is checked automatically on GitHub.
 
@@ -136,11 +136,11 @@ This is the second setup issue. Every pull request is checked automatically on G
 <details>
 <summary>Hint ✨</summary>
 
-`npm ci` needs the `package-lock.json` of the repository. Use the scripts from issue 11: the workflow runs the same checks as you do locally.
+`npm ci` needs the `package-lock.json` of the repository. Use the scripts from issue 1: the workflow runs the same checks as you do locally.
 
 </details>
 
-### 13. Setup: SonarQube Cloud and Branch Protection
+### 3. Setup: SonarQube Cloud and Branch Protection
 
 This is the last setup issue. SonarQube Cloud checks the quality of every pull request, and `main` is protected.
 
@@ -163,7 +163,7 @@ This is the last setup issue. SonarQube Cloud checks the quality of every pull r
 
 - [ ] In the browser: create the organization and the project in SonarQube Cloud, switch off the automatic analysis and add the token as the GitHub secret `SONAR_TOKEN`. Never paste the token into a prompt.
 - [ ] Add `sonar-project.properties` and `.github/workflows/sonar.yml` like in the Code Quality Tooling and Code Review session: the coverage runs before the scan, with `fetch-depth: 0`.
-- [ ] After the workflows of issues 12 and 13 ran at least once: set up branch protection for `main` in the settings of your repository.
+- [ ] After the workflows of issues 2 and 3 ran at least once: set up branch protection for `main` in the settings of your repository.
 
 <details>
 <summary>Hint ✨</summary>
@@ -187,7 +187,7 @@ Remember to type everything: the fetched data, your state and the props of your 
 
 </details>
 
-### 1. Gallery Page
+### 4. Gallery Page
 
 The Gallery page displays a list of all art pieces. Each art piece's image, along with its artist's name and title, is shown.
 
@@ -232,7 +232,7 @@ SWR only reports an `error` if the `fetcher` throws. Throw an `Error` when the r
 
 </details>
 
-### 2. Spotlight Page
+### 5. Spotlight Page
 
 This page is the app's homepage. A random art piece image, along with its artist's name, is displayed as a spotlight feature.
 
@@ -263,7 +263,7 @@ If you pick the random art piece directly in the component body, it changes on e
 
 </details>
 
-### 3. App Navigation Design
+### 6. App Navigation Design
 
 Since we have multiple pages, we want to enable smooth navigation between them. All pages share a consistent layout.
 
@@ -296,7 +296,7 @@ Since we have multiple pages, we want to enable smooth navigation between them. 
 
 </details>
 
-### 4. Art Piece Details Page
+### 7. Art Piece Details Page
 
 When a user clicks on an art piece, they see all detailed information about it, along with an option to navigate back to the list of art pieces.
 
@@ -326,7 +326,7 @@ When a user clicks on an art piece, they see all detailed information about it, 
 - [ ] Create a new component for displaying the art piece details.
 - [ ] Create a **dynamic route** that renders the details of the selected art piece. Read the `slug` from the URL with `useParams`.
 
-### 5. Mark Art Pieces as Favorites
+### 8. Mark Art Pieces as Favorites
 
 Users want the ability to mark art pieces as favorites. Users can do this on the Gallery page, the Spotlight page and the Details page. The favorite button is reused on all of these pages.
 
@@ -370,7 +370,7 @@ You can find a heart icon on [Lucide](https://lucide.dev/icons/heart).
 
 </details>
 
-### 6. Favorites Page
+### 9. Favorites Page
 
 The Favorites page displays a list of all favorite art pieces. Each art piece shows its image, artist's name, title and a favorite button.
 
@@ -401,7 +401,7 @@ You could write a function that checks whether an art piece is a favorite.
 
 </details>
 
-### 7. Comments for Art Pieces
+### 10. Comments for Art Pieces
 
 To enhance user engagement, we add a commenting feature that allows users to write and view comments on each art piece. A comment section is displayed on the details page, showing the comments of the art piece being viewed.
 
@@ -437,7 +437,7 @@ Use `new Date().toISOString()` to get a date you can store, and `new Date(dateSt
 
 </details>
 
-### 8. Show Color Palette
+### 11. Show Color Palette
 
 To enrich the information displayed on the details page, we add a color palette for each art piece.
 
@@ -458,7 +458,7 @@ To enrich the information displayed on the details page, we add a color palette 
 
 - [ ] Create a new component for displaying the color palette.
 
-### 9. Bonus: Persist Favorites and Comments in the Browser
+### 12. Bonus: Persist Favorites and Comments in the Browser
 
 This is a bonus story: work on it when all other stories are done. Currently, all data is saved using `useState`, which means it is lost upon page refresh. To improve the user experience, we want to persist it in the browser's local storage.
 
@@ -492,7 +492,7 @@ The art pieces themselves are always fetched from the API. Only your own informa
 
 </details>
 
-### 10. Bonus: Testing Components
+### 13. Bonus: Testing Components
 
 As developers, we want to avoid repetitive manual testing by automating component tests.
 
