@@ -8,9 +8,9 @@ This is an individual project: create your own **public** repository following t
 
 We will create an art gallery app with four pages: **Spotlight**, **Gallery**, **Favorites** and **Details**. Users can like or unlike art pieces, and liked pieces appear on the **Favorites** page. Users can also comment on art pieces. As a bonus, favorites and comments are saved in the browser.
 
-![wireframes](./wireframes.excalidraw.png)
+![wireframes](https://raw.githubusercontent.com/wd-bootcamp/sd-recap-project-6/main/docs/wireframes.excalidraw.png)
 
-To open the wireframes file `wireframes.excalidraw.png` in VS Code, install the [excalidraw extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor).
+Your repository contains the wireframes file in `docs/wireframes.excalidraw.png`. To open it in VS Code, install the [excalidraw extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor).
 
 ## API
 
@@ -37,7 +37,7 @@ An art piece looks like this. The first user story defines a TypeScript type for
 
 ## Template
 
-Do not work in this folder. Create your own **public** repository from the GitHub template repository [sd-recap-project-6](https://github.com/wd-bootcamp/sd-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/sd-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the same starter project as this folder, and the user stories below are created as predefined issues in your repository.
+This folder only contains the description of the project. Create your own **public** repository from the GitHub template repository [sd-recap-project-6](https://github.com/wd-bootcamp/sd-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/sd-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the starter project, and the user stories below are created as predefined issues in your repository.
 
 > 💡 **Reminder**: Work on one feature branch per issue.
 
