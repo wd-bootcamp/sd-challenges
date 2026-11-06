@@ -37,11 +37,11 @@ An art piece looks like this. The first user story defines a TypeScript type for
 
 ## Template
 
-This folder only contains the description of the project. Create your own **public** repository from the GitHub template repository [sd-recap-project-6](https://github.com/wd-bootcamp/sd-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/sd-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the starter project, and the user stories below are created as predefined issues in your repository.
+This folder only contains the description of the project. Create your own **public** repository from the GitHub template repository [sd-recap-project-6](https://github.com/wd-bootcamp/sd-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/sd-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the starter project, and the setup issues and user stories below are created as predefined issues in your repository.
 
 > 💡 **Reminder**: Work on one feature branch per issue.
 
-> 📝 **Note for coaches**: The user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/sd-recap-project-6/tree/main/.github/templates) of the template repository. The same stories are also used in Recap Project 5. If you change a story, change it in all four places (see the coaches' guide of Recap Project 6).
+> 📝 **Note for coaches**: The setup issues and user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/sd-recap-project-6/tree/main/.github/templates) of the template repository. The same stories are also used in Recap Project 5. If you change a story, change it in all four places, and a setup issue in both places (see the coaches' guide of Recap Project 6).
 
 ## Starter project
 
@@ -62,11 +62,117 @@ Vitest and React Testing Library are installed and configured in `vite.config.ts
 
 ## Working on Your Own
 
-- Each user story is one issue. Work on the issues in sequence.
+- Start with the setup issues 11, 12 and 13, then work on the user stories in the order of their numbers.
 - Only one issue should be in the "In Progress" column at any given time.
 - Use one branch and one pull request for every issue.
 - Merge a pull request only when the CI checks and the quality gate are green.
 - You find the details of every step in the project brief of Recap Project 6 in your curriculum.
+
+## Setup Issues
+
+The repository has three setup issues. Work on them first, in this order, before the user stories. They come after the user stories in the numbering, so the issue numbers match the story numbers.
+
+### 11. Setup: Tooling and CLAUDE.md
+
+This is the first setup issue: work on the setup issues 11, 12 and 13 before the user stories. The project gets the scripts that check your code, and Claude gets the instructions for this project.
+
+#### Value Proposition
+
+**As a** developer
+
+**I want to** have scripts for tests, coverage, linting and formatting, and a `CLAUDE.md` for this project
+
+**so that** the agent and I check every change in the same way.
+
+#### Acceptance Criteria
+
+- [ ] `CLAUDE.md` has the four parts **Stack**, **Commands**, **Conventions** and **Off limits**.
+- [ ] Off limits contains at least: never use `npm test` (watch mode), never change a test to make it pass, never lower a threshold or disable a rule to make a check green, and only do what the current issue asks for.
+- [ ] `npm run test:run` runs all tests once.
+- [ ] `npm run coverage` writes the coverage report `coverage/lcov.info`.
+- [ ] `npm run lint` checks the code with ESLint.
+- [ ] `npm run format` formats the code and `npm run format:check` checks the formatting with Prettier.
+- [ ] `coverage/` is in `.gitignore`.
+- [ ] All scripts run without errors.
+
+#### Tasks
+
+- [ ] Create `CLAUDE.md` with `/init`, then shorten and adapt it.
+- [ ] Add the scripts `test:run` and `coverage` (with `@vitest/coverage-v8` and the `lcov` reporter).
+- [ ] Set up ESLint with a flat config (`@eslint/js`, `typescript-eslint` and `eslint-plugin-sonarjs`) and the script `lint`.
+- [ ] Add the scripts `format` and `format:check` for Prettier.
+
+<details>
+<summary>Hint ✨</summary>
+
+Vitest is already configured in the `test` block of `vite.config.ts`. Add the coverage settings there. Do not create a separate `vitest.config.ts`: it takes priority over `vite.config.ts`, and the existing test setup (jsdom, `setupFiles`) would be lost.
+
+The components and their tests are `.tsx` files. In Vitest, every pattern has to cover `.ts` and `.tsx`, for example `src/**/*.{ts,tsx}`.
+
+</details>
+
+### 12. Setup: CI Pipeline
+
+This is the second setup issue. Every pull request is checked automatically on GitHub.
+
+#### Value Proposition
+
+**As a** developer
+
+**I want to** have every pull request checked automatically
+
+**so that** broken code does not reach `main`.
+
+#### Acceptance Criteria
+
+- [ ] `.github/workflows/ci.yml` runs on every pull request and on every push to `main`.
+- [ ] A job `ci` runs `npm ci`, `npm run check`, `npm run lint`, `npm run test:run` and `npm run build`.
+- [ ] The check `ci` is green in the pull request of this issue.
+
+#### Tasks
+
+- [ ] Create the workflow `.github/workflows/ci.yml` like in the CI/CD Concepts and GitHub Actions session.
+
+<details>
+<summary>Hint ✨</summary>
+
+`npm ci` needs the `package-lock.json` of the repository. Use the scripts from issue 11: the workflow runs the same checks as you do locally.
+
+</details>
+
+### 13. Setup: SonarQube Cloud and Branch Protection
+
+This is the last setup issue. SonarQube Cloud checks the quality of every pull request, and `main` is protected.
+
+#### Value Proposition
+
+**As a** developer
+
+**I want to** have an automatic quality check and a protected `main` branch
+
+**so that** only tested and clean code is merged.
+
+#### Acceptance Criteria
+
+- [ ] SonarQube Cloud analyzes every pull request, and the quality gate shows up as a check.
+- [ ] The coverage of the tests shows up in SonarQube Cloud.
+- [ ] Test files are marked as tests, not as source code.
+- [ ] `main` is protected: the checks `ci` and the quality gate are required, approvals are not required.
+
+#### Tasks
+
+- [ ] In the browser: create the organization and the project in SonarQube Cloud, switch off the automatic analysis and add the token as the GitHub secret `SONAR_TOKEN`. Never paste the token into a prompt.
+- [ ] Add `sonar-project.properties` and `.github/workflows/sonar.yml` like in the Code Quality Tooling and Code Review session: the coverage runs before the scan, with `fetch-depth: 0`.
+- [ ] After the workflows of issues 12 and 13 ran at least once: set up branch protection for `main` in the settings of your repository.
+
+<details>
+<summary>Hint ✨</summary>
+
+The test patterns have to cover `.ts` and `.tsx` files, as a comma-separated list: `src/**/*.test.ts,src/**/*.test.tsx`. Entry files without tests, such as `src/index.tsx`, belong in `sonar.coverage.exclusions`.
+
+Do not require approvals in the branch protection: you work alone, and nobody can approve their own pull request.
+
+</details>
 
 ## User Stories
 
