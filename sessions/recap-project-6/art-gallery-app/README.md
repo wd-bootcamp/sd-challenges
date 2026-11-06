@@ -37,11 +37,11 @@ An art piece looks like this. The first user story defines a TypeScript type for
 
 ## Template
 
-Do not work in this folder. Create your own **public** repository from the GitHub template repository [web-recap-project-6](https://github.com/wd-bootcamp/web-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/web-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the same starter project as this folder, and the user stories below are created as predefined issues in your repository.
+Do not work in this folder. Create your own **public** repository from the GitHub template repository [sd-recap-project-6](https://github.com/wd-bootcamp/sd-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/sd-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the same starter project as this folder, and the user stories below are created as predefined issues in your repository.
 
 > 💡 **Reminder**: Work on one feature branch per issue.
 
-> 📝 **Note for coaches**: The user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/web-recap-project-6/tree/main/.github/templates) of the template repository. The same stories are also used in Recap Project 5. If you change a story, change it in all four places (see the coaches' guide of Recap Project 6).
+> 📝 **Note for coaches**: The user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/sd-recap-project-6/tree/main/.github/templates) of the template repository. The same stories are also used in Recap Project 5. If you change a story, change it in all four places (see the coaches' guide of Recap Project 6).
 
 ## Starter project
 
