@@ -1,0 +1,547 @@
+# Recap Project 6: Art Gallery App with a Coding Agent
+
+In this project, you will create an interactive art gallery app with React, TypeScript and React Router: the same app as in Recap Project 5, but this time a coding agent (Claude Code) writes all of the code, including the tests, the configuration and the workflows. You plan, steer, check and review.
+
+This is an individual project: create your own **public** repository following the [guide in the template section](#template). Then follow the steps in the project brief of Recap Project 6 in your curriculum.
+
+## Overview
+
+We will create an art gallery app with four pages: **Spotlight**, **Gallery**, **Favorites** and **Details**. Users can like or unlike art pieces, and liked pieces appear on the **Favorites** page. Users can also comment on art pieces. As a bonus, favorites and comments are saved in the browser.
+
+![wireframes](https://raw.githubusercontent.com/wd-bootcamp/sd-recap-project-6/main/docs/wireframes.excalidraw.png)
+
+Your repository contains the wireframes file in `docs/wireframes.excalidraw.png`. To open it in VS Code, install the [excalidraw extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor).
+
+## API
+
+We fetch all necessary information about the art pieces from an API specifically designed for this course. [Check out the API](https://example-apis.vercel.app/api/art).
+
+```bash
+https://example-apis.vercel.app/api/art
+```
+
+An art piece looks like this. The Gallery Page story (issue 4) defines a TypeScript type for it:
+
+```json
+{
+  "slug": "wheat-field-with-cypresses",
+  "artist": "Vincent van Gogh",
+  "name": "Wheat Field with Cypresses",
+  "imageSource": "https://example-apis.vercel.app/assets/art/wheat-field-with-cypresses.jpg",
+  "year": "1889",
+  "genre": "Landscape Painting",
+  "colors": ["#37412E", "#8D7332", "#838665", "#718F98", "#9DA59E"],
+  "dimensions": { "height": 1528, "width": 1920, "type": "jpg" }
+}
+```
+
+## Template
+
+This folder only contains the description of the project. Create your own **public** repository from the GitHub template repository [sd-recap-project-6](https://github.com/wd-bootcamp/sd-recap-project-6) and follow the [guide to setup your repository](https://github.com/wd-bootcamp/sd-recap-project-6/blob/main/docs/github-respository-template.md). The repository has to be public: branch protection on a free GitHub account needs it, and SonarQube Cloud is free for public repositories. The template contains the starter project, and the setup issues and user stories below are created as predefined issues in your repository.
+
+> 💡 **Reminder**: Work on one feature branch per issue.
+
+> 📝 **Note for coaches**: The setup issues and user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/sd-recap-project-6/tree/main/.github/templates) of the template repository. The same stories are also used in Recap Project 5. If you change a story, change it in all four places, and a setup issue in both places (see the coaches' guide of Recap Project 6).
+
+## Starter project
+
+The template is a [Vite](https://vite.dev/) project with React, TypeScript, [React Router](https://reactrouter.com/) and [SWR](https://swr.vercel.app/) already installed:
+
+- `src/index.tsx` wraps the app with `BrowserRouter`.
+- `src/App.tsx` is your starting point.
+- `src/styles.css` contains some basic styles. Feel free to change them.
+- `vercel.json` makes sure that URLs like `/art-pieces/the-harvesters` also work after deploying and reloading the page.
+
+Run `npm run check` regularly: it type-checks your project with TypeScript.
+
+Vitest and React Testing Library are installed and configured in `vite.config.ts`. The scripts for a single test run and for coverage, linting, formatting, CI and SonarQube Cloud are not set up yet: you set them up with your coding agent in the project setup step.
+
+## Deploying Your Project
+
+🚀 Project deployment to Vercel is required: Please follow [these instructions](https://github.com/wd-bootcamp/cohort-template/blob/main/docs/deployment-vercel.md) to deploy the project on Vercel. Vercel detects Vite automatically.
+
+## Working on Your Own
+
+- Start with the setup issues 1, 2 and 3, then work on the core stories 4 to 11 in the order of their numbers. The bonus stories 12 and 13 are optional: do them after the core stories, if you have time.
+- Only one issue should be in the "In Progress" column at any given time.
+- Use one branch and one pull request for every issue.
+- Merge a pull request only when the CI checks and the quality gate are green.
+- You find the details of every step in the project brief of Recap Project 6 in your curriculum.
+
+## Setup Issues
+
+The repository has three setup issues. Work on them first, in this order, before the user stories.
+
+### 1. Setup: Tooling and CLAUDE.md
+
+This is the first setup issue: work on the setup issues 1, 2 and 3 before the user stories. The project gets the scripts that check your code, and Claude gets the instructions for this project.
+
+#### Value Proposition
+
+**As a** developer
+
+**I want to** have scripts for tests, coverage, linting and formatting, and a `CLAUDE.md` for this project
+
+**so that** the agent and I check every change in the same way.
+
+#### Acceptance Criteria
+
+- [ ] `CLAUDE.md` has the four parts **Stack**, **Commands**, **Conventions** and **Off limits**.
+- [ ] Off limits contains at least: never use `npm test` (watch mode), never change a test to make it pass, never lower a threshold or disable a rule to make a check green, and only do what the current issue asks for.
+- [ ] `npm run test:run` runs all tests once.
+- [ ] `npm run coverage` writes the coverage report `coverage/lcov.info`.
+- [ ] `npm run lint` checks the code with ESLint.
+- [ ] `npm run format` formats the code and `npm run format:check` checks the formatting with Prettier.
+- [ ] `coverage/` is in `.gitignore`.
+- [ ] All scripts run without errors.
+
+#### Tasks
+
+- [ ] Create `CLAUDE.md` with `/init`, then shorten and adapt it.
+- [ ] Add the scripts `test:run` and `coverage` (with `@vitest/coverage-v8` and the `lcov` reporter).
+- [ ] Set up ESLint with a flat config (`@eslint/js`, `typescript-eslint` and `eslint-plugin-sonarjs`) and the script `lint`.
+- [ ] Add the scripts `format` and `format:check` for Prettier.
+
+<details>
+<summary>Hint ✨</summary>
+
+Vitest is already configured in the `test` block of `vite.config.ts`. Add the coverage settings there. Do not create a separate `vitest.config.ts`: it takes priority over `vite.config.ts`, and the existing test setup (jsdom, `setupFiles`) would be lost.
+
+The components and their tests are `.tsx` files. In Vitest, every pattern has to cover `.ts` and `.tsx`, for example `src/**/*.{ts,tsx}`.
+
+</details>
+
+### 2. Setup: CI Pipeline
+
+This is the second setup issue. Every pull request is checked automatically on GitHub.
+
+#### Value Proposition
+
+**As a** developer
+
+**I want to** have every pull request checked automatically
+
+**so that** broken code does not reach `main`.
+
+#### Acceptance Criteria
+
+- [ ] `.github/workflows/ci.yml` runs on every pull request and on every push to `main`.
+- [ ] A job `ci` runs `npm ci`, `npm run check`, `npm run lint`, `npm run test:run` and `npm run build`.
+- [ ] The check `ci` is green in the pull request of this issue.
+
+#### Tasks
+
+- [ ] Create the workflow `.github/workflows/ci.yml` like in the CI/CD Concepts and GitHub Actions session.
+
+<details>
+<summary>Hint ✨</summary>
+
+`npm ci` needs the `package-lock.json` of the repository. Use the scripts from issue 1: the workflow runs the same checks as you do locally.
+
+</details>
+
+### 3. Setup: SonarQube Cloud and Branch Protection
+
+This is the last setup issue. SonarQube Cloud checks the quality of every pull request, and `main` is protected.
+
+#### Value Proposition
+
+**As a** developer
+
+**I want to** have an automatic quality check and a protected `main` branch
+
+**so that** only tested and clean code is merged.
+
+#### Acceptance Criteria
+
+- [ ] SonarQube Cloud analyzes every pull request, and the quality gate shows up as a check.
+- [ ] The coverage of the tests shows up in SonarQube Cloud.
+- [ ] Test files are marked as tests, not as source code.
+- [ ] `main` is protected: the checks `ci` and the quality gate are required, approvals are not required.
+
+#### Tasks
+
+- [ ] In the browser: create the organization and the project in SonarQube Cloud, switch off the automatic analysis and add the token as the GitHub secret `SONAR_TOKEN`. Never paste the token into a prompt.
+- [ ] Add `sonar-project.properties` and `.github/workflows/sonar.yml` like in the Code Quality Tooling and Code Review session: the coverage runs before the scan, with `fetch-depth: 0`.
+- [ ] After the workflows of issues 2 and 3 ran at least once: set up branch protection for `main` in the settings of your repository.
+
+<details>
+<summary>Hint ✨</summary>
+
+The test patterns have to cover `.ts` and `.tsx` files, as a comma-separated list: `src/**/*.test.ts,src/**/*.test.tsx`. Entry files without tests, such as `src/index.tsx`, belong in `sonar.coverage.exclusions`.
+
+Do not require approvals in the branch protection: you work alone, and nobody can approve their own pull request.
+
+</details>
+
+## User Stories
+
+This app has four main pages: **Spotlight**, **Gallery**, **Favorites** and **Details**. Each page needs access to the art pieces. Think about where to fetch and store the data so that all pages can reach it.
+
+<details>
+<summary>Hint ✨</summary>
+
+Fetch the art pieces once in `App.tsx` with `useSWR` and pass them down as props to the pages that need them. Components rendered by a `Route` can only get data from props, context or their own hooks.
+
+Remember to type everything: the fetched data, your state and the props of your components.
+
+</details>
+
+### 4. Gallery Page
+
+The Gallery page displays a list of all art pieces. Each art piece's image, along with its artist's name and title, is shown.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** see a list of all art pieces
+
+**so that** I can get an overview of each one.
+
+#### Acceptance Criteria
+
+- [ ] All art pieces are displayed in a list.
+- [ ] Each art piece's image is displayed.
+- [ ] Each art piece's title is displayed.
+- [ ] Each art piece's artist's name is displayed.
+- [ ] The list is available on the route `/art-pieces`.
+
+#### Tasks
+
+- [ ] Define a type `ArtPiece` that describes one art piece of the API (see the example in the README), for example in a new file `src/types.ts`. Only type the properties you use.
+- [ ] Fetch the art pieces with `useSWR` and write a `fetcher` function that returns `ArtPiece[]`.
+- [ ] Display a loading and an error state.
+- [ ] Create a component to render the list of art pieces.
+- [ ] Create a component to render each art piece preview.
+
+<details>
+<summary>Hint ✨</summary>
+
+`response.json()` returns `any`. Annotate the result with your type and let the `fetcher` say what it returns:
+
+```ts
+async function fetcher(url: string): Promise<ArtPiece[]> {
+  // ...
+  const data: ArtPiece[] = await response.json();
+  return data;
+}
+```
+
+SWR only reports an `error` if the `fetcher` throws. Throw an `Error` when the response is not `ok`, like in React Data Fetching.
+
+</details>
+
+### 5. Spotlight Page
+
+This page is the app's homepage. A random art piece image, along with its artist's name, is displayed as a spotlight feature.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** see a spotlight art piece
+
+**so that** I can get inspirational highlights.
+
+#### Acceptance Criteria
+
+- [ ] One art piece is randomly selected as a spotlight feature.
+- [ ] The image of the selected art piece is displayed.
+- [ ] The artist's name for the spotlighted art piece is displayed.
+- [ ] The spotlight is available on the route `/`.
+
+#### Tasks
+
+- [ ] Write a function to select a random art piece. [Refer to this resource](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#examples).
+- [ ] Create a new component for the Spotlight page.
+
+<details>
+<summary>Hint ✨</summary>
+
+If you pick the random art piece directly in the component body, it changes on every re-render (for example when the state changes). Think about how you can pick it only once.
+
+</details>
+
+### 6. App Navigation Design
+
+Since we have multiple pages, we want to enable smooth navigation between them. All pages share a consistent layout.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** switch between the Spotlight and Gallery views
+
+**so that** I can navigate the app easily.
+
+#### Acceptance Criteria
+
+- [ ] A navigation link labeled "Spotlight" is displayed.
+- [ ] A navigation link labeled "Gallery" is displayed.
+- [ ] Clicking "Spotlight" shows the Spotlight page.
+- [ ] Clicking "Gallery" shows the Gallery page.
+- [ ] The link of the current page is visually highlighted.
+- [ ] Unknown URLs show a "Page not found" message.
+
+#### Tasks
+
+- [ ] Create a `Navigation` component that renders all navigation links.
+- [ ] Render the `Navigation` component only once, ensuring it appears on all pages.
+
+<details>
+<summary>Hint ✨</summary>
+
+`NavLink` works like `Link`, but adds an `active` class to the link of the current page. Use the `end` prop for the link to `/`, otherwise it is active on every page.
+
+</details>
+
+### 7. Art Piece Details Page
+
+When a user clicks on an art piece, they see all detailed information about it, along with an option to navigate back to the list of art pieces.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** view detailed information about an art piece
+
+**so that** I can learn everything about it.
+
+#### Acceptance Criteria
+
+- [ ] Clicking on an art piece from the list navigates to the detail page.
+- [ ] The details are available on the route `/art-pieces/:slug`, for example `/art-pieces/the-harvesters`.
+- [ ] The art piece's image is displayed.
+- [ ] The art piece's title is displayed.
+- [ ] The art piece's artist is displayed.
+- [ ] The art piece's year is displayed.
+- [ ] The art piece's genre is displayed.
+- [ ] A back button is displayed.
+- [ ] Clicking the back button navigates back to the list view.
+- [ ] An unknown `slug` shows an "Art piece not found" message instead of crashing.
+
+#### Tasks
+
+- [ ] Create a new component for displaying the art piece details.
+- [ ] Create a **dynamic route** that renders the details of the selected art piece. Read the `slug` from the URL with `useParams`.
+
+### 8. Mark Art Pieces as Favorites
+
+Users want the ability to mark art pieces as favorites. Users can do this on the Gallery page, the Spotlight page and the Details page. The favorite button is reused on all of these pages.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** mark art pieces as favorites
+
+**so that** I can find them more easily.
+
+#### Acceptance Criteria
+
+- [ ] The favorite button is displayed on each entry in the list view.
+- [ ] The favorite button is displayed on the details view.
+- [ ] The favorite button is displayed on the spotlight view.
+- [ ] Clicking the favorite button on a non-favorite piece saves it as a favorite and provides a visual indication (for example a changing color or icon).
+- [ ] Clicking the favorite button on a favorite piece removes it from the favorites and provides a visual indication.
+- [ ] Favorite art pieces are visually highlighted to clearly show their favorite status.
+
+#### Tasks
+
+- [ ] Create a new component for the favorite button.
+- [ ] Store this additional information (favorite status) in a state.
+
+<details>
+<summary>Hint ✨</summary>
+
+All pages need to read and change the favorite status. The place for state that is shared by several routes is the component that renders the `Routes`: `App`.
+
+Do not change the fetched art pieces. Store the additional information in your own state and connect it with the art pieces via the unique `slug`, for example:
+
+```ts
+type ArtPieceInfo = {
+  slug: string;
+  isFavorite: boolean;
+};
+```
+
+You can find a heart icon on [Lucide](https://lucide.dev/icons/heart).
+
+</details>
+
+### 9. Favorites Page
+
+The Favorites page displays a list of all favorite art pieces. Each art piece shows its image, artist's name, title and a favorite button.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** see a list of all my favorite art pieces
+
+**so that** I can have an overview of my saved favorites.
+
+#### Acceptance Criteria
+
+- [ ] A navigation link labeled "Favorites" is displayed.
+- [ ] Clicking "Favorites" shows the Favorites page on the route `/favorites`.
+- [ ] All **favorite** art pieces are displayed in a list format.
+- [ ] Each art piece's image, title and artist's name are displayed.
+- [ ] Each art piece has an active favorite button.
+
+#### Tasks
+
+- [ ] Reuse an existing component to display only the favorite art pieces.
+
+<details>
+<summary>Hint ✨</summary>
+
+You could write a function that checks whether an art piece is a favorite.
+
+</details>
+
+### 10. Comments for Art Pieces
+
+To enhance user engagement, we add a commenting feature that allows users to write and view comments on each art piece. A comment section is displayed on the details page, showing the comments of the art piece being viewed.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** write comments on art pieces
+
+**so that** I can note down my thoughts and ideas about the work.
+
+#### Acceptance Criteria
+
+- [ ] The detail view includes a section labeled "Comments" displaying a list of comments for this art piece.
+- [ ] Each comment's text is displayed.
+- [ ] Each comment's date and time are displayed.
+- [ ] A form with a text field and a submit button is displayed.
+- [ ] Submitting the form adds the comment to the list of this art piece, and only to this art piece.
+- [ ] Empty comments cannot be submitted.
+
+#### Tasks
+
+- [ ] Create a `Comments` component and a `CommentForm` component.
+- [ ] Type the comment, for example with `type ArtPieceComment = { text: string; date: string }`.
+- [ ] Extend the information you store for each art piece with its comments.
+
+<details>
+<summary>Hint ✨</summary>
+
+It is best practice to consolidate related information into one state. If you already have `ArtPieceInfo` with the `slug` and `isFavorite`, add a `comments` property with a list of comments.
+
+Use `new Date().toISOString()` to get a date you can store, and `new Date(dateString).toLocaleString()` to display it.
+
+</details>
+
+### 11. Show Color Palette
+
+To enrich the information displayed on the details page, we add a color palette for each art piece.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want to** see the color palette of an art piece
+
+**so that** I can find color inspiration.
+
+#### Acceptance Criteria
+
+- [ ] The art piece detail page displays a list of all colors used in the image.
+- [ ] Colors are displayed visually, for example in circles or squares.
+
+#### Tasks
+
+- [ ] Create a new component for displaying the color palette.
+
+### 12. Bonus: Persist Favorites and Comments in the Browser
+
+This is a bonus story: work on it when all other stories are done. Currently, all data is saved using `useState`, which means it is lost upon page refresh. To improve the user experience, we want to persist it in the browser's local storage.
+
+#### Value Proposition
+
+**As an** art enthusiast
+
+**I want** my favorites and comments to be saved
+
+**so that** my data remains accessible even when I close or refresh the app.
+
+#### Acceptance Criteria
+
+- [ ] All favorite flags and comments on art pieces are persisted across browser reloads.
+- [ ] Without any data in the local storage, the app still works.
+
+#### Tasks
+
+- [ ] Use `localStorage` to save the information on art pieces, including favorites and comments.
+
+<details>
+<summary>Hint ✨</summary>
+
+The art pieces themselves are always fetched from the API. Only your own information (favorites and comments) is saved in the local storage.
+
+- Read the saved value once when creating the state: `useState` accepts a function that returns the initial value, for example `useState<ArtPieceInfo[]>(loadArtPiecesInfo)`.
+- Write the value with `localStorage.setItem(key, JSON.stringify(value))` in a `useEffect` that runs whenever the state changes.
+- `localStorage.getItem(key)` returns `string | null` and `JSON.parse` returns `any`: handle the `null` case and annotate the parsed value with your type.
+
+📙 Read more about [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+
+</details>
+
+### 13. Bonus: Testing Components
+
+As developers, we want to avoid repetitive manual testing by automating component tests.
+
+#### Value Proposition
+
+**As a** programmer
+
+**I want to** automate component testing
+
+**so that** I can identify bugs more easily.
+
+#### Acceptance Criteria
+
+- [ ] Automated tests cover the core components, ensuring they render and function as expected.
+
+#### Tasks
+
+- [ ] Write tests for the Spotlight component.
+- [ ] Write tests for the art piece preview and the list of art pieces.
+- [ ] Write tests for the navigation to confirm that the links are rendered correctly.
+- [ ] Write tests for the art piece details to confirm that all details are displayed correctly.
+
+<details>
+<summary>Hint ✨</summary>
+
+The project uses [Vitest](https://vitest.dev/) with React Testing Library, set up like in the React Component Testing session: `test`, `expect` and `vi` are available without imports, and `vi.fn()` replaces `jest.fn()`. Rendered components are cleaned up after each test automatically. Put a test file next to its component, for example `Navigation.test.tsx`, and run the tests once with `npx vitest run` (or with the `test:run` script from your project setup).
+
+Components that contain a `Link` or `NavLink` need a router around them in a test. Wrap them in a `MemoryRouter` from `react-router`.
+
+```tsx
+render(
+  <MemoryRouter>
+    <Navigation />
+  </MemoryRouter>
+);
+```
+
+</details>
+
+## Development
+
+To work locally, please install the dependencies using `npm i` first (Node.js 22.22 or newer is required).
+
+Run `npm run dev` to start a development server and open the displayed URL in a browser.
+
+### Scripts
+
+- `npm run dev` to start a development server
+- `npm run build` to build the project
+- `npm run serve` to preview the production build
+- `npm run check` to type-check the project with TypeScript
+- `npm run test` to run the tests with Vitest
