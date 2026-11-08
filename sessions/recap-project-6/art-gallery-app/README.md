@@ -62,7 +62,7 @@ Vitest and React Testing Library are installed and configured in `vite.config.ts
 
 ## Working on Your Own
 
-- Start with the setup issues 1, 2 and 3, then work on the user stories 4 to 13 in the order of their numbers.
+- Start with the setup issues 1, 2 and 3, then work on the core stories 4 to 11 in the order of their numbers. The bonus stories 12 and 13 are optional: do them after the core stories, if you have time.
 - Only one issue should be in the "In Progress" column at any given time.
 - Use one branch and one pull request for every issue.
 - Merge a pull request only when the CI checks and the quality gate are green.
