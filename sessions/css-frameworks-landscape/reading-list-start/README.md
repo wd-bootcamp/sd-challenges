@@ -59,7 +59,7 @@ Use the setup commands of the handout (section "Setup in a Vite + React + TypeSc
 Notes for the approaches:
 
 - **Bootstrap:** use classes for layout and typography. For the dialog and the toast use `react-bootstrap` (`npm i react-bootstrap`), because Bootstrap's own JavaScript does not work well with React.
-- **shadcn/ui:** run `npx shadcn@latest init -d -b radix` after Tailwind is set up. Add the components you need with `npx shadcn@latest add ...`. A toast comes from `sonner`, remember to render its `<Toaster />` once in the app.
+- **shadcn/ui:** run `npx shadcn@latest init -d` after Tailwind is set up. Add the components you need with `npx shadcn@latest add ...`. A toast comes from `sonner`, remember to render its `<Toaster />` once in the app.
 - **styled-components:** props that are only for styling start with `$` (`$status`).
 
 If you run out of time, skip the toast and the search first. **Never skip the keyboard check.**
