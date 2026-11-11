@@ -1,0 +1,16 @@
+{
+  "name": "programming-languages-landscape_typescript-reference",
+  "version": "0.0.0-unreleased",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.9"
+  }
+}
