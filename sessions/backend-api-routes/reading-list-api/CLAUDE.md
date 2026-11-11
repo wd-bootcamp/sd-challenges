@@ -12,7 +12,7 @@ Run these in the project root (the API):
 - `npm run test:run`: run the unit tests once. Do not use `npm test`, it starts the watch mode and never ends.
 - Run `npm run typecheck`, `npm run test:run` and `npm run check` before you say a task is done.
 
-The React app in `client/` is a separate project with its own `package.json`: `npm run dev` (port 3000), `npm run check` (types), `npm run test:run`, `npm run build`.
+The React app in `client/` is a separate project with its own `package.json`: `npm run dev` (port 3000), `npm run typecheck`, `npm run test:run`, `npm run build`.
 
 ## Stack
 

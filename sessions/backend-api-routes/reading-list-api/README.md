@@ -71,7 +71,7 @@ The browser will block the first request. Read the error in the console, and ask
 4. Build slice by slice. After every slice run `npm run check` and read the diff. The number of passing rules must grow, and no rule that passed may fail again.
 5. Try the routes yourself, not only with the script: use `curl` or `requests.http` (VS Code with the REST Client extension, or the HTTP client of WebStorm). Send one invalid body and one broken JSON.
 6. Part 2: in `client/` run `npm i` and `npm run dev` (the API must run). Plan the change with the agent, build it, and use the app in the browser. Add a book, mark it as done, delete it and reload the page. What stays, what is gone? Restart the server: what happens to your data?
-7. Run `npm run typecheck`, `npm run test:run` and `npm run check` in the project root, and `npm run check` and `npm run test:run` in `client/`. Commit when everything passes.
+7. Run `npm run typecheck`, `npm run test:run` and `npm run check` in the project root, and `npm run typecheck` and `npm run test:run` in `client/`. Commit when everything passes.
 
 ### Review your result
 
@@ -130,4 +130,4 @@ In the project root:
 In `client/`:
 
 - `npm run dev` starts the app on http://localhost:3000
-- `npm run check` (types), `npm run test:run` and `npm run build` as usual
+- `npm run typecheck`, `npm run test:run` and `npm run build`
