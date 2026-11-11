@@ -59,8 +59,7 @@ This folder only contains the description of the project. Create your own **publ
 - the 12 issues (they are created by a GitHub Action, see the guide), identical to the setup issues and user stories below
 - a start for `CLAUDE.md`
 - `docs/api-contract.md`: the API contract, the same as in [The API](#the-api) below
-- `data/books.seed.json`: the 10 books for your seed script
-- empty folders `backend/` and `frontend/`: you build both with the agent
+- empty folders `backend/` and `frontend/`: the backend comes from your Backend MongoDB project, you build the frontend with the agent
 
 > 📝 **Note for coaches**: The setup issues and user stories below are a copy of the issue templates in [`.github/templates`](https://github.com/wd-bootcamp/sd-recap-project-7/tree/main/.github/templates) of the template repository, and the contract is a copy of `docs/api-contract.md` there. If you change one, change both.
 
@@ -71,9 +70,8 @@ This folder only contains the description of the project. Create your own **publ
 1. Create your repository from the template and choose **Public**. Check that the 12 issues appeared, create a project board and import the issues.
 2. Clone the repository (Node.js 22.22 or newer is required).
 3. Set up your security baseline **before you start Claude Code in the project for the first time**. Copy `.claude/settings.json` and `docs/agent-security.md` from your Recap Project 6 repository, and read both again. The baseline denies reading `.env` files and switches on the sandbox: this is exactly what you need for a project with a database connection string.
-4. **Test the baseline** with the project folders in place: create an empty file `backend/.env` and start `claude`. Ask it to read `backend/.env`: it must refuse. Ask it to read `backend/.env.example` (create it with any text): this has to work, because the agent maintains that file. If the first works or the second is refused, change the deny rules in `.claude/settings.json` (for example `Read(**/.env)` and `Read(**/.env.local)`), and test again. Do not continue before both behave as described.
-5. Commit and push the baseline.
-6. Create your **MongoDB Atlas** cluster, as in the Databases and MongoDB session: a database user, access from your IP address and the connection string. You use it in issue 2.
+4. Commit and push the baseline.
+5. Create your **MongoDB Atlas** cluster, as in the Databases and MongoDB session: a database user, access from your IP address and the connection string. You use it in issue 2.
 
 > 💡 **The agent does not run servers and does not call the network.** The sandbox blocks network access, the baseline blocks `curl`, and the agent must not read `backend/.env`. So **you** start the backend and the frontend in two terminals, and **you** check the API with `curl` and the app in the browser. When a command needs the network (`npm install`, `git push`, `gh`, `npx shadcn@latest ...`), Claude asks to run it outside the sandbox: read the command, and only agree to what you expected.
 
@@ -88,14 +86,14 @@ Copy your skills and the reviewer from Recap Project 6 into the new repository (
 - **`open-pr`** and **`create-issue`**: as before. The pull request description lists how **you** checked the story (the `curl` commands and what you clicked), not only what the agent did.
 - **The reviewer:** as before (it reads `git diff main...HEAD`). Add two checks to it: secrets and connection strings in the diff, and whether every error case of the contract is handled.
 
-> 💡 Automated tests for the API (Supertest), for the components and for the whole flow (Playwright) come in Backend Advanced and Recap Project 8. This is why the project keeps the Express app importable without a server (issue 2) and the validation in pure functions (issue 5).
+> 💡 Automated tests for the API (Supertest), for the components and for the whole flow (Playwright) come in Backend Advanced and Recap Project 8. This is why the project keeps the Express app importable without a server (issue 2) and the validation in a pure function (issue 2 and 5).
 
 ## Step 2: Set Up the Project
 
 Work on the setup issues 1, 2 and 3 first, in this order. Use the loop from Step 3, without `build-feature` where there is nothing to test:
 
 - **Issue 1:** the structure and `CLAUDE.md` (root, `backend/`, `frontend/`)
-- **Issue 2:** the backend skeleton: Express, structure, configuration, error handler, MongoDB connection
+- **Issue 2:** the backend: bring in your Backend MongoDB project, connect it to your database, check the layout and the contract
 - **Issue 3:** the frontend skeleton: framework, component library, proxy to the API
 
 Read the acceptance criteria and the hints of each issue carefully.
@@ -105,7 +103,7 @@ Read the acceptance criteria and the hints of each issue carefully.
 When the setup issues are done, work on the eight core stories 4 to 11 in the order of their numbers. The bonus story 12 is optional. Every story goes through the same loop:
 
 1. **Clean start:** `git switch main` and `git pull`, check that `git status` is clean, run `/clear`, check the mode and `/usage`. Move the issue to "In Progress".
-2. **Plan:** switch to Plan mode and run `/plan-feature <n>`. Read the plan like a pull request and remove everything that the issue does not ask for. Check that routes, handlers and database access stay in separate files. Approve it and choose to review each edit.
+2. **Plan:** switch to Plan mode and run `/plan-feature <n>`. Read the plan like a pull request and remove everything that the issue does not ask for. Check that routes, validation and the store stay in separate files. Approve it and choose to review each edit.
 3. **Branch and plan file:** Claude creates `feature/<n>-<slug>`, saves and commits the plan as `docs/plans/<n>-<slug>.md`, and stops.
 4. **Implement:** run `/build-feature` with the plan file. Backend first.
 5. **Check the API yourself:** start the backend (`npm run dev` in `backend/`) and check every acceptance criterion of the API with `curl -i`: status code, headers and body. Check the error cases, too.
@@ -126,8 +124,9 @@ This step is optional. When all core stories are done, come up with your own fea
 
 - Node.js 22, ES modules, TypeScript (`strict`), Express 5, mongoose, `tsx` to run it. No build step.
 - Port `3001`, base path `/api`. Only JSON.
-- Configuration in environment variables: `PORT`, `MONGODB_URI`. `.env` is not committed, `.env.example` is.
-- Structure: routes, handlers, models, middleware and validation in separate folders. `app.ts` creates the Express app, `index.ts` connects and starts it.
+- Configuration in environment variables: `PORT`, `MONGODB_URI`. `.env` is not committed, `.env.example` is. The scripts load `.env` with `--env-file-if-exists=.env`.
+- Structure (the layout of Backend MongoDB): `src/app.ts` exports `app` (no `listen`), `src/index.ts` connects and listens, `routes/books.ts`, `validation.ts`, `middleware/errors.ts`, `store/` (the `BooksStore` interface and the MongoDB implementation), `models/Book.ts`, `db.ts`, `scripts/seed.ts` and `scripts/check.ts`.
+- You start from **your own** Backend MongoDB result. If it does not run, ask a coach for the solution of Backend MongoDB. The agent checks it against the criteria of issue 2 and fixes the gaps: you do not rebuild it.
 
 **Frontend** (`frontend/`)
 
@@ -162,21 +161,22 @@ type Book = {
 };
 ```
 
-| Method and path         | Success                    | Errors                                               |
-| ----------------------- | -------------------------- | ---------------------------------------------------- |
-| `GET /api/health`       | 200 `{ "status": "ok" }`   |                                                      |
-| `GET /api/books`        | 200 `Book[]`, newest first | 400 for an unknown `status`                          |
-| `GET /api/books/:id`    | 200 `Book`                 | 404 `{ "error": "Book not found" }`                  |
-| `POST /api/books`       | 201 `Book`                 | 400 `{ "error": "<message>" }`                       |
-| `PUT /api/books/:id`    | 200 `Book`                 | 400 `{ "error": "<message>" }`, 404 `Book not found` |
-| `DELETE /api/books/:id` | 204, no body               | 404 `{ "error": "Book not found" }`                  |
-| any other route         |                            | 404 `{ "error": "Not found" }`                       |
+| Method and path         | Success                   | Errors                                               |
+| ----------------------- | ------------------------- | ---------------------------------------------------- |
+| `GET /api/health`       | 200 `{ "status": "ok" }`  |                                                      |
+| `GET /api/books`        | 200 `Book[]`              | 400 for an unknown `status` or a repeated `q`        |
+| `GET /api/books/count`  | 200 `{ "count": number }` |                                                      |
+| `GET /api/books/:id`    | 200 `Book`                | 404 `{ "error": "Book not found" }`                  |
+| `POST /api/books`       | 201 `Book`                | 400 `{ "error": "<message>" }`                       |
+| `PUT /api/books/:id`    | 200 `Book`                | 400 `{ "error": "<message>" }`, 404 `Book not found` |
+| `DELETE /api/books/:id` | 204, no body              | 404 `{ "error": "Book not found" }`                  |
+| any other route         |                           | 404 `{ "error": "Not found" }`                       |
 
 - `GET /api/books?status=<status>&q=<text>`: both parameters are optional and can be combined. `q` matches the title, ignores case and is trimmed.
 - `POST` and `PUT` take `{ title, author, status?, rating?, notes? }`. Defaults: status `want-to-read`, rating `null`, notes `""`. 400 when the title or the author is missing or empty, the status is not one of the three values, or the rating is not `null` or an integer from 1 to 5. `PUT` replaces all editable fields (a missing field gets its default).
 - All errors look like `{ "error": "<message>" }`. A body that is not valid JSON gives 400. An unexpected error gives 500 `{ "error": "Internal server error" }` without details.
 
-Where this goes beyond the shared Reading List contract of the course: the list is sorted newest first, an unknown `status` filter gives 400, an `id` that is not a valid ObjectId gives 404, and unknown body fields are ignored.
+Where this goes beyond the shared Reading List contract of the course (this is what your Backend MongoDB API does): `GET /api/books/count` exists, an unknown `status` filter and a repeated `q` give 400, an `id` that is not a valid ObjectId gives 404, unknown body fields are ignored, and the order of the list is the order of the database. The frontend does not need `count`.
 
 If you change the API in a later step, change `docs/api-contract.md` in the same pull request.
 
@@ -210,36 +210,36 @@ This is the first setup issue: work on the setup issues 1, 2 and 3 before the us
 - [ ] Write the first version of `backend/CLAUDE.md` and `frontend/CLAUDE.md`.
 - [ ] Keep every file short. The agent reads them in every conversation.
 
-### 2: Setup - Backend Skeleton with Health Endpoint and Database Connection
+### 2: Setup - Backend Foundation from Backend MongoDB
 
-The backend is an Express 5 API with TypeScript and MongoDB. This issue builds the structure that all later stories use, without any book feature yet.
+The backend is the Express 5 API with MongoDB that you built in Backend MongoDB. This issue brings it into your repository and makes sure that it has the structure that all later stories (and Recap Project 8) rely on. No new feature yet.
 
 #### Value Proposition
 
 **As a** developer
 
-**I want to** have a backend skeleton that is connected to MongoDB, with a clear structure, a central error handler and configuration from environment variables
+**I want to** have the backend of Backend MongoDB in `backend/`, connected to my own database and checked against the API contract
 
-**so that** every feature has a place and security and tests can be added later.
+**so that** every story has a working API under it and security and tests can be added later.
 
 #### Acceptance Criteria
 
-- [ ] `backend/` is an Express 5 project with TypeScript (`strict`) and ES modules. It runs with `tsx`, there is no build step.
-- [ ] The scripts `dev` (restart on changes), `start`, `typecheck` and `test:run` exist and run without errors.
-- [ ] The code is split into folders for routes, handlers, models, middleware and validation. The Express app is created and exported in `src/app.ts` without calling `listen` and without a database connection. `src/index.ts` connects to the database and starts the server.
-- [ ] The configuration is read in one file from environment variables: `PORT` (default 3001) and `MONGODB_URI` (required). The server stops at startup with a clear message when `MONGODB_URI` is missing.
-- [ ] `.env.example` is committed and lists every variable with a placeholder. `.env` is not committed (check `git status`). The repository contains no connection string, password or secret.
-- [ ] The server connects to your MongoDB Atlas cluster with mongoose, in the database `reading-list`.
-- [ ] `GET /api/health` answers 200 `{ "status": "ok" }`.
-- [ ] An unknown route answers 404 `{ "error": "Not found" }`. A request body that is not valid JSON answers 400 `{ "error": ... }`. An unexpected error answers 500 `{ "error": "Internal server error" }` and does not leak details. All of this happens in one central error handler.
-- [ ] There is no CORS middleware: the frontend reaches the API through the proxy of its dev server (issue 3).
+- [ ] `backend/` contains your API from Backend MongoDB: Express 5, TypeScript (`strict`), ES modules, run with `tsx`, mongoose. If you do not have a working version, ask a coach for the solution of Backend MongoDB.
+- [ ] The scripts `dev`, `start`, `seed`, `typecheck`, `test`, `test:run` and `check` exist, and `typecheck` and `test:run` run without errors.
+- [ ] The layout is: `src/app.ts` (exports `app`, no `listen`), `src/index.ts` (connects to the database, then listens on port 3001), `src/db.ts`, `src/routes/books.ts`, `src/middleware/errors.ts` (not found handler and central error handler), `src/validation.ts` (`parseBookInput`), `src/types.ts`, `src/models/Book.ts`, `src/store/` (the `BooksStore` interface and the MongoDB implementation: the only code that queries the database), `scripts/seed.ts` and `scripts/check.ts`. A different layout is fine if routes, validation, error handling and database access are separate and the app can be imported without listening.
+- [ ] The configuration comes from environment variables (`PORT`, `MONGODB_URI`). `.env.example` is committed and lists every variable with a placeholder. `.env` is not committed (check `git status`). The repository contains no connection string, password or secret.
+- [ ] The server connects to your MongoDB Atlas cluster, in the database `reading-list`, and stops with a clear message when `MONGODB_URI` is missing or the database is not reachable.
+- [ ] `npm run seed` fills the database with the ten books of `src/seed.json` (it deletes all books first).
+- [ ] `npm run check` (the contract test of Backend MongoDB, or your own) passes against the running server. If you use your own test script, it covers every rule of the contract.
+- [ ] All errors leave the API as `{ "error": ... }`: unknown routes 404, invalid JSON 400, invalid data 400, unexpected errors 500 `{ "error": "Internal server error" }` without details. This happens in one central error handler.
+- [ ] CORS allows only the origins of the frontend dev servers (a list, not `*`), or is not used at all, because the frontend uses the proxy of its dev server (issue 3).
 - [ ] `backend/CLAUDE.md` is complete: stack, commands, structure, conventions, off limits.
 
 #### Tasks
 
+- [ ] Copy your Backend MongoDB project into `backend/` (without `node_modules` and without `.env`). Then let Claude **plan** the comparison with the criteria above in Plan mode, and check the plan before it changes anything.
 - [ ] Create the MongoDB Atlas cluster, a database user and the connection string yourself (see your Databases and MongoDB session). Allow access from your IP address. Put the connection string, with the database name `reading-list`, into `backend/.env` yourself. **Never paste it into a prompt.** The agent cannot read `.env` (your baseline denies it): it only writes `.env.example`.
-- [ ] Plan the structure before you let the agent write code. Check that the plan separates routes, handlers, models and middleware.
-- [ ] Start the server yourself in a terminal and check the endpoints with `curl` (the baseline blocks `curl` for the agent, and the sandbox has no network access).
+- [ ] Start the server yourself in a terminal (`npm run dev`), run `npm run seed` and `npm run check` yourself, and look at the responses with `curl -i` (the baseline blocks `curl` for the agent, and the sandbox has no network access).
 
 <details>
 <summary>Hint ✨</summary>
@@ -249,7 +249,7 @@ Check these cases with `curl -i` yourself:
 ```bash
 curl -i http://localhost:3001/api/health
 curl -i http://localhost:3001/api/nothing
-curl -i -X POST http://localhost:3001/api/health -H "Content-Type: application/json" -d '{bad'
+curl -i -X POST http://localhost:3001/api/books -H "Content-Type: application/json" -d '{bad'
 ```
 
 Express 5 forwards errors of `async` handlers to the error handler on its own. You do not need a wrapper.
@@ -309,19 +309,19 @@ The first full slice: the books come from MongoDB, through the API, into the app
 
 #### Acceptance Criteria
 
-- [ ] **Database:** `npm run seed` in `backend/` deletes all books and inserts the books of `data/books.seed.json` (10 books). It can run more than once and prints how many books it inserted.
+- [ ] **Database:** after `npm run seed` in `backend/`, the database contains the 10 books of `src/seed.json`. The script can run more than once and prints how many books it inserted.
 - [ ] **Model:** the `Book` model has the fields of the API contract. A book can later get an owner without a rewrite of the model.
-- [ ] **API:** `GET /api/books` answers 200 with the list of books, newest first. Every book has exactly the fields `id, title, author, status, rating, notes`: `id` is a string, there is no `_id` and no `__v`.
-- [ ] **Code structure:** the route, the handler and the database access are in separate files. Only one module talks to the database about books.
+- [ ] **API:** `GET /api/books` answers 200 with the list of books. Every book has exactly the fields `id, title, author, status, rating, notes`: `id` is a string, there is no `_id` and no `__v`. (You check this: the API comes from issue 2.)
+- [ ] **Code structure:** the route, the validation and the database access stay in separate files. Only the store talks to the database about books.
 - [ ] **UI:** the books are shown as cards with the title, the author, a status badge ("Want to read", "Reading", "Done"), the rating (stars, or "Not rated") and the notes if there are any.
 - [ ] **UI:** a loading state is shown while the books are loaded.
 - [ ] **UI:** the layout has one column on a phone (360px) and more columns on a large screen.
 
 #### Tasks
 
-- [ ] Plan the model and the structure first, and check that nothing else is in the plan.
-- [ ] Run `npm run seed` yourself. Check the books in Atlas (the data browser) and in the browser with `curl http://localhost:3001/api/books`.
-- [ ] Add the endpoint to `docs/api-contract.md` if the file does not describe it exactly as built.
+- [ ] Plan first: which part of this story already works through issue 2, and what is missing in the frontend? Check that nothing else is in the plan.
+- [ ] Run `npm run seed` yourself. Check the books in Atlas (the data browser) and with `curl http://localhost:3001/api/books`.
+- [ ] If the API differs from `docs/api-contract.md`, decide which one is right and change the other in the same pull request.
 
 ### 5: Add a Book
 
@@ -337,10 +337,10 @@ Create a book through the app. This story adds the first validation: it has to e
 
 #### Acceptance Criteria
 
-- [ ] **API:** `POST /api/books` with `{ title, author, status?, rating?, notes? }` answers 201 with the new book. The defaults are status `want-to-read`, rating `null` and notes `""`. Title and author are trimmed.
+- [ ] **API (check it, fix it if it fails):** `POST /api/books` with `{ title, author, status?, rating?, notes? }` answers 201 with the new book. The defaults are status `want-to-read`, rating `null` and notes `""`. Title and author are trimmed.
 - [ ] **API:** the request answers 400 `{ "error": "<message>" }` when the title or the author is missing or empty, the status is not `want-to-read`, `reading` or `done`, or the rating is not `null` or an integer from 1 to 5 (for example 0, 6, 2.5 or `"3"`). A body without JSON content answers 400, not 500.
 - [ ] **API:** fields that are not editable (for example `id`) in the request body are ignored.
-- [ ] **Code structure:** the validation is a separate function that does not depend on Express or the database, and it has unit tests that cover every rule above.
+- [ ] **Code structure:** the validation is a separate function (`parseBookInput` in `src/validation.ts`) that does not depend on Express or the database, and it has unit tests that cover every rule above. If your backend misses a rule, the agent adds the rule and its test first.
 - [ ] **UI:** the button "Add book" opens a dialog with the fields title, author, status (select), rating (1 to 5 or none) and notes. The buttons are "Save" and "Cancel".
 - [ ] **UI:** the form does not send when the title or the author is empty and shows a message. When the API answers an error, its message is shown in the dialog.
 - [ ] **UI:** after a successful save, the dialog closes, the new book is in the list and a toast like "Book added" appears. No toast appears when the request failed.
@@ -349,7 +349,7 @@ Create a book through the app. This story adds the first validation: it has to e
 
 #### Tasks
 
-- [ ] Plan the validation rules as test cases first: one test per rule.
+- [ ] Check every rule with `curl` against your API from issue 2. Plan fixes as test cases first: one test per missing rule.
 - [ ] Check the 400 cases with `curl` yourself (see the contract). Look at the response, not only at the status code.
 - [ ] Check in Atlas that the book is stored with the right types (`rating` is a number or null).
 
@@ -374,8 +374,8 @@ Change a book.
 
 #### Acceptance Criteria
 
-- [ ] **API:** `GET /api/books/:id` answers 200 with the book, or 404 `{ "error": "Book not found" }`. An `id` that is not a valid ObjectId also answers 404, not 500.
-- [ ] **API:** `PUT /api/books/:id` replaces the editable fields with the same validation as `POST` and answers 200 with the updated book. It answers 400 for invalid data and 404 for an unknown `id`.
+- [ ] **API (check it, fix it if it fails):** `GET /api/books/:id` answers 200 with the book, or 404 `{ "error": "Book not found" }`. An `id` that is not a valid ObjectId also answers 404, not 500.
+- [ ] **API (check it, fix it if it fails):** `PUT /api/books/:id` replaces the editable fields with the same validation as `POST` and answers 200 with the updated book. It answers 400 for invalid data and 404 for an unknown `id`.
 - [ ] **UI:** every card has an "Edit" button. It opens the same dialog as "Add book", filled with the current values of the book from `GET /api/books/:id`.
 - [ ] **UI:** after a successful save, the dialog closes, the card shows the new values and a toast like "Book saved" appears.
 - [ ] **UI:** when the book does not exist any more (for example deleted in another tab), an error message is shown and the list is refreshed.
@@ -401,7 +401,7 @@ Remove a book, after a confirmation.
 
 #### Acceptance Criteria
 
-- [ ] **API:** `DELETE /api/books/:id` answers 204 without a body and removes the book. An unknown or invalid `id` answers 404 `{ "error": "Book not found" }`.
+- [ ] **API (check it, fix it if it fails):** `DELETE /api/books/:id` answers 204 without a body and removes the book. An unknown or invalid `id` answers 404 `{ "error": "Book not found" }`.
 - [ ] **UI:** every card has a "Delete" button. It opens a confirmation dialog with the title of the book and the buttons "Delete" and "Cancel".
 - [ ] **UI:** "Cancel" closes the dialog and keeps the book. "Delete" removes the book from the list and shows a toast like "Book deleted".
 - [ ] **UI:** when the request fails, the book stays in the list and an error message is shown.
@@ -426,7 +426,7 @@ The filter is done by the backend: the frontend sends the status as a query para
 
 #### Acceptance Criteria
 
-- [ ] **API:** `GET /api/books?status=<want-to-read|reading|done>` answers only the books with that status. Without `status`, all books are returned.
+- [ ] **API (check it, fix it if it fails):** `GET /api/books?status=<want-to-read|reading|done>` answers only the books with that status. Without `status`, all books are returned.
 - [ ] **API:** an unknown status (for example `?status=nope`) answers 400 `{ "error": "<message>" }`, not an empty list.
 - [ ] **UI:** a control with "All" and the three statuses (tabs, toggle group or select) filters the list. The active filter is visible.
 - [ ] **UI:** the app asks the API for the filtered list. It does not load all books and filter in the browser.
@@ -451,7 +451,7 @@ Search is also done by the backend. The filter and the search work together.
 
 #### Acceptance Criteria
 
-- [ ] **API:** `GET /api/books?q=<text>` answers the books whose title contains the text. The match ignores case, and the text is trimmed. An empty `q` means no filter. `status` and `q` can be combined.
+- [ ] **API (check it, fix it if it fails):** `GET /api/books?q=<text>` answers the books whose title contains the text. The match ignores case, and the text is trimmed. An empty `q` means no filter. `status` and `q` can be combined.
 - [ ] **API:** special characters in `q` are matched as text: a search for `C++` or `(` does not fail with a 500 error and does not match everything.
 - [ ] **UI:** a search field filters the list while typing. The app does not send a request for every key stroke (wait until the typing pauses for a moment).
 - [ ] **UI:** the search works together with the status filter.
@@ -512,10 +512,10 @@ In Recap Project 8, you add security and tests to this project. This issue makes
 - [ ] The `README.md` explains how to start the project from a fresh clone: install, create `backend/.env` from `backend/.env.example`, seed, start backend and frontend, and which URLs to open. A classmate can follow it without asking you.
 - [ ] `docs/api-contract.md` describes every endpoint with an example request and response and every error, and it matches the code. You checked every example with `curl`.
 - [ ] `backend/.env.example` lists every variable that the code reads. No secret is in the repository: search the code and the history for your connection string and your database password.
-- [ ] The structure is as described in the project README (checklist "Left behind for Recap Project 8"): routes, handlers and models are separate, there is one central error handler, and the app can be imported without a server and a database.
+- [ ] The structure is as described in the project README (checklist "Left behind for Recap Project 8"): routes, validation, models and the store are separate, there is one central error handler, and the app can be imported without a server and a database.
 - [ ] All books of the database belong to nobody yet, but the model and the database access are in one place each, so that an owner can be added later. Write down in `README.md`, in two or three sentences, where you would add an owner.
 - [ ] `CLAUDE.md` (root, `backend/`, `frontend/`) is up to date: the commands work, the structure is correct.
-- [ ] `npm run typecheck` and `npm run test:run` in `backend/`, and `npm run check` and `npm run build` in `frontend/` run without errors.
+- [ ] `npm run typecheck`, `npm run test:run` and `npm run check` in `backend/`, and `npm run check` and `npm run build` in `frontend/` run without errors.
 - [ ] Every user story of this project works end to end, in the browser, after a fresh `npm run seed`.
 
 #### Tasks
@@ -550,17 +550,17 @@ This story is optional. Do it after the core stories.
 
 In Recap Project 8, you add security and tests to **this** project, and deploy it. These points make that possible. Issue 11 checks them.
 
-- [ ] **Layers:** routes, handlers and models are in separate files. Middleware can be added between `express.json()` and the router.
-- [ ] **Importable app:** the Express app is created in a function or a module without `listen` and without a database connection, so that tests can import it.
-- [ ] **Central error handler:** every error leaves the API as `{ "error": "<message>" }` with the right status code. Handlers do not build error responses themselves. The 500 response contains no details.
+- [ ] **Layers:** routes, validation, the store (`BooksStore`) and the model are in separate files. Middleware can be added between `express.json()` and the router.
+- [ ] **Importable app:** `src/app.ts` exports `app` without `listen` and without a database connection (`src/index.ts` connects and listens), so that tests can import it.
+- [ ] **Central error handler:** every error leaves the API as `{ "error": "<message>" }` with the right status code. Routes only answer expected cases (400, 404) and let everything else reach the handler. The 500 response contains no details.
 - [ ] **Configuration:** all configuration comes from environment variables. `.env.example` lists them all, `.env` is not committed, and the repository (also its history) contains no secret.
-- [ ] **Scripts:** `backend/` has `dev`, `start`, `typecheck`, `test:run` and `seed`. `frontend/` has `dev`, `build` and `check`. They are documented in the `README.md`.
+- [ ] **Scripts:** `backend/` has `dev`, `start`, `typecheck`, `test:run`, `check` and `seed`. `frontend/` has `dev`, `build` and `check`. They are documented in the `README.md`.
 - [ ] **API contract:** `docs/api-contract.md` matches the code and has an example for every endpoint and every error.
-- [ ] **Seed script:** `npm run seed` fills an empty database with the books of `data/books.seed.json`.
-- [ ] **Validation:** the validation of book data is in pure functions with unit tests. Security tests can build on them.
+- [ ] **Seed script:** `npm run seed` fills an empty database with the books of `src/seed.json`.
+- [ ] **Validation and a contract test:** the validation of book data is a pure function with unit tests, and `npm run check` tests the whole contract against a server. Supertest tests in Recap Project 8 can build on both.
 - [ ] **One place for the frontend API calls:** a module that all components use, so that a token can be added in one place.
 - [ ] **`CLAUDE.md`:** root, `backend/` and `frontend/` are complete and correct.
-- [ ] **Owner-ready data model:** only one module queries books. Adding a `userId` to the model and to the queries later is a change in a few places, not a rewrite. (You do **not** add a `userId` now.)
+- [ ] **Owner-ready data model:** only the store (`store/mongoBooksStore.ts`) queries books. Adding a `userId` to the model and to the queries later is a change in a few places, not a rewrite. (You do **not** add a `userId` now.)
 
 ## Review Checklist
 
@@ -570,7 +570,7 @@ Use it for every pull request, before you merge:
 - **Scope:** every changed file belongs to the issue. No new dependency that you did not agree to.
 - **Validation:** the backend checks the data itself. The frontend validation is a convenience, not the protection.
 - **Errors:** each error case of the contract has the right status code and the shape `{ "error": ... }`. No `500` for bad input. No stack traces in responses.
-- **Structure:** no database call in a route file, no `fetch` in a component.
+- **Structure:** no database call in a route file (only the store), no `fetch` in a component.
 - **Frontend:** loading, error and empty states exist. A success toast only appears after the API call succeeded. Everything works with the keyboard.
 - **You can explain** the route and the component of this story: which request comes in, where it goes and what is sent back.
 
@@ -579,7 +579,7 @@ Use it for every pull request, before you merge:
 - Look things up in the curriculum: Backend MongoDB (mongoose), Backend API Routes, Databases and MongoDB, the Frontend Alternatives session, the CSS Frameworks Landscape session and the four AI sessions.
 - Read the plan before you approve it. A wrong plan is cheap, wrong code is not.
 - Commit before every task, so `git diff` shows what the agent did.
-- The browser blocks requests from one origin to another unless the server allows it (CORS). This is why the dev server forwards `/api` to the backend: the browser only talks to the frontend origin. A deployment with two origins needs another solution, which you add in Recap Project 8.
+- You cannot reach the API from the browser console of another site, and the browser blocks requests to another origin without CORS. This is why the dev server forwards `/api`: the browser only talks to one origin. A deployment needs another solution (Recap Project 8).
 - Atlas says "connection refused" or times out? Your IP address changed. Check "Network Access" in Atlas.
 
 ## Demo

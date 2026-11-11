@@ -6,7 +6,6 @@ Full-stack reading list: Express API with MongoDB (`backend/`) and a React front
 
 - `backend/`: Express 5, TypeScript, mongoose. Has its own `CLAUDE.md`.
 - `frontend/`: React, TypeScript, Vite, shadcn/ui. Has its own `CLAUDE.md`.
-- `data/books.seed.json`: seed data for `npm run seed`.
 
 ## Rules
 

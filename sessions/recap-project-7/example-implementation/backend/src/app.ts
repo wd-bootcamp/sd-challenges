@@ -1,23 +1,20 @@
+import cors from "cors";
 import express from "express";
 
-import { errorHandler, notFound } from "./middleware/errors.js";
-import { apiRouter } from "./routes/index.js";
+import { errorHandler, notFound } from "./middleware/errors";
+import { booksRouter } from "./routes/books";
 
-/**
- * Builds the Express app without starting it and without a database
- * connection, so that tests (Recap Project 8) can import it.
- *
- * There is no CORS middleware on purpose: in development, the frontend dev
- * server proxies /api to this server, so the browser sees one origin.
- */
-export function createApp() {
-  const app = express();
+export const app = express();
 
-  app.use(express.json());
+// The React app runs on another origin (port 3000), so the browser needs CORS headers.
+app.use(cors({ origin: ["http://localhost:3000", "http://localhost:5173"] }));
+app.use(express.json());
 
-  app.use("/api", apiRouter);
+app.get("/api/health", (_request, response) => {
+  response.json({ status: "ok" });
+});
+app.use("/api/books", booksRouter);
 
-  app.use(notFound);
-  app.use(errorHandler);
-  return app;
-}
+// Always last: the 404 handler, then the error handler.
+app.use(notFound);
+app.use(errorHandler);

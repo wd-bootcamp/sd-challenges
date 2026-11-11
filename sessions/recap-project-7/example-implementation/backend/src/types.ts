@@ -7,10 +7,10 @@ export type Book = {
   title: string;
   author: string;
   status: Status;
-  /** 1 to 5, `null` means "not rated" */
+  /** 1 to 5 stars, `null` means "not rated" */
   rating: number | null;
   notes: string;
 };
 
-/** The editable fields of a book (what POST and PUT accept). */
-export type BookInput = Omit<Book, "id">;
+/** The data you need to create or replace a book. The `id` is created by the server. */
+export type NewBook = Omit<Book, "id">;

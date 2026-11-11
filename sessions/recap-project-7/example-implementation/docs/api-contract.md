@@ -21,15 +21,16 @@ Responses contain exactly these fields: no `_id`, no `__v`, no timestamps.
 
 ## Endpoints
 
-| Method and path         | Success                    | Errors                                               |
-| ----------------------- | -------------------------- | ---------------------------------------------------- |
-| `GET /api/health`       | 200 `{ "status": "ok" }`   |                                                      |
-| `GET /api/books`        | 200 `Book[]`, newest first | 400 for an unknown `status`                          |
-| `GET /api/books/:id`    | 200 `Book`                 | 404 `{ "error": "Book not found" }`                  |
-| `POST /api/books`       | 201 `Book`                 | 400 `{ "error": "<message>" }`                       |
-| `PUT /api/books/:id`    | 200 `Book`                 | 400 `{ "error": "<message>" }`, 404 `Book not found` |
-| `DELETE /api/books/:id` | 204, no body               | 404 `{ "error": "Book not found" }`                  |
-| any other route         |                            | 404 `{ "error": "Not found" }`                       |
+| Method and path         | Success                   | Errors                                               |
+| ----------------------- | ------------------------- | ---------------------------------------------------- |
+| `GET /api/health`       | 200 `{ "status": "ok" }`  |                                                      |
+| `GET /api/books`        | 200 `Book[]`              | 400 for an unknown `status` or a repeated `q`        |
+| `GET /api/books/count`  | 200 `{ "count": number }` |                                                      |
+| `GET /api/books/:id`    | 200 `Book`                | 404 `{ "error": "Book not found" }`                  |
+| `POST /api/books`       | 201 `Book`                | 400 `{ "error": "<message>" }`                       |
+| `PUT /api/books/:id`    | 200 `Book`                | 400 `{ "error": "<message>" }`, 404 `Book not found` |
+| `DELETE /api/books/:id` | 204, no body              | 404 `{ "error": "Book not found" }`                  |
+| any other route         |                           | 404 `{ "error": "Not found" }`                       |
 
 All errors have the shape `{ "error": "<message>" }`. A request body that is not valid JSON gets 400. Unexpected server errors get 500 `{ "error": "Internal server error" }` without details.
 
@@ -89,14 +90,15 @@ curl -X POST http://localhost:3001/api/books \
 ```
 
 ```json
-{ "error": "Title is required" }
+{ "error": "title is required" }
 ```
 
-## Decisions in this contract
+## Beyond the shared Reading List contract
 
-These points go beyond the shared Reading List contract of the course:
+These points are part of the API that students bring from Backend MongoDB. The frontend of Recap Project 7 does not need `count`.
 
-- **Order:** `GET /api/books` returns the newest book first.
-- **Invalid `status` filter:** 400 with a message, not an empty list.
-- **Malformed `id`:** an `id` that is not a valid ObjectId gives 404 `Book not found`, like an `id` that does not exist.
+- **Count:** `GET /api/books/count` answers `{ "count": <number> }`.
+- **Invalid filters:** an unknown `status` and a repeated `q` (`?q=a&q=b`) answer 400 with a message, not an empty list.
+- **Malformed `id`:** an `id` that is not a valid ObjectId answers 404 `Book not found`, like an `id` that does not exist.
 - **Unknown body fields:** ignored.
+- **Order:** the order of the list is the order of the database (insertion order). The contract does not promise more.

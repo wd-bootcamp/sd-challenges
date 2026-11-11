@@ -7,19 +7,19 @@ Express 5 JSON API with MongoDB (mongoose), TypeScript strict, ESM. Runs with `t
 - `npm run dev`: start with restart on changes (I run this, not you)
 - `npm run typecheck`: type check
 - `npm run test:run`: unit tests, once
-- `npm run seed`: replace all books with `../data/books.seed.json`
+- `npm run seed`: replace all books with `src/seed.json` (I run this)
+- `npm run check`: contract test, calls a server (starts its own on port 3101 unless `BASE_URL` is set, needs the database: I run this)
 
 ## Structure
 
-`routes/` maps URLs to `handlers/`. Handlers read the request, call `models/bookStore.ts` and send the response. Only `bookStore.ts` talks to the database. `validation/` holds pure functions. `app.ts` builds the app without listening, `index.ts` connects and listens.
+`src/app.ts` exports `app` (no `listen`), `src/index.ts` connects and listens. `routes/books.ts` maps URLs to code, `validation.ts` has `parseBookInput` (pure function), `middleware/errors.ts` has the not found handler and the central error handler. `store/booksStore.ts` is the interface the routes use, `store/mongoBooksStore.ts` is the only code that queries the database. `models/Book.ts` is the mongoose model, `db.ts` connects.
 
 ## Conventions
 
-- Errors: throw `HttpError(status, message)`. The central handler in `middleware/errors.ts` sends `{ "error": "<message>" }`. Handlers do not build error responses themselves.
+- Routes only call `booksStore` and `parseBookInput`. Errors are answered as `{ "error": "<message>" }`, unexpected ones go to the central handler.
 - Responses follow `../docs/api-contract.md` exactly: `id` as string, no `_id`, no `__v`.
-- Configuration only through `src/config.ts` (environment variables, `.env.example` lists them).
-- No `any`. Imports of local files end with `.js` (ESM).
-- Validation lives in `validation/` and has unit tests.
+- Configuration only from environment variables (`.env.example` lists them), loaded with `--env-file-if-exists=.env`.
+- No `any` in new code. New validation rules get a unit test first.
 
 ## Off limits
 

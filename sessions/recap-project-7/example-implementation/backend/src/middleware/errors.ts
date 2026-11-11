@@ -1,39 +1,32 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
+import mongoose from "mongoose";
 
-/** An error with a status code that the client may see. */
-export class HttpError extends Error {
-  constructor(
-    public status: number,
-    message: string
-  ) {
-    super(message);
-  }
-}
-
+/** Runs when no route matched. */
 export const notFound: RequestHandler = (_request, response) => {
   response.status(404).json({ error: "Not found" });
 };
 
+/** Runs when a route or a middleware threw an error. Express knows it by the four parameters. */
 export const errorHandler: ErrorRequestHandler = (
   err,
   _request,
   response,
   _next
 ) => {
-  if (err instanceof HttpError) {
-    response.status(err.status).json({ error: err.message });
-    return;
-  }
-  // express.json() throws this for a body that is not valid JSON.
-  if (err?.type === "entity.parse.failed") {
+  // express.json() throws a SyntaxError with status 400 for a body that is not valid JSON.
+  if (err instanceof SyntaxError && "status" in err && err.status === 400) {
     response.status(400).json({ error: "Invalid JSON body" });
     return;
   }
-  if (err?.type === "entity.too.large") {
-    response.status(413).json({ error: "Request body too large" });
+  // The schema rejected a value (second line of defense after parseBookInput).
+  if (err instanceof mongoose.Error.ValidationError) {
+    const message = Object.values(err.errors)
+      .map((fieldError) => fieldError.message)
+      .join(", ");
+    response.status(400).json({ error: message });
     return;
   }
-  // Everything else is our bug: log it, do not leak details.
+  // Log the details on the server, send nothing internal to the client.
   console.error(err);
   response.status(500).json({ error: "Internal server error" });
 };
