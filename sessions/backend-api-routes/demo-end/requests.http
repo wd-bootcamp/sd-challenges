@@ -1,0 +1,46 @@
+### Health check
+GET http://localhost:3001/api/health
+
+### All quotes
+GET http://localhost:3001/api/quotes
+
+### Filter by author
+GET http://localhost:3001/api/quotes?author=kent
+
+### One quote
+GET http://localhost:3001/api/quotes/q1
+
+### Unknown quote (404)
+GET http://localhost:3001/api/quotes/nope
+
+### Create a quote (201)
+POST http://localhost:3001/api/quotes
+Content-Type: application/json
+
+{
+  "text": "Talk is cheap. Show me the code.",
+  "author": "Linus Torvalds"
+}
+
+### Create without text (400)
+POST http://localhost:3001/api/quotes
+Content-Type: application/json
+
+{
+  "author": "Nobody"
+}
+
+### Replace a quote
+PUT http://localhost:3001/api/quotes/q1
+Content-Type: application/json
+
+{
+  "text": "Programs must be written for people to read, and only incidentally for machines to execute.",
+  "author": "Harold Abelson"
+}
+
+### Delete a quote (204)
+DELETE http://localhost:3001/api/quotes/q3
+
+### Unknown route (404)
+GET http://localhost:3001/api/nope
