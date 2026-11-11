@@ -6,7 +6,7 @@ This README describes the whole task. Read it completely before you start.
 
 ## The task
 
-You build the Reading List with **two** styling approaches: Bootstrap, Tailwind CSS, styled-components or shadcn/ui. The app is the same in both versions, only the styling changes. At the end you compare your two versions.
+You build the Reading List with **two** styling approaches: Bootstrap, Tailwind CSS, styled-components or shadcn/ui. The app is the same in both versions, only the styling changes.
 
 ### The app
 
@@ -73,23 +73,6 @@ Review the code the agent wrote, not only the look:
 - Can you use the whole app with the keyboard only?
 - Does the dialog trap the focus, close with Escape and return the focus to the button that opened it?
 - Is there an unused dependency or an `any` in the diff?
-
-### Compare and reflect
-
-Create a `COMPARISON.md` on your last branch and fill in one column per approach you built.
-
-| | Approach A | Approach B |
-| --- | --- | --- |
-| Lines in the biggest component | | |
-| Number of components you wrote yourself | | |
-| Size of the build (`npm run build`, JS and CSS) | | |
-| Keyboard check passed? (dialog, focus, Escape) | | |
-| How often did the agent need a correction? | | |
-| What was easy? | | |
-| What annoyed you? | | |
-| Would you use it in your capstone? Why? | | |
-
-Then write three sentences: for which kind of project would you choose each approach, and why?
 
 ### Bonus
 
