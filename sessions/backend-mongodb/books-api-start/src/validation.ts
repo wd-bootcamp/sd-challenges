@@ -1,61 +1,56 @@
-import { STATUSES, type NewBook, type Status } from "./types";
+import type { NewBook } from "./types";
+import { STATUSES, type Status } from "./types";
 
-export type ParseResult =
-  { ok: true; value: NewBook } | { ok: false; error: string };
+export type ParseResult = { value: NewBook } | { error: string };
 
 function isStatus(value: unknown): value is Status {
   return STATUSES.includes(value as Status);
 }
 
-/** Checks the body of POST and PUT and fills in the defaults. */
+/**
+ * Checks the body of POST and PUT and returns the clean data or the first error.
+ * Only title, author, status, rating and notes are read, all other fields are ignored.
+ */
 export function parseBookInput(body: unknown): ParseResult {
   if (typeof body !== "object" || body === null || Array.isArray(body)) {
-    return { ok: false, error: "Body must be a JSON object" };
+    return { error: "Body must be a JSON object" };
   }
-  const input = body as Record<string, unknown>;
+  const { title, author, status, rating, notes } = body as Record<
+    string,
+    unknown
+  >;
 
-  if (typeof input.title !== "string" || input.title.trim() === "") {
-    return { ok: false, error: "title is required" };
+  if (typeof title !== "string" || title.trim() === "") {
+    return { error: "title is required" };
   }
-  if (typeof input.author !== "string" || input.author.trim() === "") {
-    return { ok: false, error: "author is required" };
+  if (typeof author !== "string" || author.trim() === "") {
+    return { error: "author is required" };
   }
-
-  const status = input.status ?? "want-to-read";
-  if (!isStatus(status)) {
-    return {
-      ok: false,
-      error: `status must be one of: ${STATUSES.join(", ")}`,
-    };
+  if (status !== undefined && !isStatus(status)) {
+    return { error: `status must be one of: ${STATUSES.join(", ")}` };
   }
-
-  const rating = input.rating ?? null;
   if (
+    rating !== undefined &&
     rating !== null &&
-    (typeof rating !== "number" ||
-      !Number.isInteger(rating) ||
-      rating < 1 ||
-      rating > 5)
+    !(
+      Number.isInteger(rating) &&
+      (rating as number) >= 1 &&
+      (rating as number) <= 5
+    )
   ) {
-    return {
-      ok: false,
-      error: "rating must be null or an integer from 1 to 5",
-    };
+    return { error: "rating must be null or an integer from 1 to 5" };
   }
-
-  const notes = input.notes ?? "";
-  if (typeof notes !== "string") {
-    return { ok: false, error: "notes must be a string" };
+  if (notes !== undefined && typeof notes !== "string") {
+    return { error: "notes must be a string" };
   }
 
   return {
-    ok: true,
     value: {
-      title: input.title.trim(),
-      author: input.author.trim(),
-      status,
-      rating,
-      notes,
+      title: title.trim(),
+      author: author.trim(),
+      status: status ?? "want-to-read",
+      rating: (rating as number | null | undefined) ?? null,
+      notes: notes ?? "",
     },
   };
 }

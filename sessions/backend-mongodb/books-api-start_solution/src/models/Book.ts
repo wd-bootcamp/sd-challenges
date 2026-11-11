@@ -1,4 +1,5 @@
 import { Schema, model, type HydratedDocument } from "mongoose";
+
 import { STATUSES, type Book, type NewBook } from "../types";
 
 const bookSchema = new Schema<NewBook>({

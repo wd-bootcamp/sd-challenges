@@ -1,7 +1,7 @@
 import { app } from "./app";
 
-const port = Number(process.env.PORT) || 3001;
+const PORT = Number(process.env.PORT ?? 3001);
 
-app.listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`API running on http://localhost:${PORT}`);
 });

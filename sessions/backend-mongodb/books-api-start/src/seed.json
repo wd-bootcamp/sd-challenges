@@ -1,5 +1,6 @@
 [
   {
+    "id": "b1",
     "title": "Dune",
     "author": "Frank Herbert",
     "status": "done",
@@ -7,6 +8,7 @@
     "notes": "Read it twice. The first chapters are slow, the rest is worth it."
   },
   {
+    "id": "b2",
     "title": "The Hobbit",
     "author": "J. R. R. Tolkien",
     "status": "done",
@@ -14,6 +16,7 @@
     "notes": ""
   },
   {
+    "id": "b3",
     "title": "Gone Girl",
     "author": "Gillian Flynn",
     "status": "want-to-read",
@@ -21,6 +24,7 @@
     "notes": "Recommended by a friend."
   },
   {
+    "id": "b4",
     "title": "Neuromancer",
     "author": "William Gibson",
     "status": "reading",
@@ -28,6 +32,7 @@
     "notes": "Dense, but the atmosphere is great."
   },
   {
+    "id": "b5",
     "title": "Sapiens",
     "author": "Yuval Noah Harari",
     "status": "done",
@@ -35,6 +40,7 @@
     "notes": "Good for a long train ride."
   },
   {
+    "id": "b6",
     "title": "The Name of the Wind",
     "author": "Patrick Rothfuss",
     "status": "want-to-read",
@@ -42,6 +48,7 @@
     "notes": ""
   },
   {
+    "id": "b7",
     "title": "Project Hail Mary",
     "author": "Andy Weir",
     "status": "reading",
@@ -49,6 +56,7 @@
     "notes": "Hard to put down."
   },
   {
+    "id": "b8",
     "title": "The Pragmatic Programmer",
     "author": "Andrew Hunt and David Thomas",
     "status": "want-to-read",
@@ -56,6 +64,7 @@
     "notes": "For the capstone."
   },
   {
+    "id": "b9",
     "title": "Educated",
     "author": "Tara Westover",
     "status": "done",
@@ -63,6 +72,7 @@
     "notes": ""
   },
   {
+    "id": "b10",
     "title": "Klara and the Sun",
     "author": "Kazuo Ishiguro",
     "status": "done",

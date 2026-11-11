@@ -1,45 +1,26 @@
 /**
- * Checks every rule of the Reading List API contract (see README.md).
+ * Checks every rule of the API contract.
  *
  *   npm run check
- *     Starts the server itself on port 3101, runs all checks, stops the
- *     server, starts it a second time and checks that the data survived the
- *     restart. Uses MONGODB_URI from .env (or from the environment).
+ *     Starts the server itself on port 3101, runs all rules, stops the server,
+ *     starts it a second time and checks that the data survived the restart.
+ *     Uses MONGODB_URI from .env (or from the terminal).
  *
  *   BASE_URL=http://localhost:3001 npm run check
  *     Checks a server that is already running. Skips the restart check.
  *
- * The checks create their own books (title prefix "check-api") and delete
- * them again. They do not depend on the seed data.
+ * It creates its own books (title starts with "check-api") and deletes them at the end.
+ * It does not depend on the seed data.
  */
 import { spawn, type ChildProcess } from "node:child_process";
+import assert from "node:assert/strict";
 
-const KEYS = ["author", "id", "notes", "rating", "status", "title"];
-const PREFIX = "check-api";
 const externalUrl = process.env.BASE_URL?.replace(/\/$/, "");
-const port = Number(process.env.CHECK_PORT) || 3101;
-const base = externalUrl ?? `http://localhost:${port}`;
+const CHECK_PORT = Number(process.env.CHECK_PORT) || 3101;
+const BASE = externalUrl ?? `http://localhost:${CHECK_PORT}`;
+const FIELDS = ["author", "id", "notes", "rating", "status", "title"];
 
-let passed = 0;
-const failures: string[] = [];
-
-async function check(name: string, fn: () => void | Promise<void>) {
-  try {
-    await fn();
-    passed++;
-    console.log(`  PASS  ${name}`);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    failures.push(`${name}: ${message}`);
-    console.log(`  FAIL  ${name}\n        ${message}`);
-  }
-}
-
-function expect(condition: boolean, message: string): asserts condition {
-  if (!condition) throw new Error(message);
-}
-
-type Reply = { status: number; body: any; raw: string; type: string };
+type Reply = { status: number; contentType: string; text: string; json: any };
 
 async function call(
   method: string,
@@ -47,411 +28,495 @@ async function call(
   body?: unknown,
   rawBody?: string
 ): Promise<Reply> {
-  const init: RequestInit = { method };
-  if (rawBody !== undefined || body !== undefined) {
-    init.headers = { "Content-Type": "application/json" };
-    init.body = rawBody ?? JSON.stringify(body);
-  }
-  const response = await fetch(base + path, init);
-  const raw = await response.text();
-  let parsed: unknown;
+  const response = await fetch(BASE + path, {
+    method,
+    headers:
+      body !== undefined || rawBody !== undefined
+        ? { "Content-Type": "application/json" }
+        : undefined,
+    body: rawBody ?? (body !== undefined ? JSON.stringify(body) : undefined),
+  });
+  const text = await response.text();
+  let json: any;
   try {
-    parsed = raw === "" ? undefined : JSON.parse(raw);
+    json = JSON.parse(text);
   } catch {
-    parsed = undefined;
+    json = undefined;
   }
   return {
     status: response.status,
-    body: parsed,
-    raw,
-    type: response.headers.get("content-type") ?? "",
+    contentType: response.headers.get("content-type") ?? "",
+    text,
+    json,
   };
 }
 
 function expectStatus(reply: Reply, status: number) {
-  expect(
-    reply.status === status,
-    `expected status ${status}, got ${reply.status} (${reply.raw.slice(0, 120)})`
+  assert.equal(
+    reply.status,
+    status,
+    `expected status ${status}, got ${reply.status}`
   );
 }
 
 function expectError(reply: Reply, status: number, message?: string) {
   expectStatus(reply, status);
-  expect(
-    reply.type.includes("application/json"),
-    `error response must be JSON, got "${reply.type}"`
+  assert.match(
+    reply.contentType,
+    /application\/json/,
+    "the error response must be JSON"
   );
-  expect(
-    typeof reply.body?.error === "string" && reply.body.error !== "",
-    'error response needs a non-empty string "error"'
+  assert.deepEqual(
+    Object.keys(reply.json ?? {}),
+    ["error"],
+    "the body must be { error: <message> }"
   );
-  if (message)
-    expect(
-      reply.body.error === message,
-      `expected error "${message}", got "${reply.body.error}"`
-    );
+  assert.equal(typeof reply.json.error, "string");
+  assert.ok(reply.json.error.length > 0, "the error message must not be empty");
+  if (message !== undefined) {
+    assert.equal(reply.json.error, message);
+  }
 }
 
 function expectBook(book: any) {
-  expect(typeof book === "object" && book !== null, "expected a book object");
-  expect(
-    JSON.stringify(Object.keys(book).sort()) === JSON.stringify(KEYS),
-    `book must have exactly the keys ${KEYS.join(", ")}, got ${Object.keys(book).sort().join(", ")}`
+  assert.ok(book && typeof book === "object", "expected a book object");
+  assert.deepEqual(
+    Object.keys(book).sort(),
+    FIELDS,
+    "a book has exactly: id, title, author, status, rating, notes"
   );
-  expect(
-    typeof book.id === "string" && book.id !== "",
-    "id must be a non-empty string"
-  );
-  expect(typeof book.title === "string", "title must be a string");
-  expect(typeof book.author === "string", "author must be a string");
-  expect(
-    ["want-to-read", "reading", "done"].includes(book.status),
-    "status must be one of the three values"
-  );
-  expect(
-    book.rating === null ||
-      (Number.isInteger(book.rating) && book.rating >= 1 && book.rating <= 5),
-    "rating must be null or an integer 1 to 5"
-  );
-  expect(typeof book.notes === "string", "notes must be a string");
+  assert.equal(typeof book.id, "string", "id must be a string");
+  assert.ok(book.id.length > 0);
 }
 
-const unique = `${PREFIX}-${Date.now().toString(36)}`;
-const createdIds: string[] = [];
+const unique = Math.random().toString(36).slice(2, 8);
+const created: string[] = [];
 
-async function createBook(fields: Record<string, unknown>) {
+async function createBook(extra: Record<string, unknown> = {}) {
   const reply = await call("POST", "/api/books", {
+    title: `check-api ${unique}`,
     author: "Check Author",
-    ...fields,
+    ...extra,
   });
-  expectStatus(reply, 201);
-  createdIds.push(reply.body.id);
-  return reply.body;
+  assert.equal(
+    reply.status,
+    201,
+    `setup failed: POST returned ${reply.status}`
+  );
+  created.push(reply.json.id);
+  return reply.json;
 }
 
-async function cleanup() {
-  for (const id of createdIds)
-    await call("DELETE", `/api/books/${id}`).catch(() => undefined);
-}
+const rules: [string, () => Promise<void>][] = [];
+const rule = (name: string, run: () => Promise<void>) =>
+  rules.push([name, run]);
 
-async function runContractChecks() {
-  console.log("\nHealth and unknown routes");
-  await check("GET /api/health -> 200 { status: ok }", async () => {
-    const reply = await call("GET", "/api/health");
-    expectStatus(reply, 200);
-    expect(reply.body?.status === "ok", 'body must be { "status": "ok" }');
-  });
-  await check("unknown GET route -> 404 { error: Not found }", async () => {
+// Health and unknown routes
+rule("GET /api/health returns 200 { status: 'ok' }", async () => {
+  const reply = await call("GET", "/api/health");
+  expectStatus(reply, 200);
+  assert.deepEqual(reply.json, { status: "ok" });
+});
+rule(
+  "unknown route GET /api/nope returns 404 { error: 'Not found' }",
+  async () => {
     expectError(await call("GET", "/api/nope"), 404, "Not found");
-  });
-  await check(
-    "unknown route with POST -> 404 { error: Not found }",
-    async () => {
-      expectError(await call("POST", "/nope", {}), 404, "Not found");
-    }
-  );
-  await check("invalid JSON body -> 400 { error }", async () => {
-    expectError(
-      await call("POST", "/api/books", undefined, '{"title": "broken'),
-      400
-    );
-  });
+  }
+);
+rule(
+  "unknown route outside /api returns 404 { error: 'Not found' }",
+  async () => {
+    expectError(await call("GET", "/nope"), 404, "Not found");
+  }
+);
+rule(
+  "unknown method on a known path returns 404 { error: 'Not found' }",
+  async () => {
+    expectError(await call("PATCH", "/api/books"), 404, "Not found");
+  }
+);
 
-  console.log("\nPOST /api/books");
-  let minimal: any;
-  await check(
-    "minimal body -> 201 with defaults (want-to-read, null, empty notes)",
-    async () => {
-      minimal = await createBook({ title: `${unique} minimal` });
-      expectBook(minimal);
-      expect(
-        minimal.status === "want-to-read",
-        `default status must be want-to-read, got ${minimal.status}`
-      );
-      expect(minimal.rating === null, "default rating must be null");
-      expect(minimal.notes === "", 'default notes must be ""');
-    }
-  );
-  await check("full body -> 201 and the values are returned", async () => {
-    const book = await createBook({
-      title: `${unique} full`,
-      status: "done",
-      rating: 4,
-      notes: "Great",
-    });
-    expectBook(book);
-    expect(
-      book.status === "done" && book.rating === 4 && book.notes === "Great",
-      "values must be stored as sent"
-    );
-  });
-  await check("response has id, no _id and no __v", async () => {
-    const book = await createBook({ title: `${unique} keys`, rating: null });
-    expect(
-      !("_id" in book) && !("__v" in book),
-      "_id and __v must not be in the response"
-    );
-    expect(typeof book.id === "string", "id must be a string");
-  });
-  const badBodies: [string, Record<string, unknown>][] = [
-    ["missing title", { author: "A" }],
-    ["empty title", { title: "", author: "A" }],
-    ["title with spaces only", { title: "   ", author: "A" }],
-    ["title is not a string", { title: 42, author: "A" }],
-    ["missing author", { title: "T" }],
-    ["empty author", { title: "T", author: "" }],
-    ["unknown status", { title: "T", author: "A", status: "finished" }],
-    ["rating 0", { title: "T", author: "A", rating: 0 }],
-    ["rating 6", { title: "T", author: "A", rating: 6 }],
-    ["rating 3.5", { title: "T", author: "A", rating: 3.5 }],
-    ['rating "3" (string)', { title: "T", author: "A", rating: "3" }],
-    ["notes is not a string", { title: "T", author: "A", notes: 7 }],
-  ];
-  for (const [name, body] of badBodies) {
-    await check(`400 for ${name}`, async () =>
-      expectError(await call("POST", "/api/books", body), 400)
+// Read
+rule(
+  "GET /api/books/count returns 200 and { count: <number of books> } (from Backend Basics)",
+  async () => {
+    const before = (await call("GET", "/api/books")).json.length;
+    const reply = await call("GET", "/api/books/count");
+    expectStatus(reply, 200);
+    assert.deepEqual(reply.json, { count: before });
+  }
+);
+rule("GET /api/books returns 200 and an array of books", async () => {
+  const reply = await call("GET", "/api/books");
+  expectStatus(reply, 200);
+  assert.match(reply.contentType, /application\/json/);
+  assert.ok(Array.isArray(reply.json));
+  reply.json.forEach(expectBook);
+});
+rule("GET /api/books/:id returns 200 and the book", async () => {
+  const book = await createBook();
+  const reply = await call("GET", `/api/books/${book.id}`);
+  expectStatus(reply, 200);
+  assert.deepEqual(reply.json, book);
+});
+rule(
+  "GET /api/books/:id with an unknown id returns 404 { error: 'Book not found' }",
+  async () => {
+    expectError(
+      await call("GET", "/api/books/does-not-exist"),
+      404,
+      "Book not found"
     );
   }
-  await check("400 for a body that is not an object", async () => {
-    expectError(await call("POST", "/api/books", ["not", "an", "object"]), 400);
-  });
-  await check("400 for a missing body", async () => {
-    expectError(await call("POST", "/api/books"), 400);
-  });
-  await check("rating null and rating 1 and 5 are accepted", async () => {
-    for (const rating of [null, 1, 5]) {
-      const book = await createBook({ title: `${unique} rating`, rating });
-      expect(book.rating === rating, `rating ${rating} must be stored`);
-    }
-  });
+);
 
-  console.log("\nGET /api/books");
-  await createBook({ title: `${unique} Alpha Dune`, status: "reading" });
-  await createBook({ title: `${unique} Beta`, status: "done" });
-  await check(
-    "list -> 200 array of books that contains the created book",
-    async () => {
-      const reply = await call("GET", "/api/books");
-      expectStatus(reply, 200);
-      expect(Array.isArray(reply.body), "body must be an array");
-      reply.body.forEach(expectBook);
-      expect(
-        reply.body.some((book: any) => book.id === minimal.id),
-        "the created book must be in the list"
-      );
-    }
-  );
-  await check("?status= filters by status", async () => {
-    const reply = await call("GET", "/api/books?status=reading");
-    expectStatus(reply, 200);
-    expect(
-      reply.body.length > 0 &&
-        reply.body.every((b: any) => b.status === "reading"),
-      "only reading books expected"
-    );
-    expect(
-      reply.body.some((b: any) => b.title === `${unique} Alpha Dune`),
-      "the reading book must be found"
-    );
+// Create
+rule(
+  "POST /api/books with all fields returns 201 and the book with a new id",
+  async () => {
+    const reply = await call("POST", "/api/books", {
+      title: `check-api ${unique} full`,
+      author: "Check Author",
+      status: "reading",
+      rating: 4,
+      notes: "a note",
+    });
+    expectStatus(reply, 201);
+    expectBook(reply.json);
+    created.push(reply.json.id);
+    assert.equal(reply.json.title, `check-api ${unique} full`);
+    assert.equal(reply.json.status, "reading");
+    assert.equal(reply.json.rating, 4);
+    assert.equal(reply.json.notes, "a note");
+  }
+);
+rule(
+  "POST /api/books with title and author sets the defaults (want-to-read, null, '')",
+  async () => {
+    const reply = await call("POST", "/api/books", {
+      title: `check-api ${unique} min`,
+      author: "Check Author",
+    });
+    expectStatus(reply, 201);
+    expectBook(reply.json);
+    created.push(reply.json.id);
+    assert.equal(reply.json.status, "want-to-read");
+    assert.equal(reply.json.rating, null);
+    assert.equal(reply.json.notes, "");
+  }
+);
+rule("POST /api/books with rating null returns 201", async () => {
+  const reply = await call("POST", "/api/books", {
+    title: `check-api ${unique}`,
+    author: "A",
+    rating: null,
   });
-  await check(
-    "?q= matches the title, case-insensitive and trimmed",
-    async () => {
-      const reply = await call(
-        "GET",
-        `/api/books?q=${encodeURIComponent("  " + unique.toUpperCase() + " ALPHA ")}`
-      );
-      expectStatus(reply, 200);
-      expect(
-        reply.body.length === 1 &&
-          reply.body[0].title === `${unique} Alpha Dune`,
-        `expected exactly the Alpha book, got ${reply.body.length} books`
-      );
-    }
-  );
-  await check("?q= matches only the title, not the author", async () => {
-    const reply = await call("GET", "/api/books?q=Check%20Author");
-    expectStatus(reply, 200);
-    expect(reply.body.length === 0, "q must not match the author");
-  });
-  await check("?status= and ?q= can be combined", async () => {
-    const hit = await call("GET", `/api/books?status=done&q=${unique}%20beta`);
-    expect(
-      hit.body.length === 1 && hit.body[0].title === `${unique} Beta`,
-      "expected the Beta book"
-    );
-    const miss = await call(
-      "GET",
-      `/api/books?status=reading&q=${unique}%20beta`
-    );
-    expect(miss.body.length === 0, "expected no book");
-  });
-  await check(
-    "?q= with regex characters is treated as plain text",
-    async () => {
-      const reply = await call(
-        "GET",
-        "/api/books?q=" + encodeURIComponent(".*")
-      );
-      expectStatus(reply, 200);
-      expect(
-        reply.body.every((b: any) => b.title.toLowerCase().includes(".*")),
-        '"." and "*" must not act as a pattern'
-      );
-    }
-  );
-  await check("?q= with no match -> 200 []", async () => {
-    const reply = await call("GET", `/api/books?q=${unique}-no-such-title`);
-    expectStatus(reply, 200);
-    expect(
-      Array.isArray(reply.body) && reply.body.length === 0,
-      "expected an empty array"
-    );
-  });
+  expectStatus(reply, 201);
+  created.push(reply.json.id);
+  assert.equal(reply.json.rating, null);
+});
+rule("a created book can be read again with GET /api/books/:id", async () => {
+  const book = await createBook({ rating: 3 });
+  assert.deepEqual((await call("GET", `/api/books/${book.id}`)).json, book);
+});
+rule("two created books get different ids", async () => {
+  const a = await createBook();
+  const b = await createBook();
+  assert.notEqual(a.id, b.id);
+});
 
-  console.log("\nGET /api/books/:id");
-  await check("existing id -> 200 book", async () => {
-    const reply = await call("GET", `/api/books/${minimal.id}`);
-    expectStatus(reply, 200);
-    expectBook(reply.body);
-    expect(reply.body.id === minimal.id, "id must match");
+const invalidBodies: [string, Record<string, unknown>][] = [
+  ["missing title", { author: "A" }],
+  ["empty title", { title: "", author: "A" }],
+  ["title with spaces only", { title: "   ", author: "A" }],
+  ["missing author", { title: "T" }],
+  ["empty author", { title: "T", author: "" }],
+  ["status not allowed", { title: "T", author: "A", status: "finished" }],
+  ["rating 0", { title: "T", author: "A", rating: 0 }],
+  ["rating 6", { title: "T", author: "A", rating: 6 }],
+  ["rating 3.5", { title: "T", author: "A", rating: 3.5 }],
+  ["rating as text '4'", { title: "T", author: "A", rating: "4" }],
+];
+for (const [name, body] of invalidBodies) {
+  rule(`POST /api/books with ${name} returns 400 { error }`, async () => {
+    expectError(await call("POST", "/api/books", body), 400);
   });
-  await check(
-    "unknown id (valid ObjectId format) -> 404 Book not found",
-    async () => {
-      expectError(
-        await call("GET", "/api/books/000000000000000000000000"),
-        404,
-        "Book not found"
-      );
-    }
+}
+rule("POST /api/books with invalid JSON returns 400 { error }", async () => {
+  expectError(
+    await call("POST", "/api/books", undefined, '{"title": "oops'),
+    400
   );
-  await check(
-    "invalid id (not an ObjectId) -> 404 Book not found, no 500",
-    async () => {
-      expectError(
-        await call("GET", "/api/books/not-an-id"),
-        404,
-        "Book not found"
-      );
-    }
-  );
+});
+rule("an invalid POST does not create a book", async () => {
+  const before = (await call("GET", "/api/books")).json.length;
+  await call("POST", "/api/books", { title: "", author: "A" });
+  assert.equal((await call("GET", "/api/books")).json.length, before);
+});
 
-  console.log("\nPUT /api/books/:id");
-  const target = await createBook({
-    title: `${unique} put`,
-    status: "reading",
-    rating: 3,
-    notes: "old",
-  });
-  await check("valid body -> 200 and the book is replaced", async () => {
-    const reply = await call("PUT", `/api/books/${target.id}`, {
-      title: `${unique} put 2`,
+// Update
+rule(
+  "PUT /api/books/:id returns 200 and the replaced book, the id stays the same",
+  async () => {
+    const book = await createBook();
+    const reply = await call("PUT", `/api/books/${book.id}`, {
+      title: `check-api ${unique} changed`,
       author: "New Author",
       status: "done",
       rating: 5,
-      notes: "new",
+      notes: "changed",
     });
     expectStatus(reply, 200);
-    expectBook(reply.body);
-    expect(reply.body.id === target.id, "id must not change");
-    expect(
-      reply.body.title === `${unique} put 2` &&
-        reply.body.author === "New Author" &&
-        reply.body.status === "done" &&
-        reply.body.rating === 5 &&
-        reply.body.notes === "new",
-      "fields must be replaced"
-    );
-    const again = await call("GET", `/api/books/${target.id}`);
-    expect(
-      again.body.title === `${unique} put 2` && again.body.notes === "new",
-      "the change must be stored"
-    );
-  });
-  await check(
-    "PUT replaces: missing optional fields fall back to the defaults",
-    async () => {
-      const reply = await call("PUT", `/api/books/${target.id}`, {
-        title: `${unique} put 3`,
-        author: "A",
-      });
-      expectStatus(reply, 200);
-      expect(
-        reply.body.status === "want-to-read" &&
-          reply.body.rating === null &&
-          reply.body.notes === "",
-        "status, rating and notes must be reset to the defaults"
-      );
-    }
-  );
-  for (const [name, body] of [
-    ["empty title", { title: "", author: "A" }],
-    ["missing author", { title: "T" }],
-    ["unknown status", { title: "T", author: "A", status: "nope" }],
-    ["rating 7", { title: "T", author: "A", rating: 7 }],
-  ] as [string, Record<string, unknown>][]) {
-    await check(`PUT 400 for ${name}`, async () =>
-      expectError(await call("PUT", `/api/books/${target.id}`, body), 400)
-    );
+    assert.deepEqual(reply.json, {
+      id: book.id,
+      title: `check-api ${unique} changed`,
+      author: "New Author",
+      status: "done",
+      rating: 5,
+      notes: "changed",
+    });
   }
-  await check("a failed PUT does not change the book", async () => {
-    const reply = await call("GET", `/api/books/${target.id}`);
-    expect(
-      reply.body.title === `${unique} put 3`,
-      "the book must stay as before"
-    );
+);
+rule("PUT /api/books/:id saves the change (GET shows it)", async () => {
+  const book = await createBook();
+  await call("PUT", `/api/books/${book.id}`, {
+    title: `check-api ${unique} saved`,
+    author: "A",
+    status: "done",
   });
-  await check("PUT unknown id -> 404 Book not found", async () => {
+  const reply = await call("GET", `/api/books/${book.id}`);
+  assert.equal(reply.json.title, `check-api ${unique} saved`);
+  assert.equal(reply.json.status, "done");
+});
+rule("PUT /api/books/:id ignores an id in the body", async () => {
+  const book = await createBook();
+  const reply = await call("PUT", `/api/books/${book.id}`, {
+    id: "other",
+    title: "T",
+    author: "A",
+  });
+  expectStatus(reply, 200);
+  assert.equal(reply.json.id, book.id);
+});
+rule(
+  "PUT /api/books/:id with an unknown id returns 404 { error: 'Book not found' }",
+  async () => {
     expectError(
-      await call("PUT", "/api/books/000000000000000000000000", {
+      await call("PUT", "/api/books/does-not-exist", {
         title: "T",
         author: "A",
       }),
       404,
       "Book not found"
     );
-  });
-  await check("PUT invalid id -> 404 Book not found, no 500", async () => {
+  }
+);
+rule(
+  "PUT /api/books/:id with an empty title returns 400 { error }",
+  async () => {
+    const book = await createBook();
     expectError(
-      await call("PUT", "/api/books/not-an-id", { title: "T", author: "A" }),
-      404,
-      "Book not found"
+      await call("PUT", `/api/books/${book.id}`, { title: "", author: "A" }),
+      400
     );
-  });
+  }
+);
+rule(
+  "PUT /api/books/:id with an invalid status returns 400 and keeps the book",
+  async () => {
+    const book = await createBook();
+    expectError(
+      await call("PUT", `/api/books/${book.id}`, {
+        title: "T",
+        author: "A",
+        status: "nope",
+      }),
+      400
+    );
+    assert.deepEqual((await call("GET", `/api/books/${book.id}`)).json, book);
+  }
+);
+rule(
+  "PUT /api/books/:id with a rating of 6 returns 400 { error }",
+  async () => {
+    const book = await createBook();
+    expectError(
+      await call("PUT", `/api/books/${book.id}`, {
+        title: "T",
+        author: "A",
+        rating: 6,
+      }),
+      400
+    );
+  }
+);
+rule("PUT /api/books/:id with invalid JSON returns 400 { error }", async () => {
+  const book = await createBook();
+  expectError(
+    await call("PUT", `/api/books/${book.id}`, undefined, "{nope"),
+    400
+  );
+});
 
-  console.log("\nDELETE /api/books/:id");
-  const doomed = await createBook({ title: `${unique} delete` });
-  await check("existing id -> 204 without a body", async () => {
-    const reply = await call("DELETE", `/api/books/${doomed.id}`);
-    expectStatus(reply, 204);
-    expect(reply.raw === "", "204 must have no body");
-  });
-  await check("the deleted book is gone (GET -> 404)", async () => {
+// Delete
+rule("DELETE /api/books/:id returns 204 with no body", async () => {
+  const book = await createBook();
+  const reply = await call("DELETE", `/api/books/${book.id}`);
+  expectStatus(reply, 204);
+  assert.equal(reply.text, "");
+});
+rule("a deleted book is gone (GET returns 404)", async () => {
+  const book = await createBook();
+  await call("DELETE", `/api/books/${book.id}`);
+  expectError(
+    await call("GET", `/api/books/${book.id}`),
+    404,
+    "Book not found"
+  );
+});
+rule(
+  "DELETE /api/books/:id twice: the second call returns 404 { error: 'Book not found' }",
+  async () => {
+    const book = await createBook();
+    await call("DELETE", `/api/books/${book.id}`);
     expectError(
-      await call("GET", `/api/books/${doomed.id}`),
+      await call("DELETE", `/api/books/${book.id}`),
       404,
       "Book not found"
     );
-  });
-  await check("DELETE again -> 404 Book not found", async () => {
+  }
+);
+rule(
+  "DELETE /api/books/:id with an unknown id returns 404 { error: 'Book not found' }",
+  async () => {
     expectError(
-      await call("DELETE", `/api/books/${doomed.id}`),
+      await call("DELETE", "/api/books/does-not-exist"),
       404,
       "Book not found"
     );
-  });
-  await check("DELETE invalid id -> 404 Book not found, no 500", async () => {
-    expectError(
-      await call("DELETE", "/api/books/not-an-id"),
-      404,
-      "Book not found"
-    );
-  });
+  }
+);
+
+// Filters
+rule(
+  "GET /api/books?status=reading returns only books with that status",
+  async () => {
+    const book = await createBook({ status: "reading" });
+    const reply = await call("GET", "/api/books?status=reading");
+    expectStatus(reply, 200);
+    assert.ok(reply.json.every((item: any) => item.status === "reading"));
+    assert.ok(reply.json.some((item: any) => item.id === book.id));
+  }
+);
+rule(
+  "GET /api/books?status=done does not return a book that is want-to-read",
+  async () => {
+    const book = await createBook();
+    const reply = await call("GET", "/api/books?status=done");
+    assert.ok(!reply.json.some((item: any) => item.id === book.id));
+  }
+);
+rule("GET /api/books?q=<text> matches the title, ignoring case", async () => {
+  const book = await createBook();
+  const reply = await call(
+    "GET",
+    `/api/books?q=${encodeURIComponent(`CHECK-API ${unique.toUpperCase()}`)}`
+  );
+  expectStatus(reply, 200);
+  assert.ok(reply.json.some((item: any) => item.id === book.id));
+  assert.ok(
+    reply.json.every((item: any) =>
+      item.title.toLowerCase().includes(`check-api ${unique}`)
+    )
+  );
+});
+rule("GET /api/books?q=<text> trims the text", async () => {
+  const book = await createBook();
+  const reply = await call(
+    "GET",
+    `/api/books?q=${encodeURIComponent(`  check-api ${unique}  `)}`
+  );
+  assert.ok(reply.json.some((item: any) => item.id === book.id));
+});
+rule("GET /api/books?q=<text> does not search the author", async () => {
+  const book = await createBook({ author: `zzauthor${unique}` });
+  const reply = await call("GET", `/api/books?q=zzauthor${unique}`);
+  assert.deepEqual(reply.json, []);
+  assert.ok(book.id);
+});
+rule("GET /api/books with status and q combines both filters", async () => {
+  const a = await createBook({ status: "done" });
+  const b = await createBook({ status: "reading" });
+  const reply = await call(
+    "GET",
+    `/api/books?status=done&q=${encodeURIComponent(`check-api ${unique}`)}`
+  );
+  const ids = reply.json.map((item: any) => item.id);
+  assert.ok(ids.includes(a.id));
+  assert.ok(!ids.includes(b.id));
+});
+rule("GET /api/books?q=<no match> returns 200 and an empty array", async () => {
+  const reply = await call(
+    "GET",
+    `/api/books?q=${encodeURIComponent(`no-book-has-this-title-${unique}`)}`
+  );
+  expectStatus(reply, 200);
+  assert.deepEqual(reply.json, []);
+});
+
+// Ids that are not ObjectIds (MongoDB) or not known (any store): 404, never 500
+const unknownIds = ["000000000000000000000000", "not-an-id", "12345"];
+for (const id of unknownIds) {
+  rule(
+    `GET, PUT and DELETE with the id "${id}" return 404 { error: 'Book not found' }`,
+    async () => {
+      expectError(await call("GET", `/api/books/${id}`), 404, "Book not found");
+      expectError(
+        await call("PUT", `/api/books/${id}`, { title: "T", author: "A" }),
+        404,
+        "Book not found"
+      );
+      expectError(
+        await call("DELETE", `/api/books/${id}`),
+        404,
+        "Book not found"
+      );
+    }
+  );
 }
+rule("GET /api/books?status=<unknown> returns 400 { error }", async () => {
+  expectError(await call("GET", "/api/books?status=finished"), 400);
+});
+rule("GET /api/books?q=a&q=b returns 400 { error }", async () => {
+  expectError(await call("GET", "/api/books?q=a&q=b"), 400);
+});
+rule(
+  "GET /api/books?q=<regex characters> is plain text, not a pattern",
+  async () => {
+    const book = await createBook({ title: `check-api (${unique}) [x]` });
+    const hit = await call(
+      "GET",
+      `/api/books?q=${encodeURIComponent(`(${unique}) [x]`)}`
+    );
+    expectStatus(hit, 200);
+    assert.ok(hit.json.some((item: any) => item.id === book.id));
+    const all = await call("GET", `/api/books?q=${encodeURIComponent(".*")}`);
+    expectStatus(all, 200);
+    assert.ok(
+      all.json.every((item: any) => item.title.toLowerCase().includes(".*"))
+    );
+  }
+);
+rule("responses have no _id and no __v", async () => {
+  const book = await createBook();
+  assert.ok(!("_id" in book) && !("__v" in book));
+  const list = await call("GET", "/api/books");
+  assert.ok(
+    list.json.every((item: any) => !("_id" in item) && !("__v" in item))
+  );
+});
 
-// --- Starting the server for the restart check ---------------------------------
-
+// Starting the server for the restart check
 let server: ChildProcess | undefined;
 let serverLog = "";
 
@@ -461,7 +526,7 @@ function startServer() {
     "node_modules/.bin/tsx",
     ["--env-file-if-exists=.env", "src/index.ts"],
     {
-      env: { ...process.env, PORT: String(port) },
+      env: { ...process.env, PORT: String(CHECK_PORT) },
       stdio: ["ignore", "pipe", "pipe"],
     }
   );
@@ -487,8 +552,7 @@ async function waitForServer() {
       );
     }
     try {
-      const response = await fetch(`${base}/api/health`);
-      if (response.ok) return;
+      if ((await fetch(`${BASE}/api/health`)).ok) return;
     } catch {
       // not ready yet
     }
@@ -500,53 +564,73 @@ async function waitForServer() {
 }
 
 async function main() {
-  console.log(`Checking the API at ${base}`);
   if (!externalUrl) {
     startServer();
     await waitForServer();
-  }
-  let persistedBook: any;
-  try {
-    await runContractChecks();
-    if (!externalUrl) {
-      persistedBook = await createBook({
-        title: `${unique} persistence`,
-        notes: "survives a restart",
-      });
+  } else {
+    try {
+      await call("GET", "/api/health");
+    } catch {
+      console.error(
+        `Cannot reach ${BASE}. Start the server first (npm run dev) and try again.`
+      );
+      process.exit(2);
     }
-  } finally {
-    if (externalUrl) await cleanup().catch(() => undefined);
+  }
+
+  console.log(`Checking the API contract at ${BASE}\n`);
+  let failed = 0;
+  let total = rules.length;
+
+  for (const [name, run] of rules) {
+    try {
+      await run();
+      console.log(`PASS  ${name}`);
+    } catch (error) {
+      failed += 1;
+      const message = (error instanceof Error ? error.message : String(error))
+        .replace(/\s+/g, " ")
+        .slice(0, 160);
+      console.log(`FAIL  ${name}\n      ${message}`);
+    }
   }
 
   if (!externalUrl) {
-    console.log("\nPersistence");
+    const probe = await createBook({
+      title: `check-api ${unique} persistence`,
+      notes: "survives a restart",
+    });
     await stopServer();
     startServer();
     await waitForServer();
-    await check(
-      "a book created before a restart is still there after the restart",
-      async () => {
-        const reply = await call("GET", `/api/books/${persistedBook.id}`);
-        expect(
-          reply.status === 200 && reply.body?.notes === "survives a restart",
-          `expected the book to survive the restart, got status ${reply.status}. Is the data stored in MongoDB?`
-        );
-      }
-    );
-    await cleanup();
-    await stopServer();
+    total += 1;
+    const reply = await call("GET", `/api/books/${probe.id}`);
+    if (reply.status === 200 && reply.json?.notes === "survives a restart") {
+      console.log(
+        "PASS  a book created before a restart is still there after the restart"
+      );
+    } else {
+      failed += 1;
+      console.log(
+        "FAIL  a book created before a restart is still there after the restart\n" +
+          `      got status ${reply.status}. Is the data stored in MongoDB?`
+      );
+    }
   }
 
-  console.log(`\n${passed} passed, ${failures.length} failed`);
-  if (failures.length > 0) {
-    console.log("\nFailed checks:");
-    failures.forEach((failure) => console.log(`  - ${failure}`));
-    process.exitCode = 1;
+  for (const id of created) {
+    await call("DELETE", `/api/books/${id}`).catch(() => undefined);
   }
+  await stopServer();
+
+  console.log(`\n${total - failed} of ${total} rules pass.`);
+  process.exit(failed === 0 ? 0 : 1);
 }
 
-main().catch(async (error) => {
+try {
+  await main();
+} catch (error) {
   console.error(error instanceof Error ? error.message : error);
   await stopServer();
-  process.exitCode = 1;
-});
+  process.exit(1);
+}

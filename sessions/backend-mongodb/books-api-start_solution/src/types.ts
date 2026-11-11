@@ -12,10 +12,5 @@ export type Book = {
   notes: string;
 };
 
-/** The data you need to create a book. The `id` is created for you. */
+/** The data you need to create or replace a book. The `id` is created by the server. */
 export type NewBook = Omit<Book, "id">;
-
-export type BookFilter = {
-  status?: string;
-  q?: string;
-};
