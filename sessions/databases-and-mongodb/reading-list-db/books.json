@@ -1,0 +1,72 @@
+[
+  {
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "status": "done",
+    "rating": 5,
+    "notes": "Read it twice. The first chapters are slow, the rest is worth it."
+  },
+  {
+    "title": "The Hobbit",
+    "author": "J. R. R. Tolkien",
+    "status": "done",
+    "rating": 4,
+    "notes": ""
+  },
+  {
+    "title": "Gone Girl",
+    "author": "Gillian Flynn",
+    "status": "want-to-read",
+    "rating": null,
+    "notes": "Recommended by a friend."
+  },
+  {
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "status": "reading",
+    "rating": null,
+    "notes": "Dense, but the atmosphere is great."
+  },
+  {
+    "title": "Sapiens",
+    "author": "Yuval Noah Harari",
+    "status": "done",
+    "rating": 4,
+    "notes": "Good for a long train ride."
+  },
+  {
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+    "status": "want-to-read",
+    "rating": null,
+    "notes": ""
+  },
+  {
+    "title": "Project Hail Mary",
+    "author": "Andy Weir",
+    "status": "reading",
+    "rating": null,
+    "notes": "Hard to put down."
+  },
+  {
+    "title": "The Pragmatic Programmer",
+    "author": "Andrew Hunt and David Thomas",
+    "status": "want-to-read",
+    "rating": null,
+    "notes": "For the capstone."
+  },
+  {
+    "title": "Educated",
+    "author": "Tara Westover",
+    "status": "done",
+    "rating": 5,
+    "notes": ""
+  },
+  {
+    "title": "Klara and the Sun",
+    "author": "Kazuo Ishiguro",
+    "status": "done",
+    "rating": 3,
+    "notes": "Beautiful, a bit sad."
+  }
+]
