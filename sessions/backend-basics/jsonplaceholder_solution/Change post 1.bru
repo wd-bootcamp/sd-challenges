@@ -1,0 +1,20 @@
+meta {
+  name: Change post 1 (PATCH)
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/posts/1
+  body: json
+  auth: none
+}
+
+body:json {
+  { "title": "A new title" }
+}
+
+assert {
+  res.status: eq 200
+  res.body.userId: eq 1
+}

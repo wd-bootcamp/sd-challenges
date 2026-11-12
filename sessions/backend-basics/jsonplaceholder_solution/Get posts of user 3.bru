@@ -1,0 +1,16 @@
+meta {
+  name: Get posts of user 3 (query)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/posts?userId=3
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: eq 10
+}
