@@ -156,7 +156,7 @@ You review code in a framework you do not know. That is harder, and it is the no
 
 ## Bonus
 
-- **Component tests:** write tests for the book card and the filter in your framework (the handout shows a test for each framework). Break the code on purpose and check that a test fails.
+- **Component tests:** write tests for the book card and the filter in your framework (Vue Test Utils for Vue, Svelte Testing Library for Svelte, `TestBed` for Angular). Break the code on purpose and check that a test fails.
 - **Routing:** add a detail page for one book (`/books/:id`) with the official router of your framework (Vue Router, `@angular/router`, or a hash based router for Svelte). Compare the effort with React Router.
 - **A second framework:** build only the book card and the filter again in another framework from the list. Which part was the same, which part was different?
 - **Look at the build:** run `npm run build` and look at the size of the output files. Why is the number not enough to choose a framework?
