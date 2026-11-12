@@ -1,0 +1,16 @@
+meta {
+  name: Get comments of post 1 (nested)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/posts/1/comments
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: eq 5
+}

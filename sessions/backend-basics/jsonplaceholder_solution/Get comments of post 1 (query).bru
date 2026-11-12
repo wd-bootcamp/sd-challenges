@@ -1,0 +1,16 @@
+meta {
+  name: Get comments of post 1 (query)
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/comments?postId=1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: eq 5
+}

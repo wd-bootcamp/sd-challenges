@@ -1,0 +1,20 @@
+meta {
+  name: Replace post 1 (PUT)
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/posts/1
+  body: json
+  auth: none
+}
+
+body:json {
+  { "id": 1, "title": "A new title", "body": "A new body", "userId": 1 }
+}
+
+assert {
+  res.status: eq 200
+  res.body.title: eq A new title
+}
