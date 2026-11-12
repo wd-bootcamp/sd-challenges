@@ -1,21 +1,10 @@
-# Backend API Routes: Demo End
+# Quotes API: Demo End
 
-This is the end result of the Backend API Routes demo.
+The end of the live demo: CRUD routes for quotes (in memory), validation, a 404 handler, an error handler and CORS.
 
-## Development
+```bash
+npm i
+npm run dev
+```
 
-To work locally, please install the dependencies using `npm i` first.
-
-Run `npm run dev` to start a development server and open the displayed URL in a browser.
-
-Use `npm run test` to run the tests.
-
-### Scripts
-
-You can use the following commands:
-
-- `npm run dev` to start a development server
-- `npm run build` to build the project
-- `npm run start` to start a production server
-- `npm run test` to run the tests
-- `npm run lint` to run the linter
+Try the routes with `requests.http` (VS Code with the REST Client extension, or the HTTP client of WebStorm) or with `curl`. `web/index.html` calls the API from another origin (`npx serve web -l 5173`).

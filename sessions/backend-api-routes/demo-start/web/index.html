@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quotes</title>
+  </head>
+  <body>
+    <h1>Quotes</h1>
+    <p id="status">Loading...</p>
+    <ul id="list"></ul>
+
+    <form id="form">
+      <input name="text" placeholder="Text" />
+      <input name="author" placeholder="Author" />
+      <button>Add quote</button>
+    </form>
+
+    <script>
+      const API = "http://localhost:3001/api/quotes";
+      const status = document.querySelector("#status");
+      const list = document.querySelector("#list");
+
+      async function load() {
+        try {
+          const response = await fetch(API);
+          const quotes = await response.json();
+          list.innerHTML = "";
+          for (const quote of quotes) {
+            const li = document.createElement("li");
+            li.textContent = `${quote.text} (${quote.author})`;
+            list.append(li);
+          }
+          status.textContent = `${quotes.length} quotes`;
+        } catch (error) {
+          status.textContent = `Request failed: ${error.message}`;
+        }
+      }
+
+      document
+        .querySelector("#form")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = Object.fromEntries(new FormData(event.target));
+          try {
+            const response = await fetch(API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+              const body = await response.json();
+              status.textContent = `Error ${response.status}: ${body.error}`;
+              return;
+            }
+            event.target.reset();
+            await load();
+          } catch (error) {
+            status.textContent = `Request failed: ${error.message}`;
+          }
+        });
+
+      load();
+    </script>
+  </body>
+</html>

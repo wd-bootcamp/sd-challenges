@@ -1,0 +1,61 @@
+### Health check
+GET http://localhost:3001/api/health
+
+### All books
+GET http://localhost:3001/api/books
+
+### Filter by status and title
+GET http://localhost:3001/api/books?status=done&q=dune
+
+### One book
+GET http://localhost:3001/api/books/b1
+
+### Unknown book (404)
+GET http://localhost:3001/api/books/nope
+
+### Create a book (201)
+POST http://localhost:3001/api/books
+Content-Type: application/json
+
+{
+  "title": "Neuromancer",
+  "author": "William Gibson",
+  "status": "reading",
+  "rating": null
+}
+
+### Create without an author (400)
+POST http://localhost:3001/api/books
+Content-Type: application/json
+
+{
+  "title": "No author"
+}
+
+### Create with a rating of 6 (400)
+POST http://localhost:3001/api/books
+Content-Type: application/json
+
+{
+  "title": "Too good",
+  "author": "Nobody",
+  "rating": 6
+}
+
+### Replace a book (200)
+PUT http://localhost:3001/api/books/b3
+Content-Type: application/json
+
+{
+  "title": "Gone Girl",
+  "author": "Gillian Flynn",
+  "status": "done",
+  "rating": 4,
+  "notes": "Finished it in two days."
+}
+
+### Delete a book (204)
+DELETE http://localhost:3001/api/books/b2
+
+### Unknown route (404)
+GET http://localhost:3001/api/nope
