@@ -35,7 +35,7 @@ You work only in the folder of your language, and you only change the source fil
 
 | Language   | Good reasons to choose it                                                                                      | Be honest: what is hard                                                                                                         |
 | ---------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Python     | The shortest code, the closest to what you read in the demo, and the toolchain is probably installed already.  | The types are **not checked** before the code runs. A wrong call shows up only when it runs, so the tests matter most here.     |
+| Python     | The shortest code, the closest to what you read in the demo.  | The types are **not checked** before the code runs. A wrong call shows up only when it runs, so the tests matter most here.     |
 | Java       | A compiler checks the types, you see how a typed language of big companies looks.                              | The most words per idea. A JDK (not only a JRE) is needed. The test has a small JSON reader, because the JDK has no JSON library. |
 | Go         | A small language with few ideas, fast compile errors, and `go test` is built in.                               | Probably not installed. Errors are values, `nil` and an empty list are not the same, and there is no `filter` function.         |
 | Rust       | The strictest compiler. You see what "memory safety without garbage collector" means in a real error message. | Probably not installed, the most to learn, `filter_books` returns references with a lifetime, and the first `cargo test` downloads crates. |
@@ -54,14 +54,7 @@ Run the check command of your language. You only need the toolchain of **one** l
 | Go         | `go version`                          | Go 1.22 or newer                              |
 | Rust       | `rustc --version` and `cargo --version` | Rust 1.85 or newer (edition 2024). Update with `rustup update` |
 
-If the command is not found, install the toolchain (see `docs/computer-setup.md` of the bootcamp), close the terminal and open it again. If you can not install it, choose a language that works on your machine.
-
-**Without Go or Rust installed, you can use Docker.** Run the command in the **root of this folder** (the tests read `../fixtures`, so the whole folder must be mounted):
-
-```bash
-docker run --rm -v "$PWD":/w -w /w/go golang:1.25 go test
-docker run --rm -v "$PWD":/w -w /w/rust -e CARGO_TARGET_DIR=/tmp/target rust:1 cargo test
-```
+If the command is not found, **install the toolchain with Claude Code**: use the prompt in `docs/computer-setup.md` of the bootcamp, read every command before you approve it, then close the terminal and open it again. If you can not install it, choose a language that works on your machine.
 
 ### The commands
 

@@ -26,18 +26,6 @@ cd typescript   # or python, java, go, rust
 node filter-books.ts
 ```
 
-## Docker fallback for Go and Rust
-
-Without Go or Rust installed, run these inside the language folder:
-
-```bash
-# in go/
-docker run --rm -v "$PWD":/w -w /w golang:1.25 go run filter_books.go
-
-# in rust/
-docker run --rm -v "$PWD":/w -w /w rust:1 sh -c 'rustc filter_books.rs -o /tmp/fb && /tmp/fb'
-```
-
 ## Tested with
 
 Tested on 2026-11-15 on macOS (arm64):
@@ -47,8 +35,8 @@ Tested on 2026-11-15 on macOS (arm64):
 | TypeScript | Node.js 22.23.3 (TypeScript 5.9.3 for the `tsc` check)                | ok     |
 | Python     | Python 3.9.6                                                         | ok     |
 | Java       | OpenJDK 25.0.2                                                       | ok     |
-| Go         | Go 1.25.14 and 1.27.4, in Docker (`golang:1.25`, `golang:1.27`)       | ok     |
-| Rust       | rustc 1.99.1 and cargo 1.99.1, in Docker (`rust:1`)                  | ok     |
+| Go         | Go 1.27.4 (installed with Homebrew)                                   | ok     |
+| Rust       | rustc 1.100.0 and cargo 1.100.0 (Homebrew `rustup`, `rustup default stable`) | ok     |
 
 ## Break it: a type error
 
