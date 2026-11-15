@@ -1,0 +1,23 @@
+meta {
+  name: Create movie with broken JSON
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{baseUrl}}/{{key}}/movies
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  { "title": "Dune", 
+}
+
+assert {
+  res.status: eq 400
+}

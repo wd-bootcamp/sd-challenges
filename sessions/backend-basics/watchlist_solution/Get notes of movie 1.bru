@@ -1,0 +1,16 @@
+meta {
+  name: Get notes of movie 1 (nested path)
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/{{key}}/movies/1/notes
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: eq 1
+}

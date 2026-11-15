@@ -1,0 +1,20 @@
+meta {
+  name: Create movie without a year
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{baseUrl}}/{{key}}/movies
+  body: json
+  auth: none
+}
+
+body:json {
+  { "title": "Dune" }
+}
+
+assert {
+  res.status: eq 400
+  res.body.error: eq Invalid movie
+}

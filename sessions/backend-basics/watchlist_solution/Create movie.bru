@@ -1,0 +1,22 @@
+meta {
+  name: Create movie (POST)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/{{key}}/movies
+  body: json
+  auth: none
+}
+
+body:json {
+  { "title": "Dune", "year": 2021 }
+}
+
+assert {
+  res.status: eq 201
+  res.body.id: eq 6
+  res.body.watched: eq false
+  res.headers.location: contains /movies/6
+}

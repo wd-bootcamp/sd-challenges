@@ -1,11 +1,11 @@
 meta {
-  name: POST to an item (wrong method)
+  name: Delete movie 6 again
   type: http
-  seq: 12
+  seq: 14
 }
 
-post {
-  url: {{baseUrl}}/posts/1
+delete {
+  url: {{baseUrl}}/{{key}}/movies/6
   body: none
   auth: none
 }

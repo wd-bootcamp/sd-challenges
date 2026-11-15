@@ -1,11 +1,11 @@
 meta {
-  name: Get comments of post 1 (nested)
+  name: Get all movies
   type: http
-  seq: 5
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/posts/1/comments
+  url: {{baseUrl}}/{{key}}/movies
   body: none
   auth: none
 }
