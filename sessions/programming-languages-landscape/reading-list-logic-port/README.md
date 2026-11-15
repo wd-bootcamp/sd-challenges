@@ -54,7 +54,7 @@ Run the check command of your language. You only need the toolchain of **one** l
 | Go         | `go version`                          | Go 1.22 or newer                              |
 | Rust       | `rustc --version` and `cargo --version` | Rust 1.85 or newer (edition 2024). Update with `rustup update` |
 
-If the command is not found, **install the toolchain with Claude Code**: use the prompt in `docs/computer-setup.md` of the bootcamp, read every command before you approve it, then close the terminal and open it again. If you can not install it, choose a language that works on your machine.
+If the command is not found, **ask Claude Code to install the toolchain**. Start Claude Code in an empty folder (not in this project) and tell it which language you chose and the minimum version from the table. Read every command before you approve it. The agent should only install and check, not change any project files. Then close the terminal, open a new one and run the check command again. If you can not install it, choose a language that works on your machine.
 
 ### The commands
 
