@@ -1,5 +1,7 @@
+"""The Reading List logic, ported from TypeScript (see ../typescript/books.ts and ../SPEC.md)."""
+
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -12,11 +14,17 @@ class Book:
     notes: str
 
 
-# TODO: the labels of the three statuses (see fixtures/cases.json)
-STATUS_LABELS: dict = {}
+# TODO: the label of every status, see SPEC.md
+STATUS_LABELS: Dict[str, str] = {}
 
 
-def filter_books(books: list, status: str, query: str) -> list:
-    """Return the books that match `status` ("all" or one status) and the title query."""
-    # TODO: implement, run the tests, repeat
-    raise NotImplementedError("filter_books is not implemented yet")
+def filter_books(books: List[Book], status: str, query: str) -> List[Book]:
+    """status is "want-to-read", "reading", "done" or "all"."""
+    # TODO: implement, see SPEC.md
+    raise NotImplementedError("filter_books")
+
+
+def validate_book(title: str, author: str) -> Dict[str, str]:
+    """Returns an error message per invalid field. An empty dict means valid."""
+    # TODO: implement, see SPEC.md
+    raise NotImplementedError("validate_book")

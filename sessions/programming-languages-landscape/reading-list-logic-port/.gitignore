@@ -1,6 +1,23 @@
-node_modules/
-__pycache__/
+# TypeScript
+node_modules
+
+# Python
+__pycache__
 *.pyc
-out/
-target/
-Cargo.lock
+.venv
+
+# Java
+java/out
+*.class
+
+# Go
+go/*.test
+go/*.out
+
+# Rust
+rust/target
+
+# Editors and systems
+.DS_Store
+.idea
+.vscode

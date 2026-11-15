@@ -11,6 +11,3 @@ export type Book = {
   rating: number | null;
   notes: string;
 };
-
-/** The data you need to create a book. The `id` is created for you. */
-export type NewBook = Omit<Book, "id">;

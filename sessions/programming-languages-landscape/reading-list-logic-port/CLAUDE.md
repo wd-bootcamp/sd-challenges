@@ -1,34 +1,48 @@
 # Reading List Logic Port
 
-This project ports the logic of the Reading List (`filterBooks` and `STATUS_LABELS`) from TypeScript to **one** other language, driven by tests.
+Port the logic of the Reading List from TypeScript to <!-- TODO: Python 3 | Java | Go | Rust -->. Read `README.md` and `SPEC.md` before you do anything.
 
-<!-- TODO: Fill in the language you chose and delete the other rows of the commands table. -->
-
-## Language
-
-Target language: **TODO (Python, Java, Go or Rust)**
-
-I do not know this language yet. Explain every language feature you use in a short sentence when you show me the plan or the diff.
+I work **only** in the folder <!-- TODO: python | java | go | rust -->. The folder `typescript` is the reference and read-only. The file `fixtures/cases.json` is shared by all languages and read-only.
 
 ## Commands
 
-Run the commands from the folder of the language.
+<!-- TODO: Keep the commands of your language, delete the others. Run them in the folder of the language. -->
 
-| Language | Test command                                                    |
-| -------- | --------------------------------------------------------------- |
-| Python   | `python3 -m unittest -v`                                        |
-| Java     | `javac -d out src/*.java test/*.java && java -cp out BooksTest` |
-| Go       | `go test ./...`                                                 |
-| Rust     | `cargo test`                                                    |
+- Python, in `python`: `python3 -m unittest`
+- Java, in `java`: `javac -d out src/*.java` and then `java -cp out BooksTest`
+- Go, in `go`: `go test` (and `go vet`, `gofmt -l .`)
+- Rust, in `rust`: `cargo test` (and `cargo fmt`, `cargo clippy` if installed)
+- Reference, in `typescript`: `node --test`
 
 ## Rules
 
-- `fixtures/cases.json` and the test files are the specification. **Never change them**, not even to make a test pass. If you think a test is wrong, tell me.
-- The reference is `typescript-reference/src/books.ts`. The port must behave the same way.
-- Only edit the implementation file of the chosen language (`python/books.py`, `java/src/Books.java`, `go/books.go` or `rust/src/lib.rs`). Ask me before you create other files.
-- Use only the standard library for the logic. Do **not** add dependencies. Ask me first if you think one is needed.
-- Do not hard-code ids, titles or results. The code must work for any list of books.
-- Do not change the input list. Return a new list.
-- Follow the naming and formatting of the language. Use its official formatter if it has one (`gofmt`, `cargo fmt`).
-- Run the tests after every change and show me the result. Never say the task is done without a passing test run.
-- Keep it short and readable. No clever tricks, I need to understand the code.
+- **Do not change** the tests and the fixtures: `fixtures/cases.json`, `python/test_books.py`, `java/src/BooksTest.java`, `java/src/Json.java`, `go/books_test.go`, `rust/tests/cases.rs`, `typescript/*`. If a test fails, change the code. If you think a test or the fixtures are wrong, stop and ask me.
+- Change only the source file of my language: `python/books.py`, `java/src/Books.java` (and `Book.java` only if needed), `go/books.go`, `rust/src/lib.rs`. Keep the names and signatures of the skeleton, the tests call them.
+- **No new dependencies.** Standard library only. No library for lowercasing, trimming, searching or JSON. Do not change `Cargo.toml` or `go.mod`, do not add a `pip install`, a Maven or Gradle file or a build tool.
+- Write the port in my language only. No other language, no script that generates code.
+- **Plan mode first.** Explain the plan in terms of my language (the types, the standard library functions, what is different from TypeScript) and wait until I approve it. Then work in small steps: `STATUS_LABELS`, `filterBooks`, `validateBook`, with a test run after each.
+- Trim the query **first**, then lower-case it, and only then use it (see `SPEC.md`).
+- Keep the code simple and readable. A plain loop is fine. No clever tricks I can not review, and no `unsafe`.
+- When you use a construct of the language that a TypeScript developer does not know, explain it in one sentence in your answer and compare it with TypeScript.
+- Run the tests before you say a task is done, and show me the output. If you could not run them, say so.
+- Do not commit unless I ask you to. I commit after I read the diff.
+
+## Language rules
+
+<!-- TODO: Keep the section of my language, delete the others. -->
+
+### Python 3
+
+- Python 3.9 compatible. Type hints on all functions, `dataclass` for the book, standard library only.
+
+### Java
+
+- JDK 17 or newer, the plain `javac` command, no build tool. Use `strip()` and `toLowerCase(Locale.ROOT)`. No `null` return values: return an empty list or map.
+
+### Go
+
+- Package `readinglist`, `gofmt` formatted, the code passes `go vet`. Return an empty slice, not `nil`, for no result. No `panic` in the final code.
+
+### Rust
+
+- Edition 2024, `cargo fmt` formatted. No `unwrap()` and no `clone()` of whole books in `filter_books` (it returns references), no `unsafe`.
