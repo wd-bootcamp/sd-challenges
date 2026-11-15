@@ -1,0 +1,20 @@
+meta {
+  name: Create the same movie again
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/{{key}}/movies
+  body: json
+  auth: none
+}
+
+body:json {
+  { "title": "Dune", "year": 2021 }
+}
+
+assert {
+  res.status: eq 201
+  res.body.id: eq 7
+}

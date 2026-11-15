@@ -1,0 +1,15 @@
+meta {
+  name: Delete movie 6 again
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{baseUrl}}/{{key}}/movies/6
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

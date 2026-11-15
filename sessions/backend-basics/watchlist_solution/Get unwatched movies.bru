@@ -1,0 +1,16 @@
+meta {
+  name: Get unwatched movies (query)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/{{key}}/movies?watched=false
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: eq 3
+}

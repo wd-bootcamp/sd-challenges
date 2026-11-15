@@ -1,0 +1,15 @@
+meta {
+  name: Get movie 9999 (does not exist)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/{{key}}/movies/9999
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

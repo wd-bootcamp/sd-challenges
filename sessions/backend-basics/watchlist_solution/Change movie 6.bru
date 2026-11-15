@@ -1,0 +1,21 @@
+meta {
+  name: Change movie 6 (PATCH)
+  type: http
+  seq: 12
+}
+
+patch {
+  url: {{baseUrl}}/{{key}}/movies/6
+  body: json
+  auth: none
+}
+
+body:json {
+  { "watched": true }
+}
+
+assert {
+  res.status: eq 200
+  res.body.watched: eq true
+  res.body.title: eq Dune: Part One
+}

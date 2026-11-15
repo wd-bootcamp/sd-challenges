@@ -1,0 +1,23 @@
+meta {
+  name: Create movie as text with Content-Type
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{baseUrl}}/{{key}}/movies
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  { "title": "Dune", "year": 2021 }
+}
+
+assert {
+  res.status: eq 201
+}

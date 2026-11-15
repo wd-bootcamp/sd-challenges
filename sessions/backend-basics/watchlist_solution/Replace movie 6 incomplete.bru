@@ -1,0 +1,19 @@
+meta {
+  name: Replace movie 6 with a missing field (PUT)
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{baseUrl}}/{{key}}/movies/6
+  body: json
+  auth: none
+}
+
+body:json {
+  { "title": "Dune: Part One", "year": 2021 }
+}
+
+assert {
+  res.status: eq 400
+}

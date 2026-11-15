@@ -1,0 +1,20 @@
+meta {
+  name: Replace movie 6 (PUT)
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/{{key}}/movies/6
+  body: json
+  auth: none
+}
+
+body:json {
+  { "title": "Dune: Part One", "year": 2021, "watched": false }
+}
+
+assert {
+  res.status: eq 200
+  res.body.title: eq Dune: Part One
+}
