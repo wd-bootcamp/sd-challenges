@@ -1,0 +1,21 @@
+meta {
+  name: Create without an author
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/books
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "No author"
+  }
+}
+
+assert {
+  res.status: eq 400
+}

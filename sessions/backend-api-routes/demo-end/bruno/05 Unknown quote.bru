@@ -1,0 +1,15 @@
+meta {
+  name: Unknown quote
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/quotes/nope
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Replace a quote
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/quotes/q1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "text": "Programs must be written for people to read, and only incidentally for machines to execute.",
+    "author": "Harold Abelson"
+  }
+}
+
+assert {
+  res.status: eq 200
+}

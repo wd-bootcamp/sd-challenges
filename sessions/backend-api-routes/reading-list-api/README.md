@@ -69,7 +69,7 @@ The browser will block the first request. Read the error in the console, and ask
 2. Read `CLAUDE.md` and `src/store/booksStore.ts`.
 3. Start Claude Code in the project root. Use **plan mode** and ask for a plan for part 1 that builds the API in small slices, for example: the router and the read routes, then `POST` with validation, then `PUT` and `DELETE`, then the error handler and CORS. Read the plan. Correct at least one thing before you approve it.
 4. Build slice by slice. After every slice run `npm run check` and read the diff. The number of passing rules must grow, and no rule that passed may fail again.
-5. Try the routes yourself, not only with the script: use `curl` or `requests.http` (VS Code with the REST Client extension, or the HTTP client of WebStorm). Send one invalid body and one broken JSON.
+5. Try the routes yourself, not only with the script: open the Bruno collection in `bruno/` (**Open Collection**, environment `Local`) and send the requests. It has requests for an invalid body and for broken JSON, send them. The requests of the routes you have not built yet fail.
 6. Part 2: in `client/` run `npm i` and `npm run dev` (the API must run). Plan the change with the agent, build it, and use the app in the browser. Add a book, mark it as done, delete it and reload the page. What stays, what is gone? Restart the server: what happens to your data?
 7. Run `npm run typecheck`, `npm run test:run` and `npm run check` in the project root, and `npm run typecheck` and `npm run test:run` in `client/`. Commit when everything passes.
 
@@ -115,7 +115,7 @@ Review the code the agent wrote, not only the result of the script. The script c
 - The API: `src/store` (finished), `src/app.ts` and `src/index.ts`, `scripts/check.ts`.
 - `client/`: the React app with `useBooks` (localStorage) and tests. It is a separate project with its own `package.json`.
 - `CLAUDE.md`: project rules for the coding agent.
-- `requests.http`: example requests.
+- `bruno/`: a Bruno collection with example requests, including invalid ones (environment `Local`, base URL `http://localhost:3001`).
 
 ## Development
 

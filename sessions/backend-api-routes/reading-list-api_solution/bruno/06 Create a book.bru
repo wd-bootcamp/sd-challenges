@@ -1,0 +1,24 @@
+meta {
+  name: Create a book
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/books
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "status": "reading",
+    "rating": null
+  }
+}
+
+assert {
+  res.status: eq 201
+}

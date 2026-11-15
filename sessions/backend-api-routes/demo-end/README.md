@@ -7,4 +7,4 @@ npm i
 npm run dev
 ```
 
-Try the routes with `requests.http` (VS Code with the REST Client extension, or the HTTP client of WebStorm) or with `curl`. `web/index.html` calls the API from another origin (`npx serve web -l 5173`).
+Try the routes with the Bruno collection in `bruno/`: open the folder in Bruno (**Open Collection**), select the environment `Local` and send the requests, or run them all with the **Runner**. The data is in memory: restart the server to reset it. `web/index.html` calls the API from another origin (`npx serve web -l 5173`).

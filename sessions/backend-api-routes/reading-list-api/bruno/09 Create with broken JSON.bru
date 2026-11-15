@@ -1,0 +1,23 @@
+meta {
+  name: Create with broken JSON
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/books
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  {"title":
+}
+
+assert {
+  res.status: eq 400
+}
