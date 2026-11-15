@@ -1,6 +1,6 @@
 # Reading List API: Start
 
-You build the **REST API of the Reading List** with Claude Code: Express 5, TypeScript, data in memory. It continues the API of Backend Basics. Then you connect the React app to your API with `fetch`.
+You build the **REST API of the Reading List** with Claude Code: Express 5, TypeScript, data in memory. The starter is a small Express app that already answers a few requests. Then you connect the React app to your API with `fetch`.
 
 This README describes the whole task. Read it completely before you start.
 
@@ -8,7 +8,7 @@ This README describes the whole task. Read it completely before you start.
 
 ### Part 1: The API
 
-You continue the API of Backend Basics. It already answers three requests, and a check script tells you which rules of the contract below your server follows.
+The starter already answers a few requests (`GET /api/health`, the list with its `status` filter, `GET /api/books/count` and a `404` for unknown routes), and a check script tells you which rules of the contract below your server follows.
 
 You do **not** write the data layer. It is finished and has tests:
 
@@ -23,16 +23,16 @@ You direct Claude Code to build the rest: move the books routes into a router, a
 
 Base path `/api`, port 3001. All bodies are JSON. A `Book` has exactly the fields `id`, `title`, `author`, `status`, `rating` and `notes`. The `id` is always a string.
 
-| Request                                   | Success                                           | Errors                                   |
-| ----------------------------------------- | ------------------------------------------------- | ---------------------------------------- |
-| `GET /api/health`                         | 200 `{ "status": "ok" }`                          |                                          |
-| `GET /api/books?status=<status>&q=<text>` | 200 `Book[]`                                      |                                          |
-| `GET /api/books/count`                    | 200 `{ "count": <number> }` (from Backend Basics) |                                          |
-| `GET /api/books/:id`                      | 200 `Book`                                        | 404 `{ "error": "Book not found" }`      |
-| `POST /api/books`                         | 201 `Book`                                        | 400 `{ "error": "<message>" }`           |
-| `PUT /api/books/:id`                      | 200 `Book`                                        | 404 `{ "error": "Book not found" }`, 400 |
-| `DELETE /api/books/:id`                   | 204 (no body)                                     | 404 `{ "error": "Book not found" }`      |
-| any other route                           |                                                   | 404 `{ "error": "Not found" }`           |
+| Request                                   | Success                                              | Errors                                   |
+| ----------------------------------------- | ---------------------------------------------------- | ---------------------------------------- |
+| `GET /api/health`                         | 200 `{ "status": "ok" }`                             |                                          |
+| `GET /api/books?status=<status>&q=<text>` | 200 `Book[]`                                         |                                          |
+| `GET /api/books/count`                    | 200 `{ "count": <number> }` (already in the starter) |                                          |
+| `GET /api/books/:id`                      | 200 `Book`                                           | 404 `{ "error": "Book not found" }`      |
+| `POST /api/books`                         | 201 `Book`                                           | 400 `{ "error": "<message>" }`           |
+| `PUT /api/books/:id`                      | 200 `Book`                                           | 404 `{ "error": "Book not found" }`, 400 |
+| `DELETE /api/books/:id`                   | 204 (no body)                                        | 404 `{ "error": "Book not found" }`      |
+| any other route                           |                                                      | 404 `{ "error": "Not found" }`           |
 
 Details:
 
@@ -64,7 +64,7 @@ The browser will block the first request. Read the error in the console, and ask
    npm run check        # in a second terminal
    ```
 
-   Read the result: which rules fail, and why? Some pass already, they come from Backend Basics.
+   Read the result: which rules fail, and why? Some pass already, they come from the starter.
 
 2. Read `CLAUDE.md` and `src/store/booksStore.ts`.
 3. Start Claude Code in the project root. Use **plan mode** and ask for a plan for part 1 that builds the API in small slices, for example: the router and the read routes, then `POST` with validation, then `PUT` and `DELETE`, then the error handler and CORS. Read the plan. Correct at least one thing before you approve it.

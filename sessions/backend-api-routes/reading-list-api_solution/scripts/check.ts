@@ -134,7 +134,7 @@ rule(
 
 // Read
 rule(
-  "GET /api/books/count returns 200 and { count: <number of books> } (from Backend Basics)",
+  "GET /api/books/count returns 200 and { count: <number of books> } (already in the starter)",
   async () => {
     const before = (await call("GET", "/api/books")).json.length;
     const reply = await call("GET", "/api/books/count");
