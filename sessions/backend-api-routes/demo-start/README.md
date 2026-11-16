@@ -1,21 +1,10 @@
-# Backend API Routes: Demo Start
+# Quotes API: Demo Start
 
-This is the starter of the Backend API Routes demo.
+The start of the live demo: an Express app with one route, `GET /api/health`, and a few quotes in memory. The coach builds the CRUD routes step by step.
 
-## Development
+```bash
+npm i
+npm run dev
+```
 
-To work locally, please install the dependencies using `npm i` first.
-
-Run `npm run dev` to start a development server and open the displayed URL in a browser.
-
-Use `npm run test` to run the tests.
-
-### Scripts
-
-You can use the following commands:
-
-- `npm run dev` to start a development server
-- `npm run build` to build the project
-- `npm run start` to start a production server
-- `npm run test` to run the tests
-- `npm run lint` to run the linter
+The server runs on http://localhost:3001. `web/index.html` is a small page that calls the API, it is used in the CORS step (`npx serve web -l 5173`).

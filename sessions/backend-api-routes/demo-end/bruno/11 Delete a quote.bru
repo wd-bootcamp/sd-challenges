@@ -1,0 +1,15 @@
+meta {
+  name: Delete a quote
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/api/quotes/q3
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 204
+}

@@ -1,0 +1,25 @@
+meta {
+  name: Replace a book
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{baseUrl}}/api/books/b3
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Gone Girl",
+    "author": "Gillian Flynn",
+    "status": "done",
+    "rating": 4,
+    "notes": "Finished it in two days."
+  }
+}
+
+assert {
+  res.status: eq 200
+}

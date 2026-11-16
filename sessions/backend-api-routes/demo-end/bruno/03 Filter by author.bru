@@ -1,0 +1,15 @@
+meta {
+  name: Filter by author
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/quotes?author=kent
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}

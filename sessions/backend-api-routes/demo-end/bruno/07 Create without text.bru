@@ -1,0 +1,21 @@
+meta {
+  name: Create without text
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/quotes
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "author": "Nobody"
+  }
+}
+
+assert {
+  res.status: eq 400
+}
