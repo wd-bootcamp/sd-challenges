@@ -1,6 +1,6 @@
 # Reading List API
 
-A REST API for the Reading List (Express 5, TypeScript, in-memory data). The folder `client/` holds a React app that will use the API. Read the section "The API contract" in `README.md` before you build anything: it is the specification.
+A REST API for the Reading List (Express 5, TypeScript, in-memory data). The folder `client/` holds a React app for the bonus task that uses the API. Read the section "The API contract" in `README.md` before you build anything: it is the specification.
 
 ## Commands
 
@@ -28,7 +28,7 @@ The React app in `client/` is a separate project with its own `package.json`: `n
 - Errors look like `{ "error": "<message>" }`. Never send a stack trace or internal details to the client.
 - Validate everything that comes from the client (`request.body`, `request.params`, `request.query`). Check the type, not only whether the value is truthy.
 - Handlers send the response and `return`. Express 5 passes errors of async handlers to the error middleware, so no `try`/`catch` is needed just for that.
-- Order in `app.ts`: `cors`, `express.json()`, the routes, then the 404 handler, then the error handler. A route added after the 404 handler is never reached.
+- Order in `app.ts`: `cors` (only when the React app is connected, a bonus task), `express.json()`, the routes, then the 404 handler, then the error handler. A route added after the 404 handler is never reached.
 - Name the parameters `request` and `response`, not `req` and `res`.
 - No `any`. Type what is not obvious.
 - No secrets in the code. Never create or commit a `.env` file.
@@ -37,7 +37,7 @@ The React app in `client/` is a separate project with its own `package.json`: `n
 
 `scripts/check.ts`, `src/types.ts`, `src/seed.json` and the interface in `src/store/booksStore.ts`.
 
-## Rules for the client (`client/`)
+## Rules for the client (`client/`, bonus)
 
 - Use `fetch` only. No axios, no SWR, no new dependencies.
 - The `fetch` calls live in `client/src/api.ts`, not in components.

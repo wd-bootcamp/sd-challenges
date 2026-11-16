@@ -1,12 +1,12 @@
 # Reading List API: Start
 
-You build the **REST API of the Reading List** with Claude Code: Express 5, TypeScript, data in memory. The starter is a small Express app that already answers a few requests. Then you connect the React app to your API with `fetch`.
+You build the **REST API of the Reading List** with Claude Code: Express 5, TypeScript, data in memory. The starter is a small Express app that already answers a few requests. The React app in `client/` is a bonus.
 
 This README describes the whole task. Read it completely before you start.
 
 ## The task
 
-### Part 1: The API
+### The API
 
 The starter already answers a few requests (`GET /api/health`, the list with its `status` filter, `GET /api/books/count` and a `404` for unknown routes), and a check script tells you which rules of the contract below your server follows.
 
@@ -17,7 +17,7 @@ You do **not** write the data layer. It is finished and has tests:
 - `scripts/check.ts`: the check script (`npm run check`).
 - `src/app.ts` has `GET /api/health`, `GET /api/books` (with `?status=`), `GET /api/books/count` and a 404 handler, all in one file.
 
-You direct Claude Code to build the rest: move the books routes into a router, add `q`, `GET /api/books/:id`, `POST`, `PUT` and `DELETE`, the validation, the error handler and CORS. **Do not change** `check.ts`, `types.ts`, `seed.json` or the interface in `booksStore.ts`.
+You direct Claude Code to build the rest: move the books routes into a router, add `q`, `GET /api/books/:id`, `POST`, `PUT` and `DELETE`, the validation and the error handler. **Do not change** `check.ts`, `types.ts`, `seed.json` or the interface in `booksStore.ts`.
 
 ### The API contract
 
@@ -42,18 +42,6 @@ Details:
 - **400** when: `title` or `author` is missing or empty, `status` is not one of the three values, `rating` is not `null` and not an integer from 1 to 5, or the body is not valid JSON.
 - Every error has the form `{ "error": "<message>" }`.
 
-### Part 2: The React app
-
-The app in `client/` shows the books from `localStorage`. Change it so it uses your API with `fetch`:
-
-- Load the books from `GET /api/books` and show them. Show a loading text and an error message (the `error` of the API, and a clear text when the server is not reachable).
-- A status filter that sends `?status=` to the API.
-- Add a book (title and author) with `POST`, mark a book as done with `PUT`, delete a book with `DELETE`. After a change, show the new state of the server.
-- Put the `fetch` calls in `client/src/api.ts`, not in the components.
-- The UI stays unstyled. Styling is not part of this task.
-
-The browser will block the first request. Read the error in the console, and ask Claude to explain it before it fixes it. It is a CORS problem. The fix belongs on the server: the `cors` package, for the origin of the React app only.
-
 ### Steps
 
 1. Work in a git repository (`git init -b main`, `git add .`, `git commit -m "Initial commit"`). Install and start:
@@ -67,11 +55,11 @@ The browser will block the first request. Read the error in the console, and ask
    Read the result: which rules fail, and why? Some pass already, they come from the starter.
 
 2. Read `CLAUDE.md` and `src/store/booksStore.ts`.
-3. Start Claude Code in the project root. Use **plan mode** and ask for a plan for part 1 that builds the API in small slices, for example: the router and the read routes, then `POST` with validation, then `PUT` and `DELETE`, then the error handler and CORS. Read the plan. Correct at least one thing before you approve it.
+3. Start Claude Code in the project root. Use **plan mode** and ask for a plan that builds the API in small slices, for example: the router and the read routes, then `POST` with validation, then `PUT` and `DELETE`, then the error handler. Read the plan. Correct at least one thing before you approve it.
 4. Build slice by slice. After every slice run `npm run check` and read the diff. The number of passing rules must grow, and no rule that passed may fail again.
 5. Try the routes yourself, not only with the script: open the Bruno collection in `bruno/` (**Open Collection**, environment `Local`) and send the requests. It has requests for an invalid body and for broken JSON, send them. The requests of the routes you have not built yet fail.
-6. Part 2: in `client/` run `npm i` and `npm run dev` (the API must run). Plan the change with the agent, build it, and use the app in the browser. Add a book, mark it as done, delete it and reload the page. What stays, what is gone? Restart the server: what happens to your data?
-7. Run `npm run typecheck`, `npm run test:run` and `npm run check` in the project root, and `npm run typecheck` and `npm run test:run` in `client/`. Commit when everything passes.
+6. Create a book with the Bruno collection, restart the server and list the books again. What happens to your data, and why?
+7. Run `npm run typecheck`, `npm run test:run` and `npm run check` in the project root. Commit when everything passes.
 
 ### Review your result
 
@@ -100,26 +88,39 @@ Review the code the agent wrote, not only the result of the script. The script c
 **No secrets, safe defaults**
 
 - No keys, passwords or tokens in the code, no `.env` file in the commit.
-- Is CORS limited to the origin of the React app, and not open to every origin (`cors()` without options)?
 - Does the server log request bodies or other data that should not be in a log?
 
 ### Bonus
 
+- **Connect the React app:** see below, with the CORS fix on the server.
 - **Unit tests for the validation:** ask the agent for Vitest tests of the validation function. Which cases did it forget? (Tests of the whole API with Supertest come in a later session.)
 - **Sorting and paging:** add `?sort=title` and `?limit=` and `?offset=` to `GET /api/books`. What must the validation do with `?limit=abc`?
 - **PATCH:** add `PATCH /api/books/:id` that changes only the fields in the body. When is `PATCH` better than `PUT`? Which rules of the contract does it need?
-- **Read the other side:** open the network tab in the browser, find the preflight request (`OPTIONS`) for a `POST` and explain why it is sent.
+
+### Bonus: Connect the React app
+
+The app in `client/` shows the books from `localStorage`. Change it so it uses your API with `fetch`:
+
+- Load the books from `GET /api/books` and show them. Show a loading text and an error message (the `error` of the API, and a clear text when the server is not reachable).
+- A status filter that sends `?status=` to the API.
+- Add a book (title and author) with `POST`, mark a book as done with `PUT`, delete a book with `DELETE`. After a change, show the new state of the server.
+- Put the `fetch` calls in `client/src/api.ts`, not in the components.
+- The UI stays unstyled. Styling is not part of this task.
+
+The browser will block the first request. Read the error in the console, and ask Claude to explain it before it fixes it. It is a CORS problem. The fix belongs on the server: the `cors` package, for the origin of the React app only. In `app.ts` it comes first, before `express.json()`. Afterwards open the network tab, find the preflight request (`OPTIONS`) for a `POST` and explain why it is sent.
+
+In `client/` run `npm i` and `npm run dev` (the API must run). Plan the change with the agent, build it, and use the app in the browser: add a book, mark it as done, delete it and reload the page. Run `npm run typecheck` and `npm run test:run` in `client/`. Review the CORS setup: is it limited to the origin of the React app, and not open to every origin (`cors()` without options)?
 
 ## What is in the starter
 
 - The API: `src/store` (finished), `src/app.ts` and `src/index.ts`, `scripts/check.ts`.
-- `client/`: the React app with `useBooks` (localStorage) and tests. It is a separate project with its own `package.json`.
+- `client/`: the React app with `useBooks` (localStorage) and tests, for the bonus. It is a separate project with its own `package.json`.
 - `CLAUDE.md`: project rules for the coding agent.
 - `bruno/`: a Bruno collection with example requests, including invalid ones (environment `Local`, base URL `http://localhost:3001`).
 
 ## Development
 
-Node.js 22.22 or newer is required. Install the dependencies with `npm i` in the project root and in `client/`.
+Node.js 22.22 or newer is required. Install the dependencies with `npm i` in the project root (and in `client/` for the bonus).
 
 In the project root:
 
@@ -127,7 +128,7 @@ In the project root:
 - `npm run check` checks the running server against the contract
 - `npm run typecheck` checks the types, `npm run test:run` runs the unit tests once
 
-In `client/`:
+In `client/` (bonus):
 
 - `npm run dev` starts the app on http://localhost:3000
 - `npm run typecheck`, `npm run test:run` and `npm run build`
