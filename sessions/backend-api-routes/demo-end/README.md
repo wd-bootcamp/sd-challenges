@@ -1,6 +1,6 @@
 # Quotes API: Demo End
 
-The end of the live demo: CRUD routes for quotes (in memory), validation, a 404 handler, an error handler and CORS.
+The end of the live demo: read, create and delete routes for quotes (in memory), validation, a 404 handler and an error handler.
 
 ```bash
 npm i

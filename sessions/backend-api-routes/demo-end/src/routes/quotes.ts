@@ -45,25 +45,6 @@ quotesRouter.post("/", (request, response) => {
   response.status(201).json(quote);
 });
 
-// PUT /api/quotes/:id
-quotesRouter.put("/:id", (request, response) => {
-  const index = quotes.findIndex((item) => item.id === request.params.id);
-
-  if (index === -1) {
-    response.status(404).json({ error: "Quote not found" });
-    return;
-  }
-  const result = parseQuote(request.body);
-
-  if ("error" in result) {
-    response.status(400).json({ error: result.error });
-    return;
-  }
-  const quote: Quote = { id: quotes[index].id, ...result.value };
-  quotes[index] = quote;
-  response.json(quote);
-});
-
 // DELETE /api/quotes/:id
 quotesRouter.delete("/:id", (request, response) => {
   const index = quotes.findIndex((item) => item.id === request.params.id);

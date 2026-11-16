@@ -1,5 +1,5 @@
 meta {
-  name: Delete a quote
+  name: Delete the same quote again
   type: http
   seq: 11
 }
@@ -11,5 +11,5 @@ delete {
 }
 
 assert {
-  res.status: eq 204
+  res.status: eq 404
 }

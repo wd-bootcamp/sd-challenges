@@ -1,12 +1,12 @@
 # Reading List API: Solution
 
-A reference solution of the Reading List API (Express 5, TypeScript, in-memory data) and of the React app that uses it.
+A reference solution of the Reading List API (Express 5, TypeScript, in-memory data) and of the bonus: the React app that uses it, with CORS.
 
 Your files and your code will look different, because an agent does not produce the same output twice. What should be the same:
 
 - **The contract:** `npm run check` passes every rule (the server must run: `npm run dev`).
 - **The structure:** one router for `/api/books`, validation in one function that `POST` and `PUT` share, a 404 handler and an error handler after all routes, and routes that only talk to `booksStore`.
-- **The client:** the `fetch` calls are in `client/src/api.ts`, the components do not know the URLs. A failed request shows a message, and `fetch` errors (no response) and error responses (`response.ok` is `false`) are both handled.
+- **The client (bonus):** the `fetch` calls are in `client/src/api.ts`, the components do not know the URLs. A failed request shows a message, and `fetch` errors (no response) and error responses (`response.ok` is `false`) are both handled.
 
 ## Layout
 
@@ -46,7 +46,7 @@ export interface BooksStore {
 - **404 or 400 for `PUT` with an unknown id and an invalid body:** the contract does not say. The solution validates first and answers 400. Both are defensible.
 - **Validation:** type checks (a number as title, a rating `"4"`, a body that is `null` or a list), trimmed `title` and `author`, defaults, unknown fields (an `id` in the body) are ignored.
 - **Errors:** `{ "error": "<message>" }` everywhere, also for invalid JSON. The error handler logs the error on the server and sends only `Internal server error`.
-- **CORS:** only the origins of the React app, not `cors()` without options.
+- **CORS (bonus):** only the origins of the React app, not `cors()` without options.
 - **Choices beyond the contract:** an unknown `status` in the query is a 400, a `q` that is not a single text is a 400, `notes` must be a string if it is sent.
 
 ## Development
