@@ -1,6 +1,6 @@
 # Databases and MongoDB: Reading List Database
 
-You set up your own MongoDB Atlas cluster, load the Reading List into it and answer questions about the data with queries. There is no app and no code to write in this project. The database you build here is the one the Express server connects to in the next session.
+You set up your own MongoDB Atlas cluster, load the Reading List into it and work with the data by hand in MongoDB Compass. There is no app and no code to write in this project. The database you build here is the one the Express server connects to in the next session.
 
 This README describes the whole task. Read it completely before you start.
 
@@ -12,11 +12,11 @@ The file has **no `id` or `_id` field on purpose**. MongoDB creates a unique `_i
 
 ## Rules
 
-- Work in `mongosh` for the tasks. Use Compass or the Atlas UI where a task says so, and to look at your data.
+- Work in **Compass**. Use the Atlas UI where a task says so.
 - **Keep your secrets out of everything you share.** The password of your database user and your connection string must not appear in a file in a Git repository, in a screenshot, in a chat message, or in a prompt to Claude Code.
-- Run a query, then **read the result** before you go on. Check `matchedCount`, `modifiedCount` and `deletedCount`.
-- Do the tasks **in order**. Later tasks expect the changes of earlier tasks. If you break your data, delete the collection and import the file again (task 2).
-- Write your queries in a text file (for example `queries.txt`, outside any Git repository or in one that has a `.gitignore` entry for it, and **without** the password).
+- Run a filter, then **read the result** before you go on. Look at the number of documents Compass shows (for example `1 – 4 of 4`).
+- Do the tasks **in order**. Later tasks expect the changes of earlier tasks. If you break your data, delete the collection, create it again and import the file again (task 3).
+- Write your filters in a text file (for example `filters.txt`, outside any Git repository or in one that has a `.gitignore` entry for it, and **without** the password).
 
 ## Part 1: Set up
 
@@ -26,81 +26,73 @@ The file has **no `id` or `_id` field on purpose**. MongoDB creates a unique `_i
 2. Create a **free** cluster (M0). Choose a region close to you.
 3. Create a **database user** with read and write access. Write down username and password.
 4. Add a **network access** entry so that your computer can connect.
-5. Connect with `mongosh` and the connection string from the "Connect" dialog.
+5. Click **Connect** and copy the connection string.
 
-You are done when `mongosh` shows its prompt and `show dbs` runs without an error.
+You are done when you have a connection string and replaced the password placeholder in your own copy.
 
-### Task 2: Import the data
+### Task 2: Connect with Compass
 
-Import `books.json` into the database `reading-list`, collection `books`.
+Install Compass, add a new connection with your connection string, and connect.
 
-- **With Compass** (recommended): connect with the same connection string, create the database `reading-list` with the collection `books`, open the collection, and use "Add Data" and "Import JSON or CSV file". Choose `books.json` and the format JSON.
-- **With `mongoimport`**, if you have the [MongoDB Database Tools](https://www.mongodb.com/docs/database-tools/installation/installation/) installed: `mongoimport --uri "<your connection string>" --db reading-list --collection books --jsonArray --file books.json`.
+You are done when the sidebar lists the databases of your cluster.
 
-Check in `mongosh`:
+### Task 3: Import the data
 
-```js
-use reading-list
-db.books.countDocuments()
-```
+Create the database `reading-list` with the collection `books`. Import `books.json` with "Add Data" and "Import JSON or CSV file". Choose the file type JSON.
 
-The result must be `10`. Run `db.books.findOne()` and look at the document. Which field did MongoDB add? What is its type?
+Check:
 
-Import the file **once**. If the count is `20`, run `db.books.drop()` and import again.
+- Compass shows `1 – 10 of 10`.
+- Open one document. Which field did MongoDB add? What is its type?
+
+Import the file **once**. If you see `1 – 20 of 20`, delete the collection, create it again and import once.
 
 ## Part 2: Read
 
-Write the query for each question and note the result.
+Use the filter bar and, where needed, **Options** (Project, Sort, Limit). Write down the filter you used and the result.
 
-3. How many books are in the collection?
-4. Which books have the status `done`? Show only the titles, sorted alphabetically (no `_id`).
-5. How many books have a rating of 4 or higher?
-6. Which books are not rated (`rating` is `null`)? Show only the titles, sorted alphabetically.
-7. Which books have a title that starts with `The `? Show only the titles, sorted alphabetically.
-8. How many books are currently `reading` or `want-to-read`? Use one query with `$in`.
-9. Which are the three best-rated books? Ignore unrated books. Sort by rating (highest first), then by title. Show title and rating (no `_id`).
-10. Which books have the status `done` **and** a rating of 4 or higher? Show title and rating, sorted by title.
-11. Find the book whose author contains "tolkien", ignoring upper and lower case. Show title and author.
+4. How many books are in the collection?
+5. Which books have the status `done`? Show only the titles, sorted alphabetically (no `_id`).
+6. How many books have a rating of 4 or higher?
+7. Which books are not rated (`rating` is `null`)? Show only the titles, sorted alphabetically.
+8. Which books have a title that starts with `The `? Show only the titles, sorted alphabetically.
+9. How many books are currently `reading` or `want-to-read`? Use one filter with `$in`.
+10. Which are the three best-rated books? Ignore unrated books. Sort by rating (highest first), then by title. Show title and rating (no `_id`).
+11. Which books have the status `done` **and** a rating of 4 or higher? Show title and rating, sorted by title.
+12. Find the book whose author contains "tolkien", ignoring upper and lower case. Show title and author.
+13. Filter for `{ rating: "5" }` (with quotes). What do you get? Why is there no error? Then fix the filter.
 
 ## Part 3: Write
 
-12. Add the book _Piranesi_ by Susanna Clarke with `insertOne`. It is `want-to-read`, has no rating (`null`) and empty notes (`""`).
-13. Add two books with one `insertMany`:
+14. Add the book _Piranesi_ by Susanna Clarke with "Insert document". It is `want-to-read`, has no rating (`null`) and empty notes (`""`).
+15. Add two books with **one** insert (an array in the JSON view):
     - _The Left Hand of Darkness_ by Ursula K. Le Guin, status `done`, rating `5`, notes `"Read for book club."`
     - _Circe_ by Madeline Miller, status `reading`, rating `null`, notes `""`
 
     How many books are in the collection now?
 
-14. You finished _Neuromancer_ and give it 4 stars. Update **one** document: status `done`, rating `4`. What do `matchedCount` and `modifiedCount` say? Then show the document (no `_id`). How many books are `done` now?
-15. Add the field `priority` with the value `"normal"` to **all** books that are `want-to-read`, with one query. How many documents were matched? Which titles have the field now (sorted)?
-16. Delete the book _Gone Girl_ with `deleteOne`. How many books are left?
+16. You finished _Neuromancer_ and give it 4 stars. Edit the document: status `done`, rating `4`. Check that the rating is a number and not a string. How many books are `done` now?
+17. Add the field `priority` with the value `"high"` to the book _The Name of the Wind_. Which filter shows all books that have the field `priority`?
+18. Delete the book _Gone Girl_. Run the filter first, so you are sure it shows exactly one book. How many books are left?
 
-## Part 4: Index
+## Part 4: Atlas UI and comparison
 
-17. Create a **unique** index on `title`. What is the name of the index?
-18. Try to insert another book with the title `Dune` (any author). What error do you get? Does the count change?
-19. Delete all books with the status `reading` with one query. Check with `find` first which books will be deleted. How many were deleted, and how many books are left?
-20. Show the final list: title and status of all books, sorted by title (no `_id`).
-
-## Part 5: Compass and the Atlas UI
-
-21. In **Compass**, run the filter `{ status: "done", rating: { $gte: 4 } }` on the collection. Compare the result with your answer to task 10. Which books are new, and why?
-22. In the **Atlas UI** ("Browse Collections"), find _Dune_ with a filter, change its notes to `"Re-read in 2026."` in the UI, and check the change in `mongosh`.
-23. In your own words: when do you use `mongosh`, when Compass, when the Atlas UI?
+19. In the **Atlas UI** ("Browse Collections"), find _Dune_ with a filter and change its notes to `"Re-read in 2026."`. Refresh Compass and check that the change is there.
+20. In your own words: what is the difference between Compass and the Atlas UI? When do you use which?
+21. Show the final list in Compass: title and status of all books, sorted by title (no `_id`).
 
 ## Review your result
 
 Check before you say you are done:
 
 - Is your connection string or password in a file, a screenshot or a message? If it ever was, change the password of the database user in Atlas.
-- Which of your queries could delete or change too much if the filter were empty or wrong? How did you check it first?
-- Which tasks gave the same result in a different order without `sort`?
-- Did you check the counts (`matchedCount`, `deletedCount`) and not just assume the update worked?
+- Which actions in Compass cannot be undone? How did you check before you deleted?
+- Which tasks gave the same result in a different order without a sort?
 - Does your IP access list allow more than you need? Why did you choose it?
 
 ## Bonus
 
-- **Embedded or referenced notes:** a reader wants several dated notes per book. Sketch one book document with an array of notes and a second design with a separate `notes` collection that points to the book. Write down when you would choose which.
 - **`$or`:** find books that are `done` **or** have the word "the" in the notes.
-- **Explain:** use `.explain("executionStats").executionStats.totalDocsExamined` on `db.books.find({ title: "Dune" })`. Compare the number with and without the index on `title`. With ten books, what does that tell you about when an index matters?
-- **Upsert:** read about the `upsert` option of `updateOne`, and add a book with it that does not exist yet.
+- **Schema tab:** open the **Schema** tab of the collection and click "Analyze Schema". Which types does `rating` have? Why are there two?
+- **Export:** export your collection as a JSON file with "Export Collection". Compare it with `books.json`. What is different?
+- **Embedded or referenced notes:** a reader wants several dated notes per book. Sketch one book document with an array of notes and a second design with a separate `notes` collection that points to the book. Write down when you would choose which.
