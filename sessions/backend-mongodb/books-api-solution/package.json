@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "seed": "tsx scripts/seed.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",

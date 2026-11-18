@@ -12,7 +12,7 @@ This README describes the whole task. Read it completely before you start.
 | 2         | A bad id is a 404, not a 500               | 51 of 52        | optional |
 | 3         | Search text is text, not a pattern         | 52 of 52        | optional |
 | 4         | The schema checks the data                 | 52 of 52        | optional |
-| 5         | A clear start, a seed script               | 52 of 52        | optional |
+| 5         | A clear start                              | 52 of 52        | optional |
 
 After every challenge, run `npm run check`: it tells you which rules of the API contract still fail. Challenges 2 to 5 are optional: do them in order if you have time. At the end of all five, all 52 rules pass and no secret is in the repository.
 
@@ -127,7 +127,7 @@ You are done when `npm run check` shows 52 of 52. Then answer: what could an att
 
 ## Challenge 4 (optional): The schema checks the data
 
-Right now the schema only lists the fields. `parseBookInput` in Express checks the input, but other writers do not use it: the seed script, a later job, and **you in Compass**. Prove it: in Compass, insert a book with `"title": 42` and `"rating": 9`. Does the API still return it?
+Right now the schema only lists the fields. `parseBookInput` in Express checks the input, but other writers do not use it: a script, a later job, and **you in Compass**. Prove it: in Compass, insert a book with `"title": 42` and `"rating": 9`. Does the API still return it?
 
 Make the schema the second line of defense:
 
@@ -140,10 +140,9 @@ Make the schema the second line of defense:
 
 Check: call `booksStore.replace` with an empty title from a small script (not through the route). Is the document changed? Remove `runValidators` and try again.
 
-## Challenge 5 (optional): A clear start and a seed script
+## Challenge 5 (optional): A clear start
 
-1. Start the server with a wrong password in `.env`. What do you see? Make `connectToDatabase` fail after 5 seconds instead of 30 (`serverSelectionTimeoutMS`), say that `MONGODB_URI` is missing when it is not set, and make `src/index.ts` stop with a clear message and exit code 1. The message must never contain the connection string.
-2. Write `scripts/seed.ts` and the npm script `seed`: it deletes all books, inserts the ten books of `src/seed.json` (without their `id`), and closes the connection. Run it twice: ten books, not twenty. Look at the result in Compass.
+Start the server with a wrong password in `.env`. What do you see? Make `connectToDatabase` fail after 5 seconds instead of 30 (`serverSelectionTimeoutMS`), say that `MONGODB_URI` is missing when it is not set, and make `src/index.ts` stop with a clear message and exit code 1. The message must never contain the connection string.
 
 ## Review your result (optional)
 

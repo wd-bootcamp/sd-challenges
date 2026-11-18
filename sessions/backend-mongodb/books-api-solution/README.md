@@ -7,7 +7,6 @@ The Reading List API with MongoDB (mongoose), after level 5. Compared with `book
 - `src/models/Book.ts`: the schema with `required`, `trim`, `enum`, `min`, `max`, an integer check and defaults.
 - `src/store/mongoBooksStore.ts`: a malformed id resolves to `undefined` or `false` (`isObjectId`), the search text is escaped, `replace` uses `runValidators: true`.
 - `src/middleware/errors.ts`: a mongoose `ValidationError` becomes a 400.
-- `scripts/seed.ts` and the npm script `seed`: delete all books, insert the seed data, close the connection.
 
 `src/routes/books.ts`, `src/validation.ts` and `scripts/check.ts` did not change.
 
@@ -17,6 +16,5 @@ The Reading List API with MongoDB (mongoose), after level 5. Compared with `book
 npm i
 cp .env.example .env   # then put your connection string into .env
 npm start              # API on http://localhost:3001
-npm run seed           # replaces ALL books in the database with the ten of src/seed.json
 npm run check          # 52 of 52 rules
 ```
