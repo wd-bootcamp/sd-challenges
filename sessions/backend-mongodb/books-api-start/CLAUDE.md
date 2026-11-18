@@ -10,7 +10,6 @@ Run these in the project root:
 - `npm run check`: check every rule of the contract. It starts its own server on port 3101 and restarts it once to test that the data survives. `BASE_URL=http://localhost:3001 npm run check` checks a running server instead.
 - `npm run typecheck`: check the types
 - `npm run test:run`: run the unit tests once. Do not use `npm test`, it starts the watch mode and never ends.
-- `npm run seed`: replace all books with the ten books of `src/seed.json`
 - Run `npm run typecheck`, `npm run test:run` and `npm run check` before you say a task is done.
 
 ## Stack

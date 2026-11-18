@@ -28,18 +28,16 @@ const bookSchema = new Schema<NewBook>({
   notes: { type: String, default: "" },
 });
 
-// What a book looks like in JSON: `_id` becomes `id`, `__v` disappears.
-bookSchema.set("toJSON", {
-  versionKey: false,
-  transform: (_doc, ret: Record<string, unknown>) => {
-    const { _id, ...rest } = ret;
-    return { id: String(_id), ...rest };
-  },
-});
-
 export const BookModel = model("Book", bookSchema);
 
-/** Turns a document into the plain `Book` object the API sends. */
+/** Turns a document into the plain `Book` object the API sends: `id` instead of `_id`, no `__v`. */
 export function toBook(doc: HydratedDocument<NewBook>): Book {
-  return doc.toJSON() as unknown as Book;
+  return {
+    id: doc.id,
+    title: doc.title,
+    author: doc.author,
+    status: doc.status,
+    rating: doc.rating,
+    notes: doc.notes,
+  };
 }
