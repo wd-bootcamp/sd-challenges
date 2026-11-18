@@ -18,11 +18,8 @@ src/
   store/booksStore.ts      the BooksStore interface, the in-memory store, the `booksStore` instance
   types.ts                 STATUSES, Status, Book, NewBook
   seed.json                ten books (the same books as books.json of the last session)
-scripts/
-  check.ts                 checks every rule of the contract (npm run check)
 .env.example               the variables of the app, without secrets
 CLAUDE.md                  rules for the agent
-requests.http              example requests for the REST Client extension of VS Code
 ```
 
 The routes only call the singleton `booksStore`. It has this interface (the same as in "Backend API Routes"):
@@ -47,4 +44,4 @@ npm i
 npm start
 ```
 
-Add a book with `POST`, stop the server, start it again: the book is gone. `npm run check` runs 52 rules and one fails: "a book created before a restart is still there after the restart".
+Add a book with `POST`, stop the server, start it again: the book is gone.

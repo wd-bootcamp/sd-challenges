@@ -7,11 +7,10 @@ A REST API for the Reading List (Express 5, TypeScript). The books live in Mongo
 Run these in the project root:
 
 - `npm run dev`: start the API on http://localhost:3001 and restart it on changes. It never finishes, so do not run it in the foreground. **Ask the user to start it**, or start it in the background. It reads `.env` if it exists.
-- `npm run check`: check every rule of the contract. It starts its own server on port 3101 and restarts it once to test that the data survives. `BASE_URL=http://localhost:3001 npm run check` checks a running server instead.
 - `npm run typecheck`: check the types
 - `npm run test:run`: run the unit tests once. Do not use `npm test`, it starts the watch mode and never ends.
 - `npm run seed`: delete ALL books in the database and insert the ten books of `src/seed.json`
-- Run `npm run typecheck`, `npm run test:run` and `npm run check` before you say a task is done.
+- Run `npm run typecheck` and `npm run test:run` before you say a task is done. The user validates the API with Bruno.
 
 ## Stack
 
@@ -33,4 +32,4 @@ Run these in the project root:
 
 ## Do not change
 
-`scripts/check.ts`, `src/types.ts`, `src/seed.json`.
+`src/types.ts`, `src/seed.json`.

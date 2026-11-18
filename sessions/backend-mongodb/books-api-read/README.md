@@ -6,15 +6,15 @@ This README describes the whole task. Read it completely before you start.
 
 ## The task
 
-| Challenge | Goal                                       | `npm run check` |          |
-| --------- | ------------------------------------------ | --------------- | -------- |
-| 1         | Minimal CRUD: get, create, replace, remove | 46 of 52        | required |
-| 2         | A bad id is a 404, not a 500               | 51 of 52        | optional |
-| 3         | Search text is text, not a pattern         | 52 of 52        | optional |
-| 4         | The schema checks the data                 | 52 of 52        | optional |
-| 5         | A clear start                              | 52 of 52        | optional |
+| Challenge | Goal                                       |          |
+| --------- | ------------------------------------------ | -------- |
+| 1         | Minimal CRUD: get, create, replace, remove | required |
+| 2         | A bad id is a 404, not a 500               | optional |
+| 3         | Search text is text, not a pattern         | optional |
+| 4         | The schema checks the data                 | optional |
+| 5         | A clear start                              | optional |
 
-After every challenge, run `npm run check`: it tells you which rules of the API contract still fail. Challenges 2 to 5 are optional: do them in order if you have time. At the end of all five, all 52 rules pass and no secret is in the repository.
+You validate the API yourself with **Bruno**. There is no Bruno collection in this project: you build your own, request by request, from the API contract below. After every challenge, run your requests again. Challenges 2 to 5 are optional: do them in order if you have time.
 
 You can write the code by hand or direct Claude Code. If you use the agent, work in a git repository, read its plan and its diffs, and decide what is accepted.
 
@@ -53,11 +53,8 @@ src/
   store/mongoBooksStore.ts    the BooksStore on top of MongoDB (this is where you work)
   types.ts                    STATUSES, Status, Book, NewBook
   seed.json                   ten books (the same books as books.json of the last session)
-scripts/
-  check.ts                    checks every rule of the contract (npm run check)
 .env.example                  the variables of the app, without secrets
 CLAUDE.md                     rules for the agent
-requests.http                 example requests for the REST Client extension of VS Code
 ```
 
 The routes only call the `booksStore`. It has this interface:
@@ -101,15 +98,36 @@ In `src/store/mongoBooksStore.ts`, implement `get`, `create`, `replace` and `rem
 
 Keep it minimal. Do not add any checks yet.
 
-### Try it, and look in Compass
+### Validate with Bruno
 
-1. Create a book with `POST`, then **refresh Compass**: the document is there.
-2. Edit the book with `PUT`, delete it with `DELETE`, and refresh Compass after each call.
+Create a Bruno collection `books-api` (you decide the folder, keep it **outside** the repository or without secrets: there are none in these requests). Add one request per row of the contract and run them against `http://localhost:3001`. For every request, check the **status code** and the **body** against the contract. Use the Tests tab of Bruno if you like, for example `expect(res.status).to.equal(201)`.
+
+Requests to build for challenge 1:
+
+| Request                                                                      | Expected                                                       |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `GET /api/health`                                                            | 200 `{ "status": "ok" }`                                       |
+| `GET /api/books`                                                             | 200, an array of books, each with `id` and without `_id`       |
+| `GET /api/books/count`                                                       | 200 `{ "count": <number> }`, the same as the list length       |
+| `GET /api/books?status=done`                                                 | 200, only books with the status `done`                         |
+| `GET /api/books?q=dune`                                                      | 200, only books whose title contains "dune", ignoring case     |
+| `POST /api/books` with `{ "title": "Piranesi", "author": "Susanna Clarke" }` | 201, the book with the defaults (`want-to-read`, `null`, `""`) |
+| `GET /api/books/:id` with the id of the new book                             | 200, the same book                                             |
+| `GET /api/books/000000000000000000000000`                                    | 404 `{ "error": "Book not found" }`                            |
+| `PUT /api/books/:id` with a changed title, status and rating                 | 200, the replaced book, the same `id`                          |
+| `DELETE /api/books/:id`                                                      | 204 without a body                                             |
+| `GET /api/books/:id` again                                                   | 404                                                            |
+| `POST /api/books` with `{ "author": "A" }`                                   | 400 `{ "error": ... }`                                         |
+| `POST /api/books` with `{ "title": "x", "author": "A", "rating": 6 }`        | 400 `{ "error": ... }`                                         |
+
+Then look in **Compass**:
+
+1. After the `POST`, **refresh Compass**: the document is there.
+2. After the `PUT` and the `DELETE`, refresh again.
 3. Edit a title in Compass and `GET` the book again.
-4. Stop the server and start it again: the data is still there.
-5. Run `npm run check`. The goal is 46 of 52. The six that fail show what the optional challenges fix.
+4. Stop the server and start it again: the books are still there.
 
-> 💡 `npm run check` creates and deletes only its own books (title starts with `check-api`). It uses the database of your `.env`. As long as `create` throws, the check stops at its setup step and reports failures for the rules that need a book.
+> 💡 Save the collection, you reuse it in the next challenges. Your requests that fail now (a malformed id, special characters in `q`) show what the optional challenges fix.
 
 ## Challenge 2 (optional): A bad id is a 404
 
@@ -117,13 +135,24 @@ Keep it minimal. Do not add any checks yet.
 
 Change `mongoBooksStore` so that `get`, `replace` and `remove` resolve to `undefined` or `false` for an id that is not an ObjectId (24 hexadecimal characters). They must never throw. Do not change the routes.
 
-You are done when `npm run check` shows 51 of 52.
+Add these requests to your Bruno collection. You are done when all of them answer with a 404 `{ "error": "Book not found" }`:
+
+- `GET /api/books/abc`
+- `PUT /api/books/abc` with a valid body
+- `DELETE /api/books/abc`
+- `GET /api/books/12345`
 
 ## Challenge 3 (optional): Search text is text
 
 `GET /api/books?q=(` fails and `?q=.*` matches every book, because the text of the user becomes a regular expression. Escape the text before you use it in `$regex`.
 
-You are done when `npm run check` shows 52 of 52. Then answer: what could an attacker do with an unescaped pattern?
+Add these requests to your Bruno collection. You are done when the first answers with a 200 and an empty array, and the second does not return every book:
+
+- `GET /api/books?q=(`
+- `GET /api/books?q=.*`
+- `GET /api/books?q=dune` still works
+
+Then answer: what could an attacker do with an unescaped pattern?
 
 ## Challenge 4 (optional): The schema checks the data
 
@@ -138,15 +167,15 @@ Make the schema the second line of defense:
 - `replace` uses `runValidators: true`. Without it, an update skips the schema rules.
 - In `src/middleware/errors.ts`, a mongoose `ValidationError` becomes a 400 `{ "error": "..." }`.
 
-Check: call `booksStore.replace` with an empty title from a small script (not through the route). Is the document changed? Remove `runValidators` and try again.
+Check in Bruno that the contract still holds (`POST` with a missing title, an invalid status and a rating of 6 are 400, the valid requests of challenge 1 still work). Then check the schema on its own: call `booksStore.replace` with an empty title from a small script (not through the route). Is the document changed? Remove `runValidators` and try again.
 
 ## Challenge 5 (optional): A clear start
 
-Start the server with a wrong password in `.env`. What do you see? Make `connectToDatabase` fail after 5 seconds instead of 30 (`serverSelectionTimeoutMS`), say that `MONGODB_URI` is missing when it is not set, and make `src/index.ts` stop with a clear message and exit code 1. The message must never contain the connection string.
+Start the server with a wrong password in `.env`. What do you see? Check it by hand (Bruno cannot help when the server does not start). Make `connectToDatabase` fail after 5 seconds instead of 30 (`serverSelectionTimeoutMS`), say that `MONGODB_URI` is missing when it is not set, and make `src/index.ts` stop with a clear message and exit code 1. The message must never contain the connection string.
 
 ## Review your result (optional)
 
-Read the whole diff, not only the green check.
+Read the whole diff, not only the answers of Bruno.
 
 **Secrets**
 
@@ -181,6 +210,5 @@ Node.js 22.22 or newer is required. Install the dependencies with `npm i` first.
 
 - `npm start` starts the API, `npm run dev` restarts it on changes
 - `npm run typecheck` checks the types, `npm run test:run` runs the unit tests once
-- `npm run check` checks the API contract. It starts its own server on port 3101. With `BASE_URL=http://localhost:3001 npm run check` it checks a server that is already running, without the restart check.
 
 > 💡 To test against another database, set `MONGODB_URI` in the terminal: a value from the terminal wins over `.env`.

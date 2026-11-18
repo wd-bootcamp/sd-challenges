@@ -11,8 +11,7 @@
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:run": "vitest run",
-    "check": "tsx scripts/check.ts"
+    "test:run": "vitest run"
   },
   "dependencies": {
     "cors": "^2.8.6",
