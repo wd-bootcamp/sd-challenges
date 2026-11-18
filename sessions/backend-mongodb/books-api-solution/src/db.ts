@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+// Read .env into process.env. A variable that is already set (terminal, hosting platform) wins.
+try {
+  process.loadEnvFile();
+} catch {
+  // No .env file: fine, the variables may come from the environment.
+}
+
 export async function connectToDatabase(): Promise<void> {
   const uri = process.env.MONGODB_URI;
   if (!uri) {

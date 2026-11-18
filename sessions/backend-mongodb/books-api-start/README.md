@@ -2,7 +2,7 @@
 
 The demo start of the session. An Express 5 API for the Reading List with TypeScript. All routes work, but the books live **in memory**: stop the server and they are gone.
 
-In the demo you build the **minimal** MongoDB version live: install `mongoose`, connect, a model, and a store on top of it. The result is the project `books-api-minimal`. You continue the exercise there, see its README for the API contract and the levels.
+In the demo you build the **read** part of the MongoDB version live: install `mongoose`, connect, a model, and `list` and `count` of a store on top of it. The result is the project `books-api-read`. You continue the exercise there, see its README for the API contract and the challenges.
 
 ## What is in the starter
 

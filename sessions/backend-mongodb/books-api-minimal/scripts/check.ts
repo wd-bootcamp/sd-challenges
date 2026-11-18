@@ -524,7 +524,7 @@ function startServer() {
   serverLog = "";
   server = spawn(
     "node_modules/.bin/tsx",
-    ["--env-file-if-exists=.env", "src/index.ts"],
+    ["src/index.ts"],
     {
       env: { ...process.env, PORT: String(CHECK_PORT) },
       stdio: ["ignore", "pipe", "pipe"],
