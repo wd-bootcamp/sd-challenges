@@ -9,7 +9,6 @@ Run these in the project root:
 - `npm run dev`: start the API on http://localhost:3001 and restart it on changes. It never finishes, so do not run it in the foreground. **Ask the user to start it**, or start it in the background. It reads `.env` if it exists.
 - `npm run typecheck`: check the types
 - `npm run test:run`: run the unit tests once. Do not use `npm test`, it starts the watch mode and never ends.
-- `npm run seed`: delete ALL books in the database and insert the ten books of `src/seed.json`
 - Run `npm run typecheck` and `npm run test:run` before you say a task is done. The user validates the API with Bruno.
 
 ## Stack
