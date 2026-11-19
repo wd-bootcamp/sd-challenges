@@ -1,0 +1,23 @@
+# TypeScript
+node_modules
+
+# Python
+__pycache__
+*.pyc
+.venv
+
+# Java
+java/out
+*.class
+
+# Go
+go/*.test
+go/*.out
+
+# Rust
+rust/target
+
+# Editors and systems
+.DS_Store
+.idea
+.vscode

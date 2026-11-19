@@ -1,0 +1,22 @@
+meta {
+  name: Create a quote
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/quotes
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "text": "Talk is cheap. Show me the code.",
+    "author": "Linus Torvalds"
+  }
+}
+
+assert {
+  res.status: eq 201
+}

@@ -1,0 +1,21 @@
+<main>
+  <h1>Reading List</h1>
+  <input
+    type="search"
+    [formField]="filterForm.query"
+    placeholder="Search by title"
+    aria-label="Search by title"
+  />
+  <select [formField]="filterForm.status" aria-label="Filter by status">
+    <option value="all">All</option>
+    @for (s of statuses; track s) {
+    <option [value]="s">{{ labels[s] }}</option>
+    }
+  </select>
+  <p>{{ visibleBooks().length }} of {{ books().length }} books</p>
+  <div class="grid">
+    @for (book of visibleBooks(); track book.id) {
+    <app-book-card [book]="book" (done)="markDone($event)" />
+    }
+  </div>
+</main>

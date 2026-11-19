@@ -1,0 +1,15 @@
+meta {
+  name: Delete a book
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/api/books/b2
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 204
+}

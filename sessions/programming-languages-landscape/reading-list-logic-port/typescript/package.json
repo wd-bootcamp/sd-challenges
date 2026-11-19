@@ -1,0 +1,9 @@
+{
+  "name": "reading-list-logic-reference",
+  "version": "0.0.0-unreleased",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

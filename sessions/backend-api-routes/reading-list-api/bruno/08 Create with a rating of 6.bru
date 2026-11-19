@@ -1,0 +1,23 @@
+meta {
+  name: Create with a rating of 6
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/books
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Too good",
+    "author": "Nobody",
+    "rating": 6
+  }
+}
+
+assert {
+  res.status: eq 400
+}

@@ -1,0 +1,16 @@
+<article class="card">
+  <h3>{{ book().title }}</h3>
+  <p>{{ book().author }}</p>
+  <span [class]="'badge badge-' + book().status">{{ statusLabel() }}</span>
+  @if (book().rating !== null) {
+  <p>
+    <span role="img" [attr.aria-label]="'Rating: ' + book().rating + ' of 5'"
+      >{{ stars() }}</span
+    >
+  </p>
+  } @else {
+  <p>Not rated</p>
+  } @if (book().status !== 'done') {
+  <button type="button" (click)="done.emit(book().id)">Mark as done</button>
+  }
+</article>

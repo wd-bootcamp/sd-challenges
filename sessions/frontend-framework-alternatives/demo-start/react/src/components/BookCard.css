@@ -1,0 +1,17 @@
+.card {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 1rem;
+}
+.badge {
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  background: #e2e8f0;
+}
+.badge-reading {
+  background: #fef3c7;
+}
+.badge-done {
+  background: #dcfce7;
+}
