@@ -1,6 +1,6 @@
 # Reading List API
 
-A REST API for the Reading List (Express 5, TypeScript). The books are being moved from memory to MongoDB. The specification is the section "The API contract" in `README.md`.
+A REST API for the Reading List (Express 5, TypeScript). The books live in memory and are being moved to MongoDB. The specification is the section "The API contract" in `README.md`.
 
 ## Commands
 
@@ -8,8 +8,7 @@ Run these in the project root:
 
 - `npm run dev`: start the API on http://localhost:3001 and restart it on changes. It never finishes, so do not run it in the foreground. **Ask the user to start it**, or start it in the background. It reads `.env` if it exists.
 - `npm run typecheck`: check the types
-- `npm run test:run`: run the unit tests once. Do not use `npm test`, it starts the watch mode and never ends.
-- Run `npm run typecheck` and `npm run test:run` before you say a task is done. The user validates the API with Bruno.
+- Run `npm run typecheck` before you say a task is done. The user validates the API with Bruno.
 
 ## Stack
 
@@ -19,8 +18,8 @@ Run these in the project root:
 ## Rules
 
 - **The API contract must not change.** Paths, status codes, the JSON field names (`id, title, author, status, rating, notes`) and the error format `{ "error": "..." }` stay exactly as they are.
-- Routes never touch the data directly. They only call `booksStore` (`src/store/booksStore.ts`). Keep the `BooksStore` interface (`list`, `count`, `get`, `create`, `replace`, `remove`, all async). An unknown **or malformed** id resolves to `undefined` or `false`, it never throws.
-- Do not change `src/routes/books.ts` and `src/validation.ts` without telling me why.
+- The routes work on one array in `src/routes/books.ts` today. Moving to MongoDB: the routes call the mongoose model directly (`BookModel` and `toBook`). There is no store, repository or service layer: do not add one.
+- There is no input validation in this project, on purpose. Do not add any.
 - The responses have exactly `id, title, author, status, rating, notes`. No `_id`, no `__v`.
 - **Never read, print, log or commit `.env`.** It contains secrets. Do not put a connection string into any other file. `.env.example` has placeholders only. Never log the connection string, at most the database name.
 - Connect to the database first, then call `listen`. If the connection fails, stop the process with a clear message.
