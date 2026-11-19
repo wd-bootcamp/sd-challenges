@@ -1,16 +1,12 @@
-export const STATUSES = ["want-to-read", "reading", "done"] as const;
-
-export type Status = (typeof STATUSES)[number];
-
-export type Book = {
+/** What the API sends: one todo. */
+export type Todo = {
   id: string;
   title: string;
-  author: string;
-  status: Status;
-  /** 1 to 5 stars, `null` means "not rated" */
-  rating: number | null;
-  notes: string;
+  done: boolean;
 };
 
-/** The data you need to create or replace a book. The `id` is created by the server. */
-export type NewBook = Omit<Book, "id">;
+/** What the API receives for POST and PUT. */
+export type NewTodo = {
+  title: string;
+  done: boolean;
+};

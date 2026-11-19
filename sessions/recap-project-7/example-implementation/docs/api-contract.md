@@ -1,104 +1,53 @@
-# API contract: Reading List
+# API Contract
 
-Base path `/api`, JSON only, development port `3001`. This file is the contract between the backend and the frontend. If the code and this file disagree, fix one of them.
-
-## Data model
+The backend runs on `http://localhost:3001`. Base path `/api`. Only JSON.
 
 ```ts
-type Status = "want-to-read" | "reading" | "done";
-
-type Book = {
-  id: string; // MongoDB ObjectId as hex string
+type Todo = {
+  id: string; // the MongoDB ObjectId as a string
   title: string;
-  author: string;
-  status: Status;
-  rating: number | null; // integer 1 to 5, null = not rated
-  notes: string;
+  done: boolean;
 };
 ```
 
-Responses contain exactly these fields: no `_id`, no `__v`, no timestamps.
+A response contains exactly these three fields: no `_id` and no `__v`.
 
-## Endpoints
+| Method and path         | Body                  | Success                  | Errors                                               |
+| ----------------------- | --------------------- | ------------------------ | ---------------------------------------------------- |
+| `GET /api/health`       |                       | 200 `{ "status": "ok" }` |                                                      |
+| `GET /api/todos`        |                       | 200 `Todo[]`             |                                                      |
+| `POST /api/todos`       | `{ "title": "..." }`  | 201 `Todo`               | 400 `{ "error": "<message>" }`                       |
+| `PUT /api/todos/:id`    | `{ "title", "done" }` | 200 `Todo`               | 400 `{ "error": "<message>" }`, 404 `Todo not found` |
+| `DELETE /api/todos/:id` |                       | 204, no body             | 404 `{ "error": "Todo not found" }`                  |
+| any other route         |                       |                          | 404 `{ "error": "Not found" }`                       |
 
-| Method and path         | Success                   | Errors                                               |
-| ----------------------- | ------------------------- | ---------------------------------------------------- |
-| `GET /api/health`       | 200 `{ "status": "ok" }`  |                                                      |
-| `GET /api/books`        | 200 `Book[]`              | 400 for an unknown `status` or a repeated `q`        |
-| `GET /api/books/count`  | 200 `{ "count": number }` |                                                      |
-| `GET /api/books/:id`    | 200 `Book`                | 404 `{ "error": "Book not found" }`                  |
-| `POST /api/books`       | 201 `Book`                | 400 `{ "error": "<message>" }`                       |
-| `PUT /api/books/:id`    | 200 `Book`                | 400 `{ "error": "<message>" }`, 404 `Book not found` |
-| `DELETE /api/books/:id` | 204, no body              | 404 `{ "error": "Book not found" }`                  |
-| any other route         |                           | 404 `{ "error": "Not found" }`                       |
+- `POST` creates a todo with `done: false`. The title is trimmed. A missing or empty title gives 400.
+- `PUT` replaces `title` and `done`. Always send both, also when you only change one of them.
+- A body that is not valid JSON gives 400. An `id` that is not a valid ObjectId gives 404.
+- All errors look like `{ "error": "<message>" }`. An unexpected error gives 500 `{ "error": "Internal server error" }` without details.
 
-All errors have the shape `{ "error": "<message>" }`. A request body that is not valid JSON gets 400. Unexpected server errors get 500 `{ "error": "Internal server error" }` without details.
+## Examples
 
-### `GET /api/books`
+```http
+POST /api/todos
+{ "title": "Buy milk" }
 
-Optional query parameters, which can be combined:
-
-- `status`: `want-to-read`, `reading` or `done`
-- `q`: text that the title contains. Case-insensitive, trimmed. An empty `q` means no filter.
-
-```bash
-curl "http://localhost:3001/api/books?status=reading&q=hail"
+201
+{ "id": "6aff79b9cd3147d2599d2f45", "title": "Buy milk", "done": false }
 ```
 
-```json
-[
-  {
-    "id": "6650f1c2a1b2c3d4e5f60718",
-    "title": "Project Hail Mary",
-    "author": "Andy Weir",
-    "status": "reading",
-    "rating": null,
-    "notes": "Hard to put down."
-  }
-]
+```http
+PUT /api/todos/6aff79b9cd3147d2599d2f45
+{ "title": "Buy oat milk", "done": true }
+
+200
+{ "id": "6aff79b9cd3147d2599d2f45", "title": "Buy oat milk", "done": true }
 ```
 
-### `POST /api/books` and `PUT /api/books/:id`
+```http
+POST /api/todos
+{ "title": "" }
 
-Body: `{ title, author, status?, rating?, notes? }`. `PUT` replaces all editable fields: a field that is missing gets its default, like in `POST`.
-
-| Field    | Rule                                     | Default        |
-| -------- | ---------------------------------------- | -------------- |
-| `title`  | required, text, not empty after trimming |                |
-| `author` | required, text, not empty after trimming |                |
-| `status` | `want-to-read`, `reading` or `done`      | `want-to-read` |
-| `rating` | `null` or an integer from 1 to 5         | `null`         |
-| `notes`  | text                                     | `""`           |
-
-Other fields in the body (for example `id`) are ignored.
-
-```bash
-curl -X POST http://localhost:3001/api/books \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Piranesi","author":"Susanna Clarke"}'
+400
+{ "error": "A todo needs a title, and done must be true or false" }
 ```
-
-```json
-{
-  "id": "6650f1c2a1b2c3d4e5f60719",
-  "title": "Piranesi",
-  "author": "Susanna Clarke",
-  "status": "want-to-read",
-  "rating": null,
-  "notes": ""
-}
-```
-
-```json
-{ "error": "title is required" }
-```
-
-## Beyond the shared Reading List contract
-
-These points are part of the API that students bring from Backend MongoDB. The frontend of Recap Project 7 does not need `count`.
-
-- **Count:** `GET /api/books/count` answers `{ "count": <number> }`.
-- **Invalid filters:** an unknown `status` and a repeated `q` (`?q=a&q=b`) answer 400 with a message, not an empty list.
-- **Malformed `id`:** an `id` that is not a valid ObjectId answers 404 `Book not found`, like an `id` that does not exist.
-- **Unknown body fields:** ignored.
-- **Order:** the order of the list is the order of the database (insertion order). The contract does not promise more.

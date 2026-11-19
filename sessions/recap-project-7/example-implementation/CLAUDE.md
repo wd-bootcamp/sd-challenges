@@ -1,17 +1,32 @@
-# Reading List
+# Todo App
 
-Full-stack reading list: Express API with MongoDB (`backend/`) and a React frontend (`frontend/`). The task and the user stories are in the project README. The API is defined in `docs/api-contract.md`: change the contract file in the same commit as the code.
+A full-stack todo app: an Express 5 API with MongoDB in `backend/`, a React app in `frontend/`.
 
-## Layout
+## Commands
 
-- `backend/`: Express 5, TypeScript, mongoose. Has its own `CLAUDE.md`.
-- `frontend/`: React, TypeScript, Vite, shadcn/ui. Has its own `CLAUDE.md`.
+- Backend (`backend/`): `npm run dev` starts the API on http://localhost:3001, `npm run typecheck` checks the types.
+- Frontend (`frontend/`): `npm run dev` starts the app on http://localhost:5173, `npm run check` checks the types, `npm run build` builds it.
+- `npm run dev` never finishes. **Ask the user to start it**, or start it in the background.
+- Run the type check of the part you changed before you say a task is done.
+
+## Stack
+
+- Backend: Node.js 22, ES modules, TypeScript (`strict`), Express 5, mongoose, `cors`. Run with `tsx`, no build step.
+- Frontend: Vite, React 19, TypeScript, SWR for loading data. Plain CSS in `src/styles.css`.
+- Do not add dependencies without asking.
+
+## Structure
+
+- `backend/src/app.ts` builds the app (CORS, JSON, routes, error handlers), `index.ts` connects to the database and listens.
+- `backend/src/routes/todos.ts` has the routes, `models/Todo.ts` the schema, `middleware/errors.ts` the 404 and error handlers.
+- `frontend/src/api.ts` holds **all** calls to the API. Components never call `fetch`.
+- `docs/api-contract.md` is the contract. If you change the API, change the contract in the same step.
 
 ## Rules
 
-- Work in one folder per task. Run the commands of that folder's `CLAUDE.md` before you say a task is done.
-- Never read or write `.env`. Add new variables to `.env.example` with a placeholder and tell me.
-- Never put a secret, token or connection string in the code, a test or a document.
-- Never use `npm test` (watch mode). Use `npm run test:run`.
-- Do not add dependencies without asking.
-- Only do what the current issue asks for. Write other ideas down, do not build them.
+- The API follows `docs/api-contract.md`: paths, status codes, field names (`id`, `title`, `done`) and the error format `{ "error": "..." }`.
+- Routes call the mongoose model directly. No extra layers.
+- **Never read, print, log or commit `backend/.env`.** It holds the connection string. `.env.example` has placeholders only.
+- CORS is set up in `backend/src/app.ts` for `http://localhost:5173`. Do not change it and do not use `*`.
+- Use async/await. Name request parameters `request` and `response`. No `any`.
+- Only do what the current issue asks for. No authentication, no tests, no deployment yet.
