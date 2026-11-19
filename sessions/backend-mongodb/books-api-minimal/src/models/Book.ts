@@ -5,9 +5,9 @@ import type { Book, NewBook } from "../types";
 const bookSchema = new Schema<NewBook>({
   title: String,
   author: String,
-  status: String,
-  rating: Number,
-  notes: String,
+  status: { type: String, default: "want-to-read" },
+  rating: { type: Number, default: null },
+  notes: { type: String, default: "" },
 });
 
 // The collection is called "books": the lower-case plural of "Book".

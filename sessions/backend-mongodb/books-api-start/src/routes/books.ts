@@ -1,39 +1,43 @@
+import { randomUUID } from "node:crypto";
+
 import { Router } from "express";
 
-import { booksStore } from "../store/booksStore";
-import { STATUSES, type Status } from "../types";
-import { parseBookInput } from "../validation";
+import seed from "../seed.json";
+import type { Book, NewBook } from "../types";
 
 export const booksRouter = Router();
 
-// GET /api/books?status=reading&q=dune
-booksRouter.get("/", async (request, response) => {
-  const { status, q } = request.query;
+// The books live in this array. When the server stops, they are gone.
+let books: Book[] = structuredClone(seed as Book[]);
 
-  if (status !== undefined && !STATUSES.includes(status as Status)) {
-    response
-      .status(400)
-      .json({ error: `status must be one of: ${STATUSES.join(", ")}` });
-    return;
-  }
-  if (q !== undefined && typeof q !== "string") {
-    response.status(400).json({ error: "q must be a single text" });
-    return;
-  }
+const defaults: NewBook = {
+  title: "",
+  author: "",
+  status: "want-to-read",
+  rating: null,
+  notes: "",
+};
+
+// GET /api/books?status=reading
+booksRouter.get("/", (request, response) => {
+  const { status } = request.query;
+
   response.json(
-    await booksStore.list({ status: status as Status | undefined, q })
+    typeof status === "string"
+      ? books.filter((book) => book.status === status)
+      : books
   );
 });
 
 // GET /api/books/count
 // This route must come before "/:id", otherwise "count" would be taken as an id.
-booksRouter.get("/count", async (_request, response) => {
-  response.json({ count: await booksStore.count() });
+booksRouter.get("/count", (_request, response) => {
+  response.json({ count: books.length });
 });
 
 // GET /api/books/:id
-booksRouter.get("/:id", async (request, response) => {
-  const book = await booksStore.get(request.params.id);
+booksRouter.get("/:id", (request, response) => {
+  const book = books.find((item) => item.id === request.params.id);
 
   if (!book) {
     response.status(404).json({ error: "Book not found" });
@@ -43,38 +47,33 @@ booksRouter.get("/:id", async (request, response) => {
 });
 
 // POST /api/books
-booksRouter.post("/", async (request, response) => {
-  const result = parseBookInput(request.body);
+booksRouter.post("/", (request, response) => {
+  const book: Book = { ...defaults, ...request.body, id: randomUUID() };
 
-  if ("error" in result) {
-    response.status(400).json({ error: result.error });
-    return;
-  }
-  response.status(201).json(await booksStore.create(result.value));
+  books.push(book);
+  response.status(201).json(book);
 });
 
 // PUT /api/books/:id
-booksRouter.put("/:id", async (request, response) => {
-  const result = parseBookInput(request.body);
+booksRouter.put("/:id", (request, response) => {
+  const index = books.findIndex((item) => item.id === request.params.id);
 
-  if ("error" in result) {
-    response.status(400).json({ error: result.error });
-    return;
-  }
-  const book = await booksStore.replace(request.params.id, result.value);
-
-  if (!book) {
+  if (index === -1) {
     response.status(404).json({ error: "Book not found" });
     return;
   }
+  const book: Book = { ...defaults, ...request.body, id: request.params.id };
+
+  books[index] = book;
   response.json(book);
 });
 
 // DELETE /api/books/:id
-booksRouter.delete("/:id", async (request, response) => {
-  const removed = await booksStore.remove(request.params.id);
+booksRouter.delete("/:id", (request, response) => {
+  const before = books.length;
 
-  if (!removed) {
+  books = books.filter((item) => item.id !== request.params.id);
+  if (books.length === before) {
     response.status(404).json({ error: "Book not found" });
     return;
   }

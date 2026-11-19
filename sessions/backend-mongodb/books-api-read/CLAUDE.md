@@ -1,6 +1,6 @@
 # Reading List API
 
-A REST API for the Reading List (Express 5, TypeScript). The books live in MongoDB (mongoose), in a minimal first version that you make robust level by level (see `README.md`). The in-memory store only stays for the unit tests.
+A REST API for the Reading List (Express 5, TypeScript). The books live in MongoDB (mongoose), in a minimal version (see `README.md`).
 
 ## Commands
 
@@ -8,8 +8,7 @@ Run these in the project root:
 
 - `npm run dev`: start the API on http://localhost:3001 and restart it on changes. It never finishes, so do not run it in the foreground. **Ask the user to start it**, or start it in the background. It reads `.env` if it exists.
 - `npm run typecheck`: check the types
-- `npm run test:run`: run the unit tests once. Do not use `npm test`, it starts the watch mode and never ends.
-- Run `npm run typecheck` and `npm run test:run` before you say a task is done. The user validates the API with Bruno.
+- Run `npm run typecheck` before you say a task is done. The user validates the API with Bruno.
 
 ## Stack
 
@@ -19,8 +18,8 @@ Run these in the project root:
 ## Rules
 
 - **The API contract must not change.** Paths, status codes, the JSON field names (`id, title, author, status, rating, notes`) and the error format `{ "error": "..." }` stay exactly as they are.
-- Routes never touch the data directly. They only call `booksStore` (`src/store/booksStore.ts`), which is `mongoBooksStore` (`src/store/mongoBooksStore.ts`, schema in `src/models/Book.ts`, connection in `src/db.ts`). Keep the `BooksStore` interface (`list`, `count`, `get`, `create`, `replace`, `remove`, all async). An unknown **or malformed** id resolves to `undefined` or `false`, it never throws (level 2).
-- Do not change `src/routes/books.ts` and `src/validation.ts` without telling me why.
+- Routes call the mongoose model directly (`BookModel` and `toBook` from `src/models/Book.ts`, connection in `src/db.ts`). There is no store, repository or service layer: do not add one.
+- There is no input validation in this project, on purpose. Do not add any (no `parseBookInput`, no schema validators, no checks of `request.body`, `request.query` or the id).
 - The responses have exactly `id, title, author, status, rating, notes`. No `_id`, no `__v`.
 - **Never read, print, log or commit `.env`.** It contains secrets. Do not put a connection string into any other file. `.env.example` has placeholders only. Never log the connection string, at most the database name.
 - Connect to the database first, then call `listen`. If the connection fails, stop the process with a clear message.
