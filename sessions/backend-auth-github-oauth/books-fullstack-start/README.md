@@ -6,12 +6,12 @@ The start of the live demo. A fullstack Reading List: the **Books API** (Express
 
 ```
 src/             the Books API from "Backend MongoDB"
-client/          the React page (Vite, TypeScript): book list, add, delete, login link, log out
+client/          the React page (Vite, TypeScript): book list, add, delete, log in, log out
 .env.example     the variables of the app, without secrets
 CLAUDE.md        rules for the agent
 ```
 
-The page is given. Nobody types frontend code in this session, and `client/` is the same in all three folders of the session. It shows "Not logged in" and a link "Log in with GitHub". The link leads to a 404 until the demo has built the login.
+The page is given. Nobody types frontend code in this session, and `client/` is the same in all three folders of the session. It shows "Not logged in" and a button "Log in with GitHub". The button does nothing useful until the demo has built the login. The page talks to the login with the client of Better Auth (`authClient` in `client/src/api.ts`).
 
 The API address comes from `VITE_API_URL` (default `http://localhost:3001/api`). `credentials: true` in `cors(...)` of `src/app.ts` is the one line that is already prepared for the login: the page runs on port 5173, the API on port 3001 (two origins), and the browser only sends cookies to another origin when both sides agree.
 
@@ -31,9 +31,9 @@ npm i
 npm run dev
 ```
 
-Open `http://localhost:5173`. You see the books of your database. "Add book" and "Delete" work for everyone. The browser console shows one error for `GET /api/auth/me` (a 404): the route does not exist yet.
+Open `http://localhost:5173`. You see the books of your database. "Add book" and "Delete" work for everyone. The browser console shows one error for `GET /api/auth/get-session` (a 404): the page already asks "who is logged in?", and the API does not know the route yet.
 
-`GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` and `JWT_SECRET` in `.env` stay placeholders until you register your OAuth App in the session. `.env` is not committed.
+`GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` and `BETTER_AUTH_SECRET` in `.env` stay placeholders until you register your OAuth App in the session. `.env` is not committed.
 
 ## Development
 

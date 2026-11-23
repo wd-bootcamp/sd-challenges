@@ -1,62 +1,59 @@
 # Backend Auth with GitHub OAuth: Books Fullstack Login
 
-The end of the live demo and the **start of the exercise**. "Log in with GitHub" works in the page, and the page shows your name. Everything else is still open: **anyone can still add and delete books**, and "Log out" does not work yet (the route is missing, the browser console shows a 404 for `POST /api/auth/logout`). Your first challenge closes both.
+The end of the live demo and the **start of the exercise**. "Log in with GitHub" works in the page, and the page shows your name. Everything else is still open: **anyone can still add and delete books**. Your challenge closes that.
 
 This README describes the whole task. Read it completely before you start.
 
 ## The task
 
-| Challenge | Goal                                           |          |
-| --------- | ---------------------------------------------- | -------- |
-| 1         | `requireAuth` on the write routes, plus logout | required |
-| 2         | Books belong to a user                         | optional |
-| 3         | Helmet and a body limit                        | optional |
-| 4         | Rate limit the login                           | optional |
-| Review    | Secrets checklist on your own repository       | optional |
+| Challenge | Goal                                     |          |
+| --------- | ---------------------------------------- | -------- |
+| 1         | `requireAuth` on the write routes        | required |
+| 2         | Books belong to a user                   | optional |
+| 3         | Helmet and a body limit                  | optional |
+| 4         | Rate limit the login                     | optional |
+| Review    | Secrets checklist on your own repository | optional |
 
-You validate in the **React page** (the login needs a browser). **Bruno** checks the API requests that need no login. There is no Bruno collection in this project: build your own. Challenges 2 to 4 are optional.
+You validate in the **React page** (the login needs a browser). **Bruno** checks the API requests that need no login. There is no Bruno collection in this project: build your own.
 
-You can write the code by hand or direct Claude Code. If you use the agent, work in a git repository, read its plan and its diffs. **Never give it your `.env`, your GitHub client secret or your `JWT_SECRET`.**
+You can write the code by hand or direct Claude Code. If you use the agent, work in a git repository, read its plan and its diffs. **Never give it your `.env`, your GitHub client secret or your `BETTER_AUTH_SECRET`.**
 
 ## The API contract
 
-The contract of the Books API stays as it is. New in this session:
+The contract of the Books API stays as it is. Everything under `/api/auth` is answered by Better Auth, you do not write it. These routes matter today:
 
-| Request                                           | Answer                                                                                |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `GET /api/auth/github`                            | 302 to GitHub. Sets the cookie `oauth_state`.                                         |
-| `GET /api/auth/github/callback`                   | 302 to `FRONTEND_URL` and sets the cookie `session`. 400 for a bad `state` or `code`. |
-| `GET /api/auth/me`                                | 200 `{ id, login, name, avatarUrl }`, or 401 `{ "error": "Not logged in" }`           |
-| `POST /api/auth/logout` (challenge 1)             | 204, deletes the cookie `session`                                                     |
-| `POST`, `PUT`, `DELETE /api/books…` (challenge 1) | 401 `{ "error": "Not logged in" }` without a login. `GET` stays public.               |
+| Request                                           | Answer                                                                            |
+| ------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `POST /api/auth/sign-in/social`                   | 200 `{ "url": "https://github.com/login/oauth/authorize?...", "redirect": true }` |
+| `GET /api/auth/callback/github`                   | 302 to the page and sets the cookie `better-auth.session_token`                   |
+| `GET /api/auth/get-session`                       | 200 `{ session, user }`, or 200 `null` when nobody is logged in                   |
+| `POST /api/auth/sign-out`                         | 200 `{ "success": true }`, ends the session in the database                       |
+| `POST`, `PUT`, `DELETE /api/books…` (challenge 1) | 401 `{ "error": "Not logged in" }` without a login. `GET` stays public.           |
 
 ## What is in the project
 
 ```
 src/
-  env.ts                     requireEnv(name): reads a variable when it is needed
-  models/User.ts             the User model (githubId, login, name, avatarUrl), toUser()
-  auth/github.ts             the three GitHub calls: authorize URL, code for token, profile
-  auth/session.ts            signSession, verifySession, the cookie options
-  routes/auth.ts             /api/auth/github, /callback, /me
+  env.ts                     reads .env, requireEnv(name)
+  auth.ts                    the Better Auth setup: database, GitHub, secret
+  app.ts                     cors with credentials, the Better Auth handler, the routers
   routes/books.ts            the books routes (no login yet)
-  app.ts                     cors with credentials, cookieParser, the routers
-client/                      the React page
+client/                      the React page (authClient in src/api.ts)
 .env.example                 all variables, without secrets
 CLAUDE.md                    rules for the agent
 ```
 
 ## Set up
 
-1. Register your own **GitHub OAuth App** (GitHub, Settings, Developer settings, OAuth Apps, New OAuth App). Name `books-api-local`, Homepage URL `http://localhost:3001`, Authorization callback URL `http://localhost:3001/api/auth/github/callback`. Then "Generate a new client secret" and copy it once.
+1. Register your own **GitHub OAuth App** (GitHub, Settings, Developer settings, OAuth Apps, New OAuth App). Name `books-api-local`, Homepage URL `http://localhost:3001`, Authorization callback URL `http://localhost:3001/api/auth/callback/github`. Then "Generate a new client secret" and copy it once.
 2. `npm i` here and in `client/`.
-3. Copy `.env.example` to `.env` and fill in `MONGODB_URI`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `JWT_SECRET` (create it with `node -p "require('crypto').randomBytes(32).toString('hex')"`).
+3. Copy `.env.example` to `.env` and fill in `MONGODB_URI`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` and `BETTER_AUTH_SECRET` (create it with `node -p "require('crypto').randomBytes(32).toString('hex')"`).
 4. `git check-ignore .env` prints `.env`.
 5. `npm run dev` here, `npm run dev` in `client/`, open `http://localhost:5173`.
 
-## Challenge 1: `requireAuth` and logout (required)
+## Challenge 1: `requireAuth` (required)
 
-Add a middleware `requireAuth` in `src/middleware/auth.ts`. It reads the `session` cookie, checks it with `verifySession`, checks that the user exists, and answers `401 { "error": "Not logged in" }` otherwise. Put it on `POST`, `PUT` and `DELETE` in `src/routes/books.ts`. Add `POST /api/auth/logout` to `src/routes/auth.ts`: it answers 204 and clears the cookie with the **same options** as the login.
+Add a middleware `requireAuth` in `src/middleware/auth.ts`. It asks Better Auth for the session of the request (`auth.api.getSession`) and answers `401 { "error": "Not logged in" }` when there is none. Put it on `POST`, `PUT` and `DELETE` in `src/routes/books.ts`. The logout already works: the page calls `authClient.signOut()`.
 
 > 💡 Type the middleware as `RequestHandler<Record<string, string>>`. With a plain `RequestHandler`, `request.params.id` becomes `string | string[]` and the typecheck of the books routes fails.
 
@@ -64,7 +61,7 @@ Add a middleware `requireAuth` in `src/middleware/auth.ts`. It reads the `sessio
 
 | #   | Action in the page           | Expected                                                           |
 | --- | ---------------------------- | ------------------------------------------------------------------ |
-| 1   | Open the page, not logged in | "Not logged in", the link is visible, the book list loads          |
+| 1   | Open the page, not logged in | "Not logged in", the button is visible, the book list loads        |
 | 2   | "Add book" without a login   | an alert `401 Not logged in`, the list does not change             |
 | 3   | Click "Log in with GitHub"   | back on the page, "Logged in as <your name>", the button "Log out" |
 | 4   | "Add book"                   | the book appears, no message                                       |
@@ -72,19 +69,19 @@ Add a middleware `requireAuth` in `src/middleware/auth.ts`. It reads the `sessio
 | 6   | Reload                       | still logged in                                                    |
 | 7   | "Log out", then "Add book"   | "Not logged in", then the alert `401 Not logged in`                |
 
-The cookie of the demo login is still valid. Add the logout route first, click "Log out", and begin with step 1.
+The session of the demo login is still valid. Click "Log out" first, and begin with step 1.
 
 ### Check it in Bruno (no login needed)
 
-| #   | Request                                                  | Expected                                                                                           |
-| --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| 1   | `GET /api/auth/me`                                       | 401 `{ "error": "Not logged in" }`                                                                 |
-| 2   | `GET /api/books`                                         | 200, the list                                                                                      |
-| 3   | `POST /api/books` with `{ "title": "x", "author": "A" }` | 401 `{ "error": "Not logged in" }`                                                                 |
-| 4   | `PUT /api/books/:id` (any id)                            | 401                                                                                                |
-| 5   | `DELETE /api/books/:id` (any id)                         | 401                                                                                                |
-| 6   | `GET /api/auth/github` (turn "follow redirects" off)     | 302, `Location` starts with `https://github.com/login/oauth/authorize?client_id=` and has `state=` |
-| 7   | `GET /api/auth/github/callback?code=x&state=y`           | 400 `{ "error": "Invalid OAuth state or code" }`                                                   |
+| #   | Request                                                                                                 | Expected                                                                           |
+| --- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 1   | `GET /api/auth/get-session`                                                                             | 200 `null`                                                                         |
+| 2   | `GET /api/books`                                                                                        | 200, the list                                                                      |
+| 3   | `POST /api/books` with `{ "title": "x", "author": "A" }`                                                | 401 `{ "error": "Not logged in" }`                                                 |
+| 4   | `PUT /api/books/:id` (any id)                                                                           | 401                                                                                |
+| 5   | `DELETE /api/books/:id` (any id)                                                                        | 401                                                                                |
+| 6   | `POST /api/auth/sign-in/social` with `{ "provider": "github", "callbackURL": "http://localhost:5173" }` | 200, `url` starts with `https://github.com/login/oauth/authorize` and has `state=` |
+| 7   | the same request with `"callbackURL": "http://evil.example"`                                            | 403 `INVALID_CALLBACK_URL`                                                         |
 
 ## Challenge 2 (optional): Books belong to a user
 
@@ -98,15 +95,15 @@ Add `helmet()` and limit the JSON body to 10 kB (`express.json({ limit: "10kb" }
 
 ## Challenge 4 (optional): Rate limit the login
 
-Add `express-rate-limit` to `/api/auth/github` and the callback (not to `/me`). After 10 requests in 15 minutes the answer is 429.
+Better Auth has a rate limit built in, but it is **off outside production**. Turn it on in `src/auth.ts` (see `rateLimit` in the docs) and check it: after the limit, `POST /api/auth/sign-in/social` answers 429.
 
 ## Review your result (optional)
 
 Go through the secrets checklist on your own repository.
 
 - `.env` is in `.gitignore` (`git check-ignore .env` prints `.env`). `.env.example` has placeholders only.
-- No client secret, `JWT_SECRET` or GitHub token in code, logs, error messages, README, screenshots or committed Bruno files.
-- `git log -p -S"client_secret"` is empty. If a secret was pushed: **regenerate it in GitHub** (and change `JWT_SECRET`, which logs everybody out). Deleting the commit is not enough.
+- No client secret, `BETTER_AUTH_SECRET` or GitHub token in code, logs, error messages, README, screenshots or committed Bruno files.
+- `git log -p -S"client_secret"` is empty. If a secret was pushed: **regenerate it in GitHub** (and change `BETTER_AUTH_SECRET`). Deleting the commit is not enough.
 - The agent never saw `.env`, and nobody pasted a secret into a chat.
 
 Write down two findings. Fix at least one.

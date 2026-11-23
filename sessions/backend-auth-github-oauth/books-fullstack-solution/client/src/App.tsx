@@ -3,18 +3,14 @@ import { type FormEvent, useEffect, useState } from "react";
 import * as api from "./api";
 
 export default function App() {
-  const [user, setUser] = useState<api.User | null>(null);
+  const { data: session } = api.authClient.useSession();
   const [books, setBooks] = useState<api.Book[]>([]);
   const [message, setMessage] = useState("");
 
-  async function loadUser() {
-    setUser(await api.getMe().catch(() => null)); // 401 means: not logged in
-  }
   async function loadBooks() {
     setBooks(await api.listBooks());
   }
   useEffect(() => {
-    void loadUser();
     void loadBooks();
   }, []);
 
@@ -43,18 +39,25 @@ export default function App() {
     <main>
       <h1>Reading List</h1>
 
-      {user ? (
+      {session ? (
         <p>
-          <span>Logged in as {user.name ?? user.login}</span>{" "}
-          <button onClick={() => void api.logout().then(loadUser)}>
-            Log out
-          </button>
+          <span>Logged in as {session.user.name}</span>{" "}
+          <button onClick={() => void api.authClient.signOut()}>Log out</button>
         </p>
       ) : (
         <p>
           <span>Not logged in</span>{" "}
-          {/* A plain link: the login is a navigation of the browser, not a fetch. */}
-          <a href={`${api.API_URL}/auth/github`}>Log in with GitHub</a>
+          {/* Asks the API for the GitHub address, then the browser goes there. */}
+          <button
+            onClick={() =>
+              void api.authClient.signIn.social({
+                provider: "github",
+                callbackURL: window.location.origin,
+              })
+            }
+          >
+            Log in with GitHub
+          </button>
         </p>
       )}
 

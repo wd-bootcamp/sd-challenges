@@ -1,9 +1,9 @@
-import cookieParser from "cookie-parser";
+import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express from "express";
 
+import { auth } from "./auth";
 import { errorHandler, notFound } from "./middleware/errors";
-import { authRouter } from "./routes/auth";
 import { booksRouter } from "./routes/books";
 
 export const app = express();
@@ -16,13 +16,16 @@ app.use(
     credentials: true,
   })
 );
+
+// Better Auth answers everything under /api/auth: login, callback, session, logout.
+// It reads the body itself, so it must come before express.json().
+app.all("/api/auth/*splat", toNodeHandler(auth));
+
 app.use(express.json());
-app.use(cookieParser()); // fills request.cookies
 
 app.get("/api/health", (_request, response) => {
   response.json({ status: "ok" });
 });
-app.use("/api/auth", authRouter);
 app.use("/api/books", booksRouter);
 
 // Always last: the 404 handler, then the error handler.
