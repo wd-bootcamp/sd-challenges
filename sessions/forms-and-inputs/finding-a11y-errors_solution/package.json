@@ -1,0 +1,10 @@
+{
+  "name": "forms-and-inputs_finding-a11y-errors_solution",
+  "version": "0.0.0-unreleased",
+  "description": "",
+  "main": "index.html",
+  "nf": {
+    "template": "html-css-static"
+  },
+  "keywords": []
+}

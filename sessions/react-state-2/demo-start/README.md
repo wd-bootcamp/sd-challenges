@@ -1,12 +1,12 @@
-# React State 2: Demo Start
+# React State 3: Demo Start
 
 This is the start state of the demo app.
 
 ## Notes
 
-- You only have to touch this files:
-  - `./src/App.jsx`
-  - `./src/components/SearchForm.jsx`
+TO DO:
+
+- You only have to touch the `./src/App.jsx` file.
 
 ## Development
 
