@@ -1,0 +1,24 @@
+{
+  "name": "backend-e2e-tests_books-fullstack-e2e-first-test",
+  "version": "0.0.0-unreleased",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.22"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "typecheck": "npm run typecheck -w backend -w frontend && tsc --noEmit",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.3"
+  }
+}
