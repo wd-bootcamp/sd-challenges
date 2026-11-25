@@ -3,7 +3,6 @@ import { Router } from "express";
 
 import { quotes } from "../quotes";
 import type { Quote } from "../types";
-import { parseQuote } from "../validation";
 
 export const quotesRouter = Router();
 
@@ -34,13 +33,7 @@ quotesRouter.get("/:id", (request, response) => {
 
 // POST /api/quotes
 quotesRouter.post("/", (request, response) => {
-  const result = parseQuote(request.body);
-
-  if ("error" in result) {
-    response.status(400).json({ error: result.error });
-    return;
-  }
-  const quote: Quote = { id: randomUUID(), ...result.value };
+  const quote: Quote = { ...request.body, id: randomUUID() };
   quotes.push(quote);
   response.status(201).json(quote);
 });
