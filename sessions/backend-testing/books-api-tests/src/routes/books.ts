@@ -1,16 +1,15 @@
 import { Router } from "express";
 
 import { BookModel, toBook } from "../models/Book";
-import type { NewBook } from "../types";
+import type { NewBook, Status } from "../types";
 
 export const booksRouter = Router();
 
 // GET /api/books?status=reading
 booksRouter.get("/", async (request, response) => {
-  const { status } = request.query;
+  const { status } = request.query as { status?: Status };
 
-  const filter: Record<string, unknown> = {};
-  if (typeof status === "string") filter.status = status;
+  const filter = typeof status === "string" ? { status } : {};
 
   const docs = await BookModel.find(filter);
   response.json(docs.map(toBook));
