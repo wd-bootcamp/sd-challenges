@@ -32,9 +32,9 @@ Run these in the project root:
 ## Rules for tests
 
 - Tests are in `src/app.test.ts` and call the app with `supertest` (`request(app)`). No port, no database.
-- Replace `BookModel` with stubs (`vi.mock`, see the first test). Never connect to MongoDB in a test, never import `src/index.ts` or `src/db.ts`, never read `.env`.
+- Replace methods of `BookModel` with stubs (`vi.spyOn`, see the first test). Never connect to MongoDB in a test, never import `src/index.ts` or `src/db.ts`, never read `.env`.
 - Every `request(app)` needs an `await`, and every test checks the status **and** the body.
-- Test the contract (status and body), not which function was called. The one exception is `model.create`, to check that the body arrived.
+- Test the contract (status and body), not which function was called. The one exception is `BookModel.create`, to check that the body arrived.
 - **Do not change `src/` to make a test pass.** If a test fails, ask whether the test or the code is wrong, and tell me.
 
 ## Do not change

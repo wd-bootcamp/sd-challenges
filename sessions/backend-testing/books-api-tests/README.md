@@ -1,6 +1,6 @@
 # Backend Testing: Books API Tests
 
-The end of the demo and the **start of the exercise**: the Reading List API with its first route test. The test file replaces `BookModel` with stubs (`vi.mock`), so a test needs no port and no database. The app code did not change.
+The end of the demo and the **start of the exercise**: the Reading List API with its first route test. The test file replaces methods of `BookModel` with stubs (`vi.spyOn`), so a test needs no port and no database. The app code did not change.
 
 Read this README completely before you start. **Only challenge 1 and "Break it" are required. Challenge 2 and 3 are optional.**
 
@@ -47,9 +47,9 @@ Read `src/app.test.ts` first. Add three tests to the same `describe`. Each has a
 
 1. **Get one.** `findById` resolves with a book: `GET /api/books/1` answers 200 with the book.
 2. **A book that does not exist.** `findById` resolves with `null`: `GET /api/books/missing` answers 404 `{ "error": "Book not found" }`.
-3. **Create one.** `create` resolves with a book: `POST /api/books` answers 201 with the book. Also check that `model.create` was called with the body you sent.
+3. **Create one.** `create` resolves with a book: `POST /api/books` answers 201 with the book. Also check that `create` was called with the body you sent (keep the spy in a variable).
 
-Hints: `request(app).post("/api/books").send({ ... })` sends JSON. `model.findById.mockResolvedValue(...)` sets the answer of the stub. `beforeEach` resets all stubs.
+Hints: `request(app).post("/api/books").send({ ... })` sends JSON. `vi.spyOn(BookModel, "findById").mockResolvedValue(... as never)` sets the answer of the stub. `afterEach` restores all spies.
 
 Run `npm run test:run`: 4 tests are green.
 
@@ -67,7 +67,7 @@ If a row stays green, your test is too weak or it misses an `await`. Fix the tes
 
 ## Challenge 2 (optional): More cases
 
-Test `PUT` (200 and 404), `DELETE` (204 and 404), a body that is not valid JSON (400 `Invalid JSON body`), and a database error: `model.find.mockRejectedValue(new Error("..."))` becomes a 500 `{ "error": "Internal server error" }` without details. The error handler logs with `console.error`, silence it in that test with `vi.spyOn`.
+Test `PUT` (200 and 404), `DELETE` (204 and 404), a body that is not valid JSON (400 `Invalid JSON body`), and a database error: `vi.spyOn(BookModel, "find").mockRejectedValue(new Error("..."))` becomes a 500 `{ "error": "Internal server error" }` without details. The error handler logs with `console.error`, silence it in that test with `vi.spyOn`.
 
 ## Challenge 3 (optional): Coverage
 

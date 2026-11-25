@@ -1,24 +1,8 @@
 import request from "supertest";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { app } from "./app";
-
-// The routes call BookModel. Here it is replaced by stubs, so no test needs a database.
-// vi.hoisted runs before the (moved to the top) vi.mock, so the factory can use `model`.
-const model = vi.hoisted(() => ({
-  find: vi.fn(),
-  findById: vi.fn(),
-  create: vi.fn(),
-  findByIdAndUpdate: vi.fn(),
-  findByIdAndDelete: vi.fn(),
-  countDocuments: vi.fn(),
-}));
-
-// Keep everything of the real module (`toBook`), swap only `BookModel`.
-vi.mock("./models/Book", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("./models/Book")>()),
-  BookModel: model,
-}));
+import { BookModel } from "./models/Book";
 
 const dune = {
   id: "1",
@@ -30,12 +14,14 @@ const dune = {
 };
 
 describe("Books API", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   test("GET /api/books answers 200 with the books", async () => {
-    model.find.mockResolvedValue([dune]);
+    // The stub decides what the "database" answers. `as never`: the real method
+    // returns a Mongoose query, the stub returns plain data.
+    vi.spyOn(BookModel, "find").mockResolvedValue([dune] as never);
 
     const response = await request(app).get("/api/books");
 
