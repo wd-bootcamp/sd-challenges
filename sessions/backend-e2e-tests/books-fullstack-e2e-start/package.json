@@ -6,21 +6,16 @@
   "engines": {
     "node": ">=22.22"
   },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.3.0",
-    "mongoose": "^9.12.1"
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "typecheck": "npm run typecheck -w backend -w frontend"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/node": "^22.10.0",
-    "tsx": "^4.23.0",
     "typescript": "^5.9.3"
   }
 }
