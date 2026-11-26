@@ -69,6 +69,15 @@ If a row stays green, your test is too weak or it misses an `await`. Fix the tes
 
 Test `PUT` (200 and 404), `DELETE` (204 and 404), a body that is not valid JSON (400 `Invalid JSON body`), and a database error: `vi.spyOn(BookModel, "find").mockRejectedValue(new Error("..."))` becomes a 500 `{ "error": "Internal server error" }` without details. The error handler logs with `console.error`, silence it in that test with `vi.spyOn`.
 
+Hint for the invalid JSON: send a string and set the header yourself. Without the header, Express does not try to parse the body as JSON, and you get no 400.
+
+```ts
+const response = await request(app)
+  .post("/api/books")
+  .set("Content-Type", "application/json")
+  .send("{ broken");
+```
+
 ## Challenge 3 (optional): Coverage
 
 `npm i -D @vitest/coverage-v8@2.1.9`, then `npx vitest run --coverage`. Which lines of `src/routes/books.ts` does no test reach? Write one test for a line you find. Coverage tells you what is **not** tested. It does not tell you that the rest is tested well.
