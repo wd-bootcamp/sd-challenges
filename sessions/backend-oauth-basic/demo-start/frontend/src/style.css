@@ -1,0 +1,38 @@
+body {
+  font-family: system-ui, sans-serif;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background: #f6f8fa;
+}
+
+main {
+  background: white;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.08);
+  text-align: center;
+}
+
+img {
+  border-radius: 50%;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  margin: 0.3rem;
+  border: none;
+  border-radius: 6px;
+  background: #24292f;
+  color: white;
+  cursor: pointer;
+}
+
+pre {
+  text-align: left;
+  background: #f6f8fa;
+  padding: 1rem;
+  border-radius: 6px;
+}
